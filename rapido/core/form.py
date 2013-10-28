@@ -1,10 +1,12 @@
 from zope.interface import implements
+from zope import component
 from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
 from pyquery import PyQuery as pq
 
 from interfaces import IForm
 from rapido.core import ANNOTATION_KEY
+from .fields.utils import get_field_class
 
 class Form(object):
     """
@@ -34,13 +36,20 @@ class Form(object):
     def set_field(self, field_id, field_settings):
         self.annotations[ANNOTATION_KEY]['fields'][field_id] = field_settings
 
-    def display(self):
+    def display(self, edit=True):
         layout = pq(self.layout.output)
+
         def process_field(index, element):
             field_id = pq(element).attr("data-rapido-field")
-            return """<span class="field">
-<input type="text" class="text-widget textline-field" name="%s" />
-</span>
-            """ % field_id
+            field_settings = self.fields.get(field_id, None)
+            if not field_settings:
+                return "UNDEFINED FIELD"
+            constructor = get_field_class(field_settings['type'])
+            if constructor:
+                field = constructor(field_id, field_settings)
+                return field.render(edit=edit)
+            else:
+                return "UNKNOWN FIELD TYPE"
+
         layout("*[data-rapido-field]").replaceWith(process_field)
         return layout.html()
