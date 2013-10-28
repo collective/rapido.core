@@ -24,7 +24,7 @@ setup(name='rapido.core',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          # -*- Extra requirements: -*-
+          'pyquery',
       ],
       entry_points="""
       # -*- Entry points: -*-
