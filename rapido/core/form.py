@@ -38,7 +38,9 @@ class Form(object):
         layout = pq(self.layout.output)
         def process_field(index, element):
             field_id = pq(element).attr("data-rapido-field")
-            return """<input type="text" class="pat-text" name="%s" />
+            return """<span class="field">
+<input type="text" class="text-widget textline-field" name="%s" />
+</span>
             """ % field_id
         layout("*[data-rapido-field]").replaceWith(process_field)
         return layout.html()
