@@ -10,4 +10,11 @@
         class=".views.OpenForm"
         />
 
+    <browser:page
+        name="CreateDocument"
+        for="..interfaces.IFormable"
+        permission="zope.Public"
+        class=".views.CreateDocument"
+        />
+
 </configure>

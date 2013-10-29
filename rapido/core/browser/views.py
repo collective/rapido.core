@@ -14,3 +14,12 @@ class OpenForm(BrowserView):
 
     def __call__(self):
         return self.template()
+
+class CreateDocument(BrowserView):
+
+    def __call__(self):
+        form = IForm(self.context)
+        doc = form.database.create_document()
+        doc.Form = form.id
+        doc.save(self.request, form)
+        import pdb; pdb.set_trace( )

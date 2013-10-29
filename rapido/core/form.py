@@ -4,7 +4,7 @@ from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
 from pyquery import PyQuery as pq
 
-from interfaces import IForm
+from interfaces import IForm, IDatabase
 from rapido.core import ANNOTATION_KEY
 from .fields.utils import get_field_class
 
@@ -15,6 +15,7 @@ class Form(object):
 
     def __init__(self, context):
         self.context = context
+        self.id = self.context.id
         self.annotations = IAnnotations(context)
         if ANNOTATION_KEY not in self.annotations:
             self.annotations[ANNOTATION_KEY] = PersistentDict({
@@ -35,6 +36,10 @@ class Form(object):
 
     def set_field(self, field_id, field_settings):
         self.annotations[ANNOTATION_KEY]['fields'][field_id] = field_settings
+
+    @property
+    def database(self):
+        return IDatabase(self.context.__parent__)
 
     def display(self, edit=True):
         layout = pq(self.layout.output)
