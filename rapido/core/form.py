@@ -41,7 +41,7 @@ class Form(object):
     def database(self):
         return IDatabase(self.context.__parent__)
 
-    def display(self, edit=True):
+    def display(self, doc=None, edit=False):
         layout = pq(self.layout.output)
 
         def process_field(index, element):
@@ -52,7 +52,7 @@ class Form(object):
             constructor = get_field_class(field_settings['type'])
             if constructor:
                 field = constructor(field_id, field_settings)
-                return field.render(edit=edit)
+                return field.render(doc, edit=edit)
             else:
                 return "UNKNOWN FIELD TYPE"
 

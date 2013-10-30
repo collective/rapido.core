@@ -1,1 +1,1 @@
-<tal:block tal:content="python:options['field'].value">field value</tal:block>
+<tal:block tal:content="python:options['value']">field value</tal:block>

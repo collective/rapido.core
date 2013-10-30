@@ -6,11 +6,14 @@ class BaseField(object):
         self.settings = settings
         self.value = value
 
-    def render(self, edit=False):
+    def render(self, doc=None, edit=False):
+        field_value = None
+        if doc:
+            field_value = doc.get_item(self.id)
         if edit:
-            return self.edit_template(field=self)
+            return self.edit_template(field=self, value=field_value)
         else:
-            return self.read_template(field=self)
+            return self.read_template(field=self, value=field_value)
 
 class TextField(BaseField):
 

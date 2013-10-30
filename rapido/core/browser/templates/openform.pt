@@ -8,7 +8,7 @@
   <head></head>
   <body>
     <form>
-      <tal:block tal:replace="structure view/form/display" />
+      <tal:block tal:replace="structure python:view.form.display(edit=True)" />
     </form>
   </body>
 </html>

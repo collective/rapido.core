@@ -7,21 +7,31 @@ class Document(object):
 
     def __init__(self, context):
         self.context = context
+        self.uid = self.context.uid()
+        self.id = self.context.get_item('docid')
+        self.database = self.context.database
+        form_id = self.get_item('Form')
+        self.form = self.database.get_form(form_id)
 
-    def __setattr__(self, name, value):
+    def set_item(self, name, value):
         self.context.set_item(name, value)
 
-    def __getattr__(self, name):
-        if self.context.has_key(name):
+    def get_item(self, name, default=None):
+        if self.context.has_item(name):
             return self.context.get_item(name)
         else:
-            raise AttributeError(name)
+            return default
 
-    def __delattr__(self, name):
+    def remove_item(self, name):
         self.context.remove_item(name)
 
     def save(self, request, form):
         # request might be a dict containing item values
         for field in form.fields:
             if field in request.keys():
-                setattr(doc, field, request.get(field))
+                self.set_item(field, request.get(field))
+
+    def display(self):
+        if self.form:
+            return self.form.display(doc=self)
+

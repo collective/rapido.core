@@ -1,6 +1,6 @@
 from zope.interface import implements
 
-from interfaces import IDatabase, IStorage, IDocument
+from interfaces import IDatabase, IStorage, IDocument, IForm
 
 class Database(object):
     """
@@ -20,4 +20,15 @@ class Database(object):
             docid = str(hash(record))
         record.set_item('docid', docid)
         return IDocument(record)
+
+    def get_document(self, docid=None, uid=None):
+        if uid:
+            record = self.storage.get(uid)
+            if record:
+                return IDocument(record)
+
+    def get_form(self, form_id):
+        form_obj = self.context.get(form_id)
+        if form_obj:
+            return IForm(form_obj)
         

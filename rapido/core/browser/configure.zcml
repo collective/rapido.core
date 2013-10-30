@@ -17,4 +17,11 @@
         class=".views.CreateDocument"
         />
 
+    <browser:page
+        name="document"
+        for="..interfaces.IDatabasable"
+        permission="zope.Public"
+        class=".views.DocumentView"
+        />
+
 </configure>

@@ -1,7 +1,10 @@
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import NotFound
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Five.browser import BrowserView
 
-from ..interfaces import IForm
+from ..interfaces import IForm, IDatabase
 
 class OpenForm(BrowserView):
 
@@ -15,11 +18,32 @@ class OpenForm(BrowserView):
     def __call__(self):
         return self.template()
 
+
 class CreateDocument(BrowserView):
 
     def __call__(self):
         form = IForm(self.context)
         doc = form.database.create_document()
-        doc.Form = form.id
+        doc.set_item('Form', form.id)
         doc.save(self.request, form)
-        import pdb; pdb.set_trace( )
+        self.request.response.redirect("../document/" + str(doc.uid))
+
+
+class DocumentView(BrowserView):
+    implements(IPublishTraverse)
+
+    template = ViewPageTemplateFile('templates/opendocument.pt')
+
+    def __init__(self, context, request):
+        super(DocumentView, self).__init__(context, request)
+        self.doc = None
+
+    def publishTraverse(self, request, name):
+        doc = IDatabase(self.context).get_document(uid=int(name))
+        if not doc:
+            raise NotFound(self, name, request)
+        self.doc = doc
+        return self()
+
+    def __call__(self):
+        return self.template()
