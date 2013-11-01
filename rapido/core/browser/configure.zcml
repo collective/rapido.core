@@ -24,4 +24,10 @@
         class=".views.DocumentView"
         />
 
+    <browser:page
+        name="documents"
+        for="..interfaces.IDatabasable"
+        permission="zope.Public"
+        class=".views.AllDocumentsView"
+        />
 </configure>

@@ -27,6 +27,9 @@ class Database(object):
             if record:
                 return IDocument(record)
 
+    def documents(self):
+        return [IDocument(record) for record in self.storage.documents()]
+
     def get_form(self, form_id):
         form_obj = self.context.get(form_id)
         if form_obj:

@@ -48,3 +48,19 @@ class DocumentView(BrowserView):
 
     def render(self):
         return self.template()
+
+    def __call__(self):
+        return self.render()
+
+
+class AllDocumentsView(BrowserView):
+
+    template = ViewPageTemplateFile('templates/documents.pt')
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.documents = IDatabase(self.context).documents()
+
+    def __call__(self):
+        return self.template()
