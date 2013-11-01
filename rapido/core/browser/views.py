@@ -35,7 +35,8 @@ class DocumentView(BrowserView):
     template = ViewPageTemplateFile('templates/opendocument.pt')
 
     def __init__(self, context, request):
-        super(DocumentView, self).__init__(context, request)
+        self.context = context
+        self.request = request
         self.doc = None
 
     def publishTraverse(self, request, name):
@@ -43,7 +44,7 @@ class DocumentView(BrowserView):
         if not doc:
             raise NotFound(self, name, request)
         self.doc = doc
-        return self()
+        return self
 
-    def __call__(self):
+    def render(self):
         return self.template()
