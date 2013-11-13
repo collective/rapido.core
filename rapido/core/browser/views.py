@@ -49,7 +49,7 @@ class DocumentView(BrowserView):
             self.doc.save(self.request)
             return self
 
-        doc = IDatabase(self.context).get_document(int(name))
+        doc = IDatabase(self.context).get_document(name)
         if not doc:
             raise NotFound(self, name, request)
         self.doc = doc

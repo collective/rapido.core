@@ -18,7 +18,7 @@ class Document(object):
         return '/'.join([
             self.database.url,
             "document",
-            str(self.uid),
+            str(self.id),
             ])
 
     def set_item(self, name, value):
