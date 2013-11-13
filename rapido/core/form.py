@@ -73,6 +73,8 @@ class Form(object):
     def execute(self, func, *args, **kwargs):
         if not hasattr(self, '_executable'):
             if not hasattr(self, '_compiled_code'):
+                #TODO: store the compiled code in a persistent object too avoid
+                # recompiling everytime
                 try:
                     self._compiled_code = CompiledProgram(self.code)
                 except Exception, e:
