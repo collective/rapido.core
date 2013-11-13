@@ -23,4 +23,14 @@
     factory=".document.Document"
   />
 
+  <subscriber
+    for=".events.ICompilationErrorEvent"
+    handler=".subscribers.on_compilation_error"
+    />
+
+  <subscriber
+    for=".events.IExecutionErrorEvent"
+    handler=".subscribers.on_execution_error"
+    />
+
 </configure>

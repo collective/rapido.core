@@ -1,5 +1,6 @@
 from zope.interface import implements
 from zope import component
+from zope.event import notify
 from zope.annotation.interfaces import IAnnotations
 from zope.security.untrustedpython.interpreter import CompiledProgram
 from persistent.dict import PersistentDict
@@ -8,6 +9,7 @@ from pyquery import PyQuery as pq
 from interfaces import IForm, IDatabase
 from rapido.core import ANNOTATION_KEY
 from .fields.utils import get_field_class
+from .events import ExecutionErrorEvent, CompilationErrorEvent
 
 class Form(object):
     """
@@ -71,11 +73,18 @@ class Form(object):
     def execute(self, func, *args, **kwargs):
         if not hasattr(self, '_executable'):
             if not hasattr(self, '_compiled_code'):
-                self._compiled_code = CompiledProgram(self.code)
+                try:
+                    self._compiled_code = CompiledProgram(self.code)
+                except Exception, e:
+                    notify(CompilationErrorEvent(e, self))
+                    return
             self._executable = {}
             self._compiled_code.exec_(self._executable)
         if func in self._executable:
-            return self._executable[func](*args, **kwargs)
+            try:
+                return self._executable[func](*args, **kwargs)
+            except Exception, e:
+                notify(ExecutionErrorEvent(e, self))
 
     def compute_field(self, field_id, context=None):
         return self.execute(field_id, context)
