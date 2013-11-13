@@ -25,7 +25,7 @@ class CreateDocument(BrowserView):
         form = IForm(self.context)
         doc = form.database.create_document()
         doc.set_item('Form', form.id)
-        doc.save(self.request, form=form)
+        doc.save(self.request, form=form, creation=True)
         self.request.response.redirect(doc.url)
 
 
@@ -49,7 +49,7 @@ class DocumentView(BrowserView):
             self.doc.save(self.request)
             return self
 
-        doc = IDatabase(self.context).get_document(uid=int(name))
+        doc = IDatabase(self.context).get_document(int(name))
         if not doc:
             raise NotFound(self, name, request)
         self.doc = doc
@@ -71,7 +71,7 @@ class AllDocumentsView(BrowserView):
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        self.documents = IDatabase(self.context).documents()
+        self.documents = IDatabase(self.context)._documents()
 
     def __call__(self):
         return self.template()

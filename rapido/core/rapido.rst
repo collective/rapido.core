@@ -43,8 +43,7 @@ Create a persistent object that will be adapted as a rapido db:
 
 Create a document:
 
-    >>> doc = db.create_document()
-    >>> docid = doc.id
+    >>> doc = db.create_document(docid='doc_1')
     >>> uid = doc.uid
     >>> doc.set_item('author', "Joseph Conrad")
     >>> doc.set_item('book_tile', "Lord Jim")
@@ -89,3 +88,7 @@ After saving the doc, the author has been changed to uppercase:
     >>> doc.save({}, form=form)
     >>> doc.get_item('author')
     'JOSEPH CONRAD'
+
+Documents can be searched:
+    >>> [doc.get_item('author') for doc in db.search('docid=="doc_1"')]
+    ['JOSEPH CONRAD']

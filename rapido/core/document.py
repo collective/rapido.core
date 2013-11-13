@@ -33,7 +33,10 @@ class Document(object):
     def remove_item(self, name):
         self.context.remove_item(name)
 
-    def save(self, request, form=None, form_id=None):
+    def reindex(self):
+        self.database.reindex(self)
+
+    def save(self, request, form=None, form_id=None, creation=False):
         # Note: request might be a dict containing item values
         if not(form or form_id or request.get('Form')):
             raise Exception("Cannot save without a form")
@@ -44,7 +47,13 @@ class Document(object):
         for field in form.fields:
             if field in request.keys():
                 self.set_item(field, request.get(field))
+        if creation:
+            docid = form.execute('doc_id', self)
+            import pdb; pdb.set_trace( )
+            if docid:
+                self.set_item('docid', docid)
         form.on_save(self)
+        self.reindex()
 
     def display(self, edit=False):
         if self.form:
