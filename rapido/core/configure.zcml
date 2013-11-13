@@ -17,10 +17,4 @@
     factory=".form.Form"
   />
 
-  <adapter
-    for=".interfaces.IRecordable"
-    provides=".interfaces.IDocument"
-    factory=".document.Document"
-  />
-
 </configure>

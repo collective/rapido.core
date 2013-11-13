@@ -1,15 +1,16 @@
 from zope.pagetemplate.pagetemplatefile import PageTemplateFile
 
 class BaseField(object):
-    def __init__(self, id, settings, value=None):
+    def __init__(self, id, settings, form):
         self.id = id
         self.settings = settings
-        self.value = value
+        self.form = form
 
     def render(self, doc=None, edit=False):
-        field_value = None
         if doc:
             field_value = doc.get_item(self.id)
+        else:
+            field_value = self.form.compute_field(self.id)
         if edit:
             return self.edit_template(field=self, value=field_value)
         else:

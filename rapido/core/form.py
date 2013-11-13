@@ -1,6 +1,7 @@
 from zope.interface import implements
 from zope import component
 from zope.annotation.interfaces import IAnnotations
+from zope.security.untrustedpython.interpreter import CompiledProgram
 from persistent.dict import PersistentDict
 from pyquery import PyQuery as pq
 
@@ -21,6 +22,7 @@ class Form(object):
             self.annotations[ANNOTATION_KEY] = PersistentDict({
                 'layout': "",
                 'fields': {},
+                'code': "",
             })
 
     @property
@@ -38,6 +40,13 @@ class Form(object):
         self.annotations[ANNOTATION_KEY]['fields'][field_id] = field_settings
 
     @property
+    def code(self):
+        return self.annotations[ANNOTATION_KEY]['code']
+
+    def set_code(self, code):
+        self.annotations[ANNOTATION_KEY]['code'] = code
+
+    @property
     def database(self):
         return IDatabase(self.context.__parent__)
 
@@ -51,10 +60,22 @@ class Form(object):
                 return "UNDEFINED FIELD"
             constructor = get_field_class(field_settings['type'])
             if constructor:
-                field = constructor(field_id, field_settings)
+                field = constructor(field_id, field_settings, self)
                 return field.render(doc, edit=edit)
             else:
                 return "UNKNOWN FIELD TYPE"
 
         layout("*[data-rapido-field]").replaceWith(process_field)
         return layout.html()
+
+    @property
+    def executed(self):
+        if not hasattr(self, '_compiled'):
+            self._compiled = CompiledProgram(self.code)
+            self._executed = {}
+            self._compiled.exec_(self._executed)
+        return self._executed
+
+    def compute_field(self, field_id, context=None):
+        if field_id in self.executed:
+            return self.executed[field_id](context)
