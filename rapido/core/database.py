@@ -1,8 +1,9 @@
 from zope.interface import implements
 
 from interfaces import IDatabase, IStorage, IDocument, IForm
+from index import Index
 
-class Database(object):
+class Database(Index):
     """
     """
     implements(IDatabase)
@@ -53,16 +54,3 @@ class Database(object):
         if form_obj:
             return IForm(form_obj)
     
-    def reindex(self, doc):
-        self.storage.reindex(doc.context)
-
-    def _search(self, query, sort_index=None, reverse=False):
-        for record in self.storage.search(
-            query,
-            sort_index=sort_index,
-            reverse=reverse):
-            yield IDocument(record)
-
-    def search(self, query, sort_index=None, reverse=False):
-        return list(self._search(query, sort_index=sort_index,
-            reverse=reverse))
