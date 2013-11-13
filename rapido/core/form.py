@@ -51,7 +51,7 @@ class Form(object):
         return IDatabase(self.context.__parent__)
 
     def display(self, doc=None, edit=False):
-        layout = pq(self.layout.output)
+        layout = pq(self.layout)
 
         def process_field(index, element):
             field_id = pq(element).attr("data-rapido-field")
@@ -68,14 +68,17 @@ class Form(object):
         layout("*[data-rapido-field]").replaceWith(process_field)
         return layout.html()
 
-    @property
-    def executed(self):
-        if not hasattr(self, '_compiled'):
-            self._compiled = CompiledProgram(self.code)
-            self._executed = {}
-            self._compiled.exec_(self._executed)
-        return self._executed
+    def execute(self, func, *args, **kwargs):
+        if not hasattr(self, '_executable'):
+            if not hasattr(self, '_compiled_code'):
+                self._compiled_code = CompiledProgram(self.code)
+            self._executable = {}
+            self._compiled_code.exec_(self._executable)
+        if func in self._executable:
+            return self._executable[func](*args, **kwargs)
 
     def compute_field(self, field_id, context=None):
-        if field_id in self.executed:
-            return self.executed[field_id](context)
+        return self.execute(field_id, context)
+
+    def on_save(self, doc):
+        return self.execute('on_save', doc)

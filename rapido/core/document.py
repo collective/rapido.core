@@ -44,6 +44,7 @@ class Document(object):
         for field in form.fields:
             if field in request.keys():
                 self.set_item(field, request.get(field))
+        form.on_save(self)
 
     def display(self, edit=False):
         if self.form:
