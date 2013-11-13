@@ -44,6 +44,8 @@ Create a persistent object that will be adapted as a rapido db:
 Create a document:
 
     >>> doc = db.create_document(docid='doc_1')
+    >>> doc.id == 'doc_1'
+    True
     >>> uid = doc.uid
     >>> doc.set_item('author', "Joseph Conrad")
     >>> doc.set_item('book_tile', "Lord Jim")
@@ -54,6 +56,11 @@ Documents can be found by uid or by id:
     >>> doc.reindex()
     >>> db.get_document(uid).uid == db.get_document('doc_1').uid
     True
+
+A docid is always unique:
+    >>> doc_bis = db.create_document(docid='doc_1')
+    >>> doc_bis.id
+    'doc_1-...'
 
 We can use form to display documents:
 

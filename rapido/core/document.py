@@ -49,8 +49,9 @@ class Document(object):
                 self.set_item(field, request.get(field))
         if creation:
             docid = form.execute('doc_id', self)
-            import pdb; pdb.set_trace( )
             if docid:
+                if self.database.get_document(docid):
+                    docid = "%s-%s" % (docid, str(hash(self.context)))
                 self.set_item('docid', docid)
         form.on_save(self)
         self.reindex()

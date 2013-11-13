@@ -25,6 +25,9 @@ class Database(object):
         record = self.storage.create()
         if not docid:
             docid = str(hash(record))
+        else:
+            if self.get_document(docid):
+                docid = "%s-%s" % (docid, str(hash(record)))
         record.set_item('docid', docid)
         return IDocument(record)
 
