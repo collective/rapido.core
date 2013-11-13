@@ -11,7 +11,7 @@
         />
 
     <browser:page
-        name="CreateDocument"
+        name="create"
         for="..interfaces.IFormable"
         permission="zope.Public"
         class=".views.CreateDocument"

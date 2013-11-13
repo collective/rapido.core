@@ -17,6 +17,10 @@ class Database(object):
     def storage(self):
         return IStorage(self.context)
 
+    @property
+    def url(self):
+        return self.context.url()
+
     def create_document(self, docid=None):
         record = self.storage.create()
         if not docid:

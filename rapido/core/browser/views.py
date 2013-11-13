@@ -25,21 +25,30 @@ class CreateDocument(BrowserView):
         form = IForm(self.context)
         doc = form.database.create_document()
         doc.set_item('Form', form.id)
-        doc.save(self.request, form)
-        self.request.response.redirect("../document/" + str(doc.uid))
+        doc.save(self.request, form=form)
+        self.request.response.redirect(doc.url)
 
 
 class DocumentView(BrowserView):
     implements(IPublishTraverse)
 
-    template = ViewPageTemplateFile('templates/opendocument.pt')
+    view_template = ViewPageTemplateFile('templates/opendocument.pt')
+    edit_template = ViewPageTemplateFile('templates/editdocument.pt')
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
         self.doc = None
+        self.edit_mode = False
 
     def publishTraverse(self, request, name):
+        if name == "edit":
+            self.edit_mode = True
+            return self
+        if name == "save":
+            self.doc.save(self.request)
+            return self
+
         doc = IDatabase(self.context).get_document(uid=int(name))
         if not doc:
             raise NotFound(self, name, request)
@@ -47,7 +56,9 @@ class DocumentView(BrowserView):
         return self
 
     def render(self):
-        return self.template()
+        if self.edit_mode:
+            return self.edit_template()
+        return self.view_template()
 
     def __call__(self):
         return self.render()
