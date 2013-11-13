@@ -33,6 +33,10 @@ class Database(object):
             record = self.storage.get(id)
             if record:
                 return IDocument(record)
+        elif type(id) is str:
+            search = self.search('docid=="%s"' % id)
+            if len(search) == 1:
+                return search[0]
 
     def _documents(self):
         for record in self.storage.documents():

@@ -50,6 +50,11 @@ Create a document:
     >>> doc.get_item('author')
     'Joseph Conrad'
 
+Documents can be found by uid or by id:
+    >>> doc.reindex()
+    >>> db.get_document(uid).uid == db.get_document('doc_1').uid
+    True
+
 We can use form to display documents:
 
     >>> from rapido.core.interfaces import IForm, IFormable
