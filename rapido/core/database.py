@@ -10,6 +10,9 @@ class Database(object):
     def __init__(self, context):
         self.context = context
 
+    def initialize(self):
+        self.storage.initialize()
+
     @property
     def storage(self):
         return IStorage(self.context)
