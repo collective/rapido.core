@@ -40,6 +40,8 @@ class Form(object):
 
     def set_field(self, field_id, field_settings):
         self.annotations[ANNOTATION_KEY]['fields'][field_id] = field_settings
+        if field_settings.get('index_type', None):
+            self.database.create_index(field_id, field_settings['index_type'])
 
     @property
     def code(self):

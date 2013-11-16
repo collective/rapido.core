@@ -104,3 +104,9 @@ After saving the doc, the author has been changed to uppercase:
 Documents can be searched:
     >>> [doc.get_item('author') for doc in db.search('docid=="doc_1"')]
     ['JOSEPH CONRAD']
+    >>> form.set_field('author', {'type': 'TEXT', 'index_type': 'field'})
+    >>> [doc.get_item('author') for doc in db.search('author=="JOSEPH CONRAD"')]
+    ['JOSEPH CONRAD']
+    >>> form.set_field('author', {'type': 'TEXT', 'index_type': 'text'})
+    >>> [doc.get_item('author') for doc in db.search('"joseph" in author')]
+    ['JOSEPH CONRAD']
