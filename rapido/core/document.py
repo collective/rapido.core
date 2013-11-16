@@ -22,6 +22,12 @@ class Document(object):
             ])
 
     def set_item(self, name, value):
+        if name=="docid":
+            # make sure id is unique
+            duplicate = self.database.get_document(value)
+            if duplicate and duplicate.uid != self.uid:
+                value = "%s-%s" % (value, str(hash(self.context)))
+            self.id = value
         self.context.set_item(name, value)
 
     def get_item(self, name, default=None):
@@ -50,8 +56,6 @@ class Document(object):
         if creation:
             docid = form.execute('doc_id', self)
             if docid:
-                if self.database.get_document(docid):
-                    docid = "%s-%s" % (docid, str(hash(self.context)))
                 self.set_item('docid', docid)
         form.on_save(self)
         self.reindex()

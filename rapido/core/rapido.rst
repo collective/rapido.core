@@ -110,3 +110,16 @@ Documents can be searched:
     >>> form.set_field('author', {'type': 'TEXT', 'index_type': 'text'})
     >>> [doc.get_item('author') for doc in db.search('"joseph" in author')]
     ['JOSEPH CONRAD']
+
+The doc id can be computed:
+    >>> form.set_code("""
+    ... def doc_id(context):
+    ...     return 'my-id'""")
+    >>> doc2 = db.create_document()
+    >>> doc2.save({'author': "John DosPassos"}, form=form, creation=True)
+    >>> doc2.id
+    'my-id'
+    >>> doc3 = db.create_document()
+    >>> doc3.save({'author': "John DosPassos"}, form=form, creation=True)
+    >>> doc3.id
+    'my-id-...'

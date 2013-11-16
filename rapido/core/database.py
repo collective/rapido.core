@@ -24,13 +24,11 @@ class Database(Index):
 
     def create_document(self, docid=None):
         record = self.storage.create()
+        doc = IDocument(record)
         if not docid:
             docid = str(hash(record))
-        else:
-            if self.get_document(docid):
-                docid = "%s-%s" % (docid, str(hash(record)))
-        record.set_item('docid', docid)
-        return IDocument(record)
+        doc.set_item('docid', docid)
+        return doc
 
     def get_document(self, id):
         if type(id) is int:

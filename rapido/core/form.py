@@ -49,6 +49,7 @@ class Form(object):
 
     def set_code(self, code):
         self.annotations[ANNOTATION_KEY]['code'] = code
+        self.compile()
 
     @property
     def database(self):
@@ -72,18 +73,21 @@ class Form(object):
         layout("*[data-rapido-field]").replaceWith(process_field)
         return layout.html()
 
+    def compile(self):
+        #TODO: store the compiled code in a persistent object too avoid
+        # recompiling everytime
+        try:
+            self._compiled_code = CompiledProgram(self.code)
+        except Exception, e:
+            self._compiled_code = None
+            notify(CompilationErrorEvent(e, self))
+            return
+        self._executable = {}
+        self._compiled_code.exec_(self._executable)
+
     def execute(self, func, *args, **kwargs):
         if not hasattr(self, '_executable'):
-            if not hasattr(self, '_compiled_code'):
-                #TODO: store the compiled code in a persistent object too avoid
-                # recompiling everytime
-                try:
-                    self._compiled_code = CompiledProgram(self.code)
-                except Exception, e:
-                    notify(CompilationErrorEvent(e, self))
-                    return
-            self._executable = {}
-            self._compiled_code.exec_(self._executable)
+            self.compile()
         if func in self._executable:
             try:
                 return self._executable[func](*args, **kwargs)
