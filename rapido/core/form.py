@@ -43,6 +43,11 @@ class Form(object):
         if field_settings.get('index_type', None):
             self.database.create_index(field_id, field_settings['index_type'])
 
+    def remove_field(self, field_id):
+        if self.annotations[ANNOTATION_KEY]['fields'].get(field_id):
+            del self.annotations[ANNOTATION_KEY]['fields'][field_id]
+        #TODO: clean up index
+        
     @property
     def code(self):
         return self.annotations[ANNOTATION_KEY]['code']
