@@ -85,6 +85,7 @@ class Form(object):
             self._compiled_code = CompiledProgram(self.code)
         except Exception, e:
             self._compiled_code = None
+            self._executable = None
             notify(CompilationErrorEvent(e, self))
             return
         self._executable = {}

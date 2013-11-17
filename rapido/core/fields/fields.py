@@ -10,7 +10,7 @@ class BaseField(object):
         if doc:
             field_value = doc.get_item(self.id)
         else:
-            field_value = self.form.compute_field(self.id)
+            field_value = self.form.compute_field(self.id, context=self.form)
         if edit:
             return self.edit_template(field=self, value=field_value)
         else:
