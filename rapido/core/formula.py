@@ -2,12 +2,9 @@ from zope.security.untrustedpython.interpreter import CompiledProgram
 from zope.event import notify
 from zope.annotation.interfaces import IAnnotations
 import marshal
-import logging
 
 from .events import ExecutionErrorEvent, CompilationErrorEvent
 from rapido.core import ANNOTATION_KEY
-
-logger = logging.getLogger("Rapido")
 
 
 class PersistentCompiledProgram(CompiledProgram):
@@ -24,7 +21,6 @@ class PersistentCompiledProgram(CompiledProgram):
         if not recompile and compiled_code:
             self.code = marshal.loads(compiled_code)
         else:
-            logger.error("compile")
             self.code = compile(
                 self.source,
                 "%s.py" % container.id,
