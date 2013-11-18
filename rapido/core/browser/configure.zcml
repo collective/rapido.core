@@ -4,7 +4,7 @@
     >
      
     <browser:page
-        name="OpenForm"
+        name="view"
         for="..interfaces.IFormable"
         permission="zope.Public"
         class=".views.OpenForm"
