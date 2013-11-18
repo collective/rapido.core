@@ -8,7 +8,7 @@
   <head></head>
   <body>
     <form action="create" method="POST" tal:attributes="name view/form/id;">
-      <tal:block tal:replace="structure python:view.form.display(edit=True)" />
+      <tal:block tal:replace="structure python:view/body" />
     </form>
   </body>
 </html>

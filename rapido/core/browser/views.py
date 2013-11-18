@@ -14,6 +14,7 @@ class OpenForm(BrowserView):
         self.context = context
         self.request = request
         self.form = IForm(context)
+        self.body = self.form.display(edit=True)
 
     def __call__(self):
         return self.template()
@@ -56,9 +57,13 @@ class DocumentView(BrowserView):
         return self
 
     def render(self):
+
         if self.edit_mode:
+            self.body = self.doc.display(edit=True)
             return self.edit_template()
-        return self.view_template()
+        else:
+            self.body = self.doc.display()
+            return self.view_template()
 
     def __call__(self):
         return self.render()
