@@ -16,7 +16,7 @@ Soup Creation
 
     >>> from rapido.core.interfaces import IDatabase, IDatabasable
 
-Create object which can store soup data:
+Create object which can store soup data::
 
     >>> from node.ext.zodb import OOBTNode
     >>> from node.base import BaseNode
@@ -25,7 +25,7 @@ Create object which can store soup data:
     ...    implements(IAttributeAnnotatable)
     >>> root = SiteNode()
 
-Create a persistent object that will be adapted as a rapido db:
+Create a persistent object that will be adapted as a rapido db::
 
     >>> class SimpleDatabase(BaseNode):
     ...    implements(IDatabasable)
@@ -41,7 +41,7 @@ Create a persistent object that will be adapted as a rapido db:
     >>> db = IDatabase(db_obj)
     >>> db.initialize()
 
-Create a document:
+Create a document::
 
     >>> doc = db.create_document(docid='doc_1')
     >>> doc.id == 'doc_1'
@@ -52,26 +52,27 @@ Create a document:
     >>> doc.get_item('author')
     'Joseph Conrad'
 
-Documents can be found by uid or by id:
+Documents can be found by uid or by id::
     >>> doc.reindex()
     >>> db.get_document(uid).uid == db.get_document('doc_1').uid
     True
 
-A docid is always unique:
+A docid is always unique::
     >>> doc_bis = db.create_document(docid='doc_1')
     >>> doc_bis.id
     'doc_1-...'
 
-We can use form to display documents:
+We can use form to display documents::
 
     >>> from rapido.core.interfaces import IForm, IFormable
     >>> class SimpleForm(BaseNode):
     ...    implements(IAttributeAnnotatable, IFormable)
-    ...    def __init__(self, id):
+    ...    def __init__(self, id, title):
     ...        self.id = id
-    >>> db_obj['frmBook'] = SimpleForm('frmBook')
+    ...        self.title = title
+    >>> db_obj['frmBook'] = SimpleForm('frmBook', 'Book form')
     >>> form = IForm(db_obj['frmBook'])
-    >>> form.set_field('author', {'type': 'TEXT'})
+    >>> form.set_field('author', {'type': 'TEXT', 'mode': 'EDITABLE'})
     >>> form.set_layout("""Author: <span data-rapido-field="author">author</span>""")
     >>> form.display(None, edit=True)
     u'Author: <span class="field">\n    <input type="text" class="text-widget textline-field" name="author"/>\n</span>'
@@ -80,7 +81,7 @@ We can use form to display documents:
     >>> form.display(doc, edit=True)
     u'Author: <span class="field">\n    <input type="text" class="text-widget textline-field" name="author" value="Joseph Conrad"/>\n</span>'
 
-A form can contain some code:
+A form can contain some code::
     >>> form = IForm(db_obj['frmBook'])
     >>> form.set_code("""
     ... # default value for the 'author' field
@@ -92,16 +93,16 @@ A form can contain some code:
     ...     author = context.get_item('author')
     ...     context.set_item('author', author.upper())""")
 
-Default value is now 'Victor Hugo':
+Default value is now 'Victor Hugo'::
     >>> form.display(None, edit=True)
     u'Author: <span class="field">\n    <input type="text" class="text-widget textline-field" name="author" value="Victor Hugo"/>\n</span>'
 
-After saving the doc, the author has been changed to uppercase:
+After saving the doc, the author has been changed to uppercase::
     >>> doc.save({}, form=form)
     >>> doc.get_item('author')
     'JOSEPH CONRAD'
 
-Documents can be searched:
+Documents can be searched::
     >>> [doc.get_item('author') for doc in db.search('docid=="doc_1"')]
     ['JOSEPH CONRAD']
     >>> form.set_field('author', {'type': 'TEXT', 'index_type': 'field'})
@@ -111,7 +112,7 @@ Documents can be searched:
     >>> [doc.get_item('author') for doc in db.search('"joseph" in author')]
     ['JOSEPH CONRAD']
 
-The doc id can be computed:
+The doc id can be computed::
     >>> form.set_code("""
     ... def doc_id(context):
     ...     return 'my-id'""")
@@ -123,3 +124,15 @@ The doc id can be computed:
     >>> doc3.save({'author': "John DosPassos"}, form=form, creation=True)
     >>> doc3.id
     'my-id-...'
+
+By default, the doc title is the form title::
+    >>> doc.title
+    'Book form'
+
+But it can be computed::
+    >>> form.set_code("""
+    ... def title(context):
+    ...     return context.get_item('author')""")
+    >>> doc.save({}, form=form)
+    >>> doc.title
+    'JOSEPH CONRAD'

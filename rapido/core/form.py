@@ -27,7 +27,10 @@ class Form(FormulaContainer):
 
     @property
     def title(self):
-        return self.context.Title()
+        if hasattr(self.context, 'title'):
+            return self.context.title
+        else:
+            return self.context.Title()
 
     @property
     def layout(self):
