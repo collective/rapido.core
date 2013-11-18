@@ -137,11 +137,32 @@ But it can be computed::
     >>> doc.title
     'JOSEPH CONRAD'
 
-Fields can be computed::
+Fields can be computed on save::
     >>> form.set_field('famous_quote', {'type': 'TEXT', 'mode': 'COMPUTED_ON_SAVE'})
     >>> form.set_code("""
     ... def famous_quote(context):
-    ...     return 'A good plan violently executed now is better than a perfect plan executed next week.'""")
+    ...     existing = context.get_item('famous_quote')
+    ...     if not existing:
+    ...         return 'A good plan violently executed now is better than a perfect plan executed next week.'
+    ...     return existing + " Or next week." """)
     >>> doc.save({}, form=form)
     >>> doc.get_item('famous_quote')
     'A good plan violently executed now is better than a perfect plan executed next week.'
+    >>> doc.save({}, form=form)
+    >>> doc.get_item('famous_quote')
+    'A good plan violently executed now is better than a perfect plan executed next week. Or next week.'
+
+Fields can be computed on creation::
+    >>> form.set_field('forever', {'type': 'TEXT', 'mode': 'COMPUTED_ON_CREATION'})
+    >>> form.set_code("""
+    ... def forever(context):
+    ...     return 'I will never change.'""")
+    >>> doc4 = db.create_document()
+    >>> doc4.save({}, form=form, creation=True)
+    >>> doc4.get_item('forever')
+    'I will never change.'
+    >>> doc.save({}, form=form)
+    >>> doc.get_item('forever') is None
+    True
+
+    

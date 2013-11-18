@@ -62,7 +62,8 @@ class Document(object):
 
         # compute fields
         for (field, params) in form.fields.items():
-            if params.get('mode') == 'COMPUTED_ON_SAVE':
+            if (params.get('mode') == 'COMPUTED_ON_SAVE' or 
+                (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
                 self.set_item(field, form.compute_field(field, context=self))
 
         # compute id if doc creation
