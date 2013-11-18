@@ -1,17 +1,15 @@
 from zope.interface import implements
 from zope import component
-from zope.event import notify
 from zope.annotation.interfaces import IAnnotations
-from zope.security.untrustedpython.interpreter import CompiledProgram
 from persistent.dict import PersistentDict
 from pyquery import PyQuery as pq
 
 from interfaces import IForm, IDatabase
 from rapido.core import ANNOTATION_KEY
 from .fields.utils import get_field_class
-from .events import ExecutionErrorEvent, CompilationErrorEvent
+from .formula import FormulaContainer
 
-class Form(object):
+class Form(FormulaContainer):
     """
     """
     implements(IForm)
@@ -54,7 +52,7 @@ class Form(object):
 
     def set_code(self, code):
         self.annotations[ANNOTATION_KEY]['code'] = code
-        self.compile()
+        self.compile(recompile=True)
 
     @property
     def database(self):
@@ -77,28 +75,6 @@ class Form(object):
 
         layout("*[data-rapido-field]").replaceWith(process_field)
         return layout.html()
-
-    def compile(self):
-        #TODO: store the compiled code in a persistent object too avoid
-        # recompiling everytime
-        try:
-            self._compiled_code = CompiledProgram(self.code)
-        except Exception, e:
-            self._compiled_code = None
-            self._executable = None
-            notify(CompilationErrorEvent(e, self))
-            return
-        self._executable = {}
-        self._compiled_code.exec_(self._executable)
-
-    def execute(self, func, *args, **kwargs):
-        if not hasattr(self, '_executable'):
-            self.compile()
-        if func in self._executable:
-            try:
-                return self._executable[func](*args, **kwargs)
-            except Exception, e:
-                notify(ExecutionErrorEvent(e, self))
 
     def compute_field(self, field_id, context=None):
         return self.execute(field_id, context)
