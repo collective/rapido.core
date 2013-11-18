@@ -64,14 +64,15 @@ class Document(object):
             if docid:
                 self.set_item('docid', docid)
 
+        # execute on_save
+        form.on_save(self)
+
         # compute title
         title = form.compute_field('title', context=self)
         if not title:
             title = form.title
         self.set_item('title', title)
-
-        # execute on_save
-        form.on_save(self)
+        
         self.reindex()
 
     def display(self, edit=False):
