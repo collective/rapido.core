@@ -56,9 +56,16 @@ class Document(object):
             form = self.database.get_form(form_id)
 
         # store fields
-        for field in form.fields:
+        for field in form.fields.items():
             if field in request.keys():
                 self.set_item(field, request.get(field))
+
+        # compute fields
+        for (field, params) in form.fields.items():
+            if params.get('mode') == 'COMPUTED_ON_SAVE':
+                self.set_item(field, form.compute_field(field, context=self))
+
+        # compute id if doc creation
         if creation:
             docid = form.execute('doc_id', self)
             if docid:

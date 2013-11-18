@@ -72,7 +72,7 @@ We can use form to display documents::
     ...        self.title = title
     >>> db_obj['frmBook'] = SimpleForm('frmBook', 'Book form')
     >>> form = IForm(db_obj['frmBook'])
-    >>> form.set_field('author', {'type': 'TEXT', 'mode': 'EDITABLE'})
+    >>> form.set_field('author', {'type': 'TEXT'})
     >>> form.set_layout("""Author: <span data-rapido-field="author">author</span>""")
     >>> form.display(None, edit=True)
     u'Author: <span class="field">\n    <input type="text" class="text-widget textline-field" name="author"/>\n</span>'
@@ -136,3 +136,12 @@ But it can be computed::
     >>> doc.save({}, form=form)
     >>> doc.title
     'JOSEPH CONRAD'
+
+Fields can be computed::
+    >>> form.set_field('famous_quote', {'type': 'TEXT', 'mode': 'COMPUTED_ON_SAVE'})
+    >>> form.set_code("""
+    ... def famous_quote(context):
+    ...     return 'A good plan violently executed now is better than a perfect plan executed next week.'""")
+    >>> doc.save({}, form=form)
+    >>> doc.get_item('famous_quote')
+    'A good plan violently executed now is better than a perfect plan executed next week.'
