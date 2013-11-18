@@ -26,6 +26,10 @@ class Form(FormulaContainer):
             })
 
     @property
+    def title(self):
+        return self.context.Title()
+
+    @property
     def layout(self):
         return self.annotations[ANNOTATION_KEY]['layout']
 

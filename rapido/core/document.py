@@ -21,6 +21,10 @@ class Document(object):
             str(self.id),
             ])
 
+    @property
+    def title(self):
+        return self.get_item('title')
+
     def set_item(self, name, value):
         if name=="docid":
             # make sure id is unique
@@ -50,6 +54,8 @@ class Document(object):
             form_id = request.get('Form')
         if not form:
             form = self.database.get_form(form_id)
+
+        # store fields
         for field in form.fields:
             if field in request.keys():
                 self.set_item(field, request.get(field))
@@ -57,6 +63,14 @@ class Document(object):
             docid = form.execute('doc_id', self)
             if docid:
                 self.set_item('docid', docid)
+
+        # compute title
+        title = form.compute_field('title', context=self)
+        if not title:
+            title = form.title
+        self.set_item('title', title)
+
+        # execute on_save
         form.on_save(self)
         self.reindex()
 
