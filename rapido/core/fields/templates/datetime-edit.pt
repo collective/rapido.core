@@ -1,0 +1,5 @@
+<span class="field">
+    <input type="date" class="text-widget textline-field"
+        tal:attributes="name python:options['field'].id;
+                        value python:options['value']" />
+</span>

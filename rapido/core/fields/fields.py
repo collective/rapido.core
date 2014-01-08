@@ -21,5 +21,8 @@ class TextField(BaseField):
     read_template = PageTemplateFile('templates/text-read.pt')
     edit_template = PageTemplateFile('templates/text-edit.pt')
 
+class DatetimeField(BaseField):
 
+    read_template = PageTemplateFile('templates/datetime-read.pt')
+    edit_template = PageTemplateFile('templates/datetime-edit.pt')
 
