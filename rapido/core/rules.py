@@ -11,11 +11,22 @@ class RuleAssignee:
         self.annotations[KEY]['rules'] = rules
         db = self.database
         for rule_id in rules:
+            self.refresh_rule(rule_id)
+
+    def refresh_rule(self, rule_id):
+        annotation = self.annotations[KEY]
+        if rule_id not in annotation['rules']:
+            if annotation.has_key(rule_id + '_code'):
+                del annotation[rule_id + '_code']
+            if annotation.has_key('compiled_' + rule_id + '_code'):
+                del annotation['compiled_' + rule_id + '_code']
+        else:
+            db = self.database
             rule = db.rules.get(rule_id)
             if not rule:
-                continue
-            self.annotations[KEY][rule_id + '_code'] = rule['code']
-            self.annotations[KEY]['compiled_' + rule_id + '_code'] = None
+                return
+            annotation[rule_id + '_code'] = rule['code']
+            annotation['compiled_' + rule_id + '_code'] = None
 
     def filter_rules(self, rule_type):
         db_rules = self.database.rules
