@@ -1,7 +1,12 @@
 from zope.interface import implements
+from zope.annotation.interfaces import IAnnotations
+from persistent.dict import PersistentDict
 
 from interfaces import IDatabase, IStorage, IDocument, IForm
 from index import Index
+
+ANNOTATION_KEY = "RAPIDO_ANNOTATION"
+
 
 class Database(Index):
     """
@@ -10,6 +15,11 @@ class Database(Index):
 
     def __init__(self, context):
         self.context = context
+        self.annotations = IAnnotations(context)
+        if ANNOTATION_KEY not in self.annotations:
+            self.annotations[ANNOTATION_KEY] = PersistentDict({
+                'rules': {},
+            })
 
     def initialize(self):
         self.storage.initialize()
@@ -51,4 +61,15 @@ class Database(Index):
         form_obj = self.context.get(form_id)
         if form_obj:
             return IForm(form_obj)
-    
+
+    @property
+    def rules(self):
+        return self.annotations[ANNOTATION_KEY]["rules"]
+
+    def set_rule(self, rule_id, rule_settings):
+        self.annotations[ANNOTATION_KEY]['rules'][rule_id] = rule_settings
+
+    def remove_rule(self, rule_id):
+        if self.annotations[ANNOTATION_KEY]['rules'].get(rule_id):
+            del self.annotations[ANNOTATION_KEY]['rules'][rule_id]
+

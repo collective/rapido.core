@@ -5,11 +5,12 @@ from persistent.dict import PersistentDict
 from pyquery import PyQuery as pq
 
 from interfaces import IForm, IDatabase
-from rapido.core import ANNOTATION_KEY
+from .database import ANNOTATION_KEY as KEY
 from .fields.utils import get_field_class
 from .formula import FormulaContainer
+from .rules import RuleAssignee
 
-class Form(FormulaContainer):
+class Form(FormulaContainer, RuleAssignee):
     """
     """
     implements(IForm)
@@ -18,11 +19,12 @@ class Form(FormulaContainer):
         self.context = context
         self.id = self.context.id
         self.annotations = IAnnotations(context)
-        if ANNOTATION_KEY not in self.annotations:
-            self.annotations[ANNOTATION_KEY] = PersistentDict({
+        if KEY not in self.annotations:
+            self.annotations[KEY] = PersistentDict({
                 'layout': "",
                 'fields': {},
                 'code': "",
+                'rules': [],
             })
 
     @property
@@ -34,31 +36,31 @@ class Form(FormulaContainer):
 
     @property
     def layout(self):
-        return self.annotations[ANNOTATION_KEY]['layout']
+        return self.annotations[KEY]['layout']
 
     def set_layout(self, html):
-        self.annotations[ANNOTATION_KEY]['layout'] = html
+        self.annotations[KEY]['layout'] = html
     
     @property
     def fields(self):
-        return self.annotations[ANNOTATION_KEY]["fields"]
+        return self.annotations[KEY]["fields"]
 
     def set_field(self, field_id, field_settings):
-        self.annotations[ANNOTATION_KEY]['fields'][field_id] = field_settings
+        self.annotations[KEY]['fields'][field_id] = field_settings
         if field_settings.get('index_type', None):
             self.database.create_index(field_id, field_settings['index_type'])
 
     def remove_field(self, field_id):
-        if self.annotations[ANNOTATION_KEY]['fields'].get(field_id):
-            del self.annotations[ANNOTATION_KEY]['fields'][field_id]
+        if self.annotations[KEY]['fields'].get(field_id):
+            del self.annotations[KEY]['fields'][field_id]
         #TODO: clean up index
         
     @property
     def code(self):
-        return self.annotations[ANNOTATION_KEY]['code']
+        return self.annotations[KEY]['code']
 
     def set_code(self, code):
-        self.annotations[ANNOTATION_KEY]['code'] = code
+        self.annotations[KEY]['code'] = code
         self.compile(recompile=True)
 
     @property
@@ -87,4 +89,9 @@ class Form(FormulaContainer):
         return self.execute(field_id, context)
 
     def on_save(self, doc):
-        return self.execute('on_save', doc)
+        rules = self.filter_rules("on_save")
+        result = None
+        for rule in rules:
+            result = self.execute_rule(rule, 'main', doc)
+        result = self.execute('on_save', doc)
+        return result

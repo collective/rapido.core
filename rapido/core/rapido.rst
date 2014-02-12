@@ -28,7 +28,7 @@ Create object which can store soup data::
 Create a persistent object that will be adapted as a rapido db::
 
     >>> class SimpleDatabase(BaseNode):
-    ...    implements(IDatabasable)
+    ...    implements(IAttributeAnnotatable, IDatabasable)
     ...    def __init__(self, uid, root):
     ...        self.uid = uid
     ...        self['root'] = root
@@ -165,4 +165,14 @@ Fields can be computed on creation::
     >>> doc.get_item('forever') is None
     True
 
-    
+A rule allow to implement a given behaviour (an action to take when saving a doc,
+a validation formula for a field, etc.). Rules are defined at the database level
+and can then be assigned to fields or forms.
+    >>> db.set_rule('polite', {'type': 'on_save', 'code': """
+    ... def main(context):
+    ...     author = context.get_item('author')
+    ...     context.set_item('author', 'Monsieur ' + author)"""})
+    >>> form.assign_rules(['polite'])
+    >>> doc.save({}, form=form)
+    >>> doc.get_item('author')
+    'Monsieur JOSEPH CONRAD'
