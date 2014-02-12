@@ -18,7 +18,7 @@ class Database(Index):
         self.annotations = IAnnotations(context)
         if ANNOTATION_KEY not in self.annotations:
             self.annotations[ANNOTATION_KEY] = PersistentDict({
-                'rules': {},
+                'available_rules': {},
             })
 
     def initialize(self):
@@ -63,13 +63,22 @@ class Database(Index):
             return IForm(form_obj)
 
     @property
+    def forms(self):
+        return [IForm(obj) for obj in self.context.forms]
+
     def rules(self):
-        return self.annotations[ANNOTATION_KEY]["rules"]
+        return self.annotations[ANNOTATION_KEY]['available_rules']
 
     def set_rule(self, rule_id, rule_settings):
-        self.annotations[ANNOTATION_KEY]['rules'][rule_id] = rule_settings
+        if 'available_rules' not in self.annotations[ANNOTATION_KEY]:
+            self.annotations[ANNOTATION_KEY]['available_rules'] = {}
+        self.annotations[ANNOTATION_KEY]['available_rules'][rule_id] = rule_settings
+        for form in self.forms:
+            form.refresh_rule(rule_id)
 
     def remove_rule(self, rule_id):
-        if self.annotations[ANNOTATION_KEY]['rules'].get(rule_id):
-            del self.annotations[ANNOTATION_KEY]['rules'][rule_id]
+        if self.annotations[ANNOTATION_KEY]['available_rules'].get(rule_id):
+            del self.annotations[ANNOTATION_KEY]['available_rules'][rule_id]
+        for form in self.forms:
+            form.remove_rule(rule_id)
 

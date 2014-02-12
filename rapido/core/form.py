@@ -24,7 +24,7 @@ class Form(FormulaContainer, RuleAssignee):
                 'layout': "",
                 'fields': {},
                 'code': "",
-                'rules': [],
+                'assigned_rules': [],
             })
 
     @property
@@ -89,9 +89,8 @@ class Form(FormulaContainer, RuleAssignee):
         return self.execute(field_id, context)
 
     def on_save(self, doc):
-        rules = self.filter_rules("on_save")
         result = None
-        for rule in rules:
-            result = self.execute_rule(rule, 'main', doc)
+        for rule in self.assigned_rules:
+            result = self.execute_rule(rule, 'on_save', doc)
         result = self.execute('on_save', doc)
         return result

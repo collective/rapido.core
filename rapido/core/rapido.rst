@@ -36,6 +36,11 @@ Create a persistent object that will be adapted as a rapido db::
     ...    @property
     ...    def root(self):
     ...        return self['root']
+    ...
+    ...    @property
+    ...    def forms(self):
+    ...        return [el for el in self.values() if el.__class__.__name__=='SimpleForm']
+    ...
     >>> root['mydb'] = SimpleDatabase(1, root)
     >>> db_obj = root['mydb']
     >>> db = IDatabase(db_obj)
@@ -165,11 +170,11 @@ Fields can be computed on creation::
     >>> doc.get_item('forever') is None
     True
 
-A rule allow to implement a given behaviour (an action to take when saving a doc,
+A rule allows to implement a given behaviour (an action to take when saving a doc,
 a validation formula for a field, etc.). Rules are defined at the database level
-and can then be assigned to fields or forms.
-    >>> db.set_rule('polite', {'type': 'on_save', 'code': """
-    ... def main(context):
+and can then be assigned to fields, forms or views.
+    >>> db.set_rule('polite', {'code': """
+    ... def on_save(context):
     ...     author = context.get_item('author')
     ...     context.set_item('author', 'Monsieur ' + author)"""})
     >>> form.assign_rules(['polite'])
