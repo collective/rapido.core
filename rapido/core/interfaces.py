@@ -103,3 +103,11 @@ class IStorage(Interface):
     def search(self, query):
         """ search for documents
         """
+
+class IACLable(Interface):
+    """ Marker interface for an access control
+    """
+    
+class IAccessControlList(Interface):
+    """ An access control list manager
+    """

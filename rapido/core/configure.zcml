@@ -23,6 +23,12 @@
     factory=".document.Document"
   />
 
+  <adapter
+    for=".interfaces.IACLable"
+    provides=".interfaces.IAccessControlList"
+    factory=".security.AccessControlList"
+  />
+
   <subscriber
     for=".events.ICompilationErrorEvent"
     handler=".subscribers.on_compilation_error"

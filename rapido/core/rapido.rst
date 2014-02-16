@@ -32,6 +32,7 @@ Create a persistent object that will be adapted as a rapido db::
     ...    def __init__(self, uid, root):
     ...        self.uid = uid
     ...        self['root'] = root
+    ...        self.fake_user = 'admin'
     ...
     ...    @property
     ...    def root(self):
@@ -41,6 +42,11 @@ Create a persistent object that will be adapted as a rapido db::
     ...    def forms(self):
     ...        return [el for el in self.values() if el.__class__.__name__=='SimpleForm']
     ...
+    ...    def current_user(self):
+    ...        return self.fake_user
+    ...
+    ...    def set_fake_user(self, user):
+    ...        self.fake_user = user
     >>> root['mydb'] = SimpleDatabase(1, root)
     >>> db_obj = root['mydb']
     >>> db = IDatabase(db_obj)
@@ -181,3 +187,20 @@ and can then be assigned to fields, forms or views.
     >>> doc.save({}, form=form)
     >>> doc.get_item('author')
     'Monsieur JOSEPH CONRAD'
+
+Access rights
+    >>> db_obj.set_fake_user("marie.curie")
+    >>> db.acl.current_user()
+    'marie.curie'
+    >>> db.acl.has_access_right("author")
+    False
+    >>> doc_5 = db.create_document(docid='doc_5')
+    Traceback (most recent call last):
+    ...
+    NotAllowed: create_document permission required
+    >>> db_obj.set_fake_user("admin")
+    >>> db.acl.grant_access(['marie.curie'], 'author')
+    >>> db_obj.set_fake_user("marie.curie")
+    >>> doc_5 = db.create_document(docid='doc_5')
+    >>> doc_5.id
+    'doc_5'
