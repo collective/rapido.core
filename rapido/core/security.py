@@ -28,6 +28,8 @@ ACCESS_RIGHTS_PERMISSIONS = {
         'modify_acl',
     ],
 }
+
+
 class acl_check:
     """" access control decorator
     """
@@ -72,8 +74,14 @@ class AccessControlList:
     def current_user(self):
         return self.context.context.current_user()
 
+    def current_user_groups(self):
+        return self.context.context.current_user_groups()
+
     def has_access_right(self, access_right):
-        if self.current_user() in self.allowed_as(access_right):
+        allowed = self.allowed_as(access_right)
+        if self.current_user() in allowed:
+            return True
+        elif set(self.current_user_groups()).intersection(allowed):
             return True
         else:
             return False

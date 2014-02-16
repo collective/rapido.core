@@ -33,6 +33,7 @@ Create a persistent object that will be adapted as a rapido db::
     ...        self.uid = uid
     ...        self['root'] = root
     ...        self.fake_user = 'admin'
+    ...        self.fake_groups = []
     ...
     ...    @property
     ...    def root(self):
@@ -47,6 +48,13 @@ Create a persistent object that will be adapted as a rapido db::
     ...
     ...    def set_fake_user(self, user):
     ...        self.fake_user = user
+    ...
+    ...    def current_user_groups(self):
+    ...        return self.fake_groups
+    ...
+    ...    def set_fake_groups(self, groups):
+    ...        self.fake_groups = groups
+    ...
     >>> root['mydb'] = SimpleDatabase(1, root)
     >>> db_obj = root['mydb']
     >>> db = IDatabase(db_obj)
@@ -204,3 +212,14 @@ Access rights
     >>> doc_5 = db.create_document(docid='doc_5')
     >>> doc_5.id
     'doc_5'
+    >>> db_obj.set_fake_user("admin")
+    >>> db.acl.grant_access(['FamousDiscoverers'], 'author')
+    >>> db_obj.set_fake_user("marie.curie")
+    >>> doc_6 = db.create_document(docid='doc_6')
+    Traceback (most recent call last):
+    ...
+    NotAllowed: create_document permission required
+    >>> db_obj.set_fake_groups(['FamousDiscoverers', 'FamousWomen'])
+    >>> doc_6 = db.create_document(docid='doc_6')
+    >>> doc_6.id
+    'doc_6'
