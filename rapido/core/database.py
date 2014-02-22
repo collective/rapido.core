@@ -4,7 +4,7 @@ from persistent.dict import PersistentDict
 
 from interfaces import (
     IDatabase, IStorage, IDocument, IForm, IACLable,
-    IAccessControlList)
+    IAccessControlList, IExportable, IImportable)
 from index import Index
 from .security import acl_check
 
@@ -14,7 +14,7 @@ ANNOTATION_KEY = "RAPIDO_ANNOTATION"
 class Database(Index):
     """
     """
-    implements(IDatabase, IACLable)
+    implements(IDatabase, IACLable, IExportable, IImportable)
 
     def __init__(self, context):
         self.context = context

@@ -29,6 +29,12 @@
     factory=".security.AccessControlList"
   />
 
+  <adapter
+    for=".interfaces.IExportable"
+    provides=".interfaces.IExporter"
+    factory=".importexport.Exporter"
+  />
+
   <subscriber
     for=".events.ICompilationErrorEvent"
     handler=".subscribers.on_compilation_error"

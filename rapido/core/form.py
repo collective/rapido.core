@@ -18,14 +18,15 @@ class Form(FormulaContainer, RuleAssignee):
     def __init__(self, context):
         self.context = context
         self.id = self.context.id
-        self.annotations = IAnnotations(context)
-        if KEY not in self.annotations:
-            self.annotations[KEY] = PersistentDict({
+        annotations = IAnnotations(context)
+        if KEY not in annotations:
+            annotations[KEY] = PersistentDict({
                 'layout': "",
                 'fields': {},
                 'code': "",
                 'assigned_rules': [],
             })
+        self.annotation = annotations[KEY]
 
     @property
     def title(self):
@@ -36,31 +37,31 @@ class Form(FormulaContainer, RuleAssignee):
 
     @property
     def layout(self):
-        return self.annotations[KEY]['layout']
+        return self.annotation['layout']
 
     def set_layout(self, html):
-        self.annotations[KEY]['layout'] = html
+        self.annotation['layout'] = html
     
     @property
     def fields(self):
-        return self.annotations[KEY]["fields"]
+        return self.annotation["fields"]
 
     def set_field(self, field_id, field_settings):
-        self.annotations[KEY]['fields'][field_id] = field_settings
+        self.annotation['fields'][field_id] = field_settings
         if field_settings.get('index_type', None):
             self.database.create_index(field_id, field_settings['index_type'])
 
     def remove_field(self, field_id):
-        if self.annotations[KEY]['fields'].get(field_id):
-            del self.annotations[KEY]['fields'][field_id]
+        if self.annotation['fields'].get(field_id):
+            del self.annotation['fields'][field_id]
         #TODO: clean up index
         
     @property
     def code(self):
-        return self.annotations[KEY]['code']
+        return self.annotation['code']
 
     def set_code(self, code):
-        self.annotations[KEY]['code'] = code
+        self.annotation['code'] = code
         self.compile(recompile=True)
 
     @property

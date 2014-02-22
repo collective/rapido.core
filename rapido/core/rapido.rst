@@ -223,3 +223,10 @@ Access rights
     >>> doc_6 = db.create_document(docid='doc_6')
     >>> doc_6.id
     'doc_6'
+
+Database can be exported
+    >>> from rapido.core.interfaces import IExporter
+    >>> exporter = IExporter(db)
+    >>> exporter.export_database()
+    {'forms': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': u"assigned_rules:\n  - polite\nfields:\n  author:\n    index_type: text\n    type: TEXT\n  famous_quote:\n    mode: COMPUTED_ON_SAVE\n    type: TEXT\n  forever:\n    mode: COMPUTED_ON_CREATION\n    type: TEXT\nid: frmBook\ntitle: 'Book form'\n", 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}, 'settings.yaml': u'acl:\n  rights:\n    author:\n      - FamousDiscoverers\n    editor: []\n    manager:\n      - admin\n    reader: []\n  roles: {}\n'}
+

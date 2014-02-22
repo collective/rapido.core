@@ -25,6 +25,7 @@ setup(name='rapido.core',
       install_requires=[
           'setuptools',
           'pyquery',
+          'pyaml',
       ],
       entry_points="""
       # -*- Entry points: -*-

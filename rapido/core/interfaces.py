@@ -111,3 +111,19 @@ class IACLable(Interface):
 class IAccessControlList(Interface):
     """ An access control list manager
     """
+
+class IImportable(Interface):
+    """ Marker interface for importable
+    """
+
+class IImporter(Interface):
+    """ Importer
+    """
+
+class IExportable(Interface):
+    """ Marker interface for exportable
+    """
+
+class IExporter(Interface):
+    """ Exporter
+    """
