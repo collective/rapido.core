@@ -3,11 +3,12 @@ class RuleAssignee:
 
     @property
     def assigned_rules(self):
-        return self.annotation['assigned_rules']
+        return self.annotation.get('assigned_rules', [])
 
     def assign_rules(self, rules):
+        old_rules = self.assigned_rules
         self.annotation['assigned_rules'] = rules
-        for rule_id in rules:
+        for rule_id in set(old_rules + rules):
             self.refresh_rule(rule_id)
 
     def remove_rule(self, rule_id):

@@ -1,4 +1,4 @@
-import pyaml
+from pyaml import yaml
 from zope.interface import implements
 
 from .interfaces import IImporter, IExporter
@@ -13,15 +13,15 @@ class Importer:
     def import_database(self, data):
         db = self.context
         if 'settings.yaml' in data:
-            db.annotation['acl'] = pyaml.load(data['settings.yaml'])
+            db.annotation['acl'] = yaml.load(data['settings.yaml'])
 
         if 'forms' in data:
-            for formid in data['forms']:
-                form = db.get_form(formid)
-                if not form:
-                    # TODO: be able to create form/fields/etc
-                    # based on the definition
-                    pass
+            for (form_id, form_data) in data['forms'].items():
+                db.context.create_form(
+                    yaml.load(form_data[form_id+'.yaml']),
+                    form_data[form_id+'.py'],
+                    form_data[form_id+'.html'],
+                )
 
 
 class Exporter:
@@ -35,19 +35,21 @@ class Exporter:
         dbsettings = {
             'acl': self.context.annotation['acl'],
         }
-        data['settings.yaml'] = pyaml.dump(dbsettings)
+        data['settings.yaml'] = yaml.dump(dbsettings)
 
         forms = {}
         for form in self.context.forms:
+            form_data = {}
             settings = {
                 "id": form.id,
                 "title": form.title,
                 "fields": form.annotation['fields'],
                 "assigned_rules": form.annotation['assigned_rules'],
             }
-            forms["%s.yaml" % form.id] = pyaml.dump(settings)
-            forms["%s.html" % form.id] = form.layout
-            forms["%s.py" % form.id] = form.code
+            form_data["%s.yaml" % form.id] = yaml.dump(settings)
+            form_data["%s.html" % form.id] = form.layout
+            form_data["%s.py" % form.id] = form.code
+            forms[form.id] = form_data
 
         data['forms'] = forms
 

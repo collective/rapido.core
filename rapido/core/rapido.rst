@@ -228,5 +228,5 @@ Database can be exported
     >>> from rapido.core.interfaces import IExporter
     >>> exporter = IExporter(db)
     >>> exporter.export_database()
-    {'forms': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': u"assigned_rules:\n  - polite\nfields:\n  author:\n    index_type: text\n    type: TEXT\n  famous_quote:\n    mode: COMPUTED_ON_SAVE\n    type: TEXT\n  forever:\n    mode: COMPUTED_ON_CREATION\n    type: TEXT\nid: frmBook\ntitle: 'Book form'\n", 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}, 'settings.yaml': u'acl:\n  rights:\n    author:\n      - FamousDiscoverers\n    editor: []\n    manager:\n      - admin\n    reader: []\n  roles: {}\n'}
+    {'forms': {'frmBook': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': 'assigned_rules: [polite]\nfields:\n  author: {index_type: text, type: TEXT}\n  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}\n  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}\nid: frmBook\ntitle: Book form\n', 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}}, 'settings.yaml': 'acl:\n  rights:\n    author: [FamousDiscoverers]\n    editor: []\n    manager: [admin]\n    reader: []\n  roles: {}\n'}
 
