@@ -43,6 +43,9 @@ class Document(object):
     def remove_item(self, name):
         self.context.remove_item(name)
 
+    def items(self):
+        return self.context.items()
+
     def reindex(self):
         self.database.reindex(self)
 
