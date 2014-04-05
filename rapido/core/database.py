@@ -60,6 +60,13 @@ class Database(Index):
             if len(search) == 1:
                 return search[0]
 
+    @acl_check('delete_document')
+    def delete_document(self, docid=None, doc=None):
+        if not doc:
+            doc = self.get_document(docid)
+        if doc:
+            self.storage.delete(doc.context)
+
     def _documents(self):
         for record in self.storage.documents():
             yield IDocument(record)

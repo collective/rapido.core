@@ -131,6 +131,13 @@ Documents can be searched::
     >>> [doc.get_item('author') for doc in db.search('"joseph" in author')]
     ['JOSEPH CONRAD']
 
+Documents can be deleted::
+    >>> doc2 = db.create_document()
+    >>> the_id = doc2.id
+    >>> db.delete_document(doc2)
+    >>> db.get_document(the_id) is None
+    True
+
 The doc id can be computed::
     >>> form.set_code("""
     ... def doc_id(context):
