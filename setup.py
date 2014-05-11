@@ -28,6 +28,7 @@ setup(name='rapido.core',
           'pyaml',
           'zope.security',
           'zope.annotation',
+          'zope.configuration',
       ],
       entry_points="""
       # -*- Entry points: -*-

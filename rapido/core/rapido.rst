@@ -58,11 +58,11 @@ We can use form to display documents::
     >>> form.set_field('author', {'type': 'TEXT'})
     >>> form.set_layout("""Author: <span data-rapido-field="author">author</span>""")
     >>> form.display(None, edit=True)
-    u'Author: <span class="field">\n    <input type="text" class="text-widget textline-field" name="author"/>\n</span>'
+    u'Author: <input type="text" class="text-widget textline-field" name="author" value=""/>'
     >>> form.display(doc)
     'Author: Joseph Conrad'
     >>> form.display(doc, edit=True)
-    u'Author: <span class="field">\n    <input type="text" class="text-widget textline-field" name="author" value="Joseph Conrad"/>\n</span>'
+    u'Author: <input type="text" class="text-widget textline-field" name="author" value="Joseph Conrad"/>'
 
 A form can contain some code::
     >>> form = IForm(db_obj['frmBook'])
@@ -78,7 +78,7 @@ A form can contain some code::
 
 Default value is now 'Victor Hugo'::
     >>> form.display(None, edit=True)
-    u'Author: <span class="field">\n    <input type="text" class="text-widget textline-field" name="author" value="Victor Hugo"/>\n</span>'
+    u'Author: <input type="text" class="text-widget textline-field" name="author" value="Victor Hugo"/>'
 
 After saving the doc, the author has been changed to uppercase::
     >>> doc.save({}, form=form)
