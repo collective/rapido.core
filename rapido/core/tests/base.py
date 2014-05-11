@@ -7,6 +7,14 @@ from rapido.core.interfaces import IDatabasable, IFormable
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
 
+
+class SimpleForm(BaseNode):
+    implements(IAttributeAnnotatable, IFormable)
+    def __init__(self, id, title):
+        self.id = id
+        self.title = title
+
+
 class SimpleDatabase(BaseNode):
     implements(IAttributeAnnotatable, IDatabasable)
     def __init__(self, uid, root):
@@ -35,9 +43,16 @@ class SimpleDatabase(BaseNode):
     def set_fake_groups(self, groups):
         self.fake_groups = groups
 
-
-class SimpleForm(BaseNode):
-    implements(IAttributeAnnotatable, IFormable)
-    def __init__(self, id, title):
-        self.id = id
-        self.title = title
+    def create_form(self, settings, code, html):
+        form_id = settings['id']
+        self[form_id] = SimpleForm(form_id, settings['title'])
+        form_obj = self[form_id]
+        form = IForm(form_obj)
+        form.assign_rules(settings['assigned_rules'])
+        form.set_code(code)
+        form.set_layout(html)
+        for (field_id, field_settings) in settings['fields'].items():
+            form.set_field(field_id, {
+                'type': field_settings['type'],
+                'index_type': field_settings['index_type'],
+            })
