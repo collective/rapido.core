@@ -1,7 +1,6 @@
 Soup Creation
 =============
 
-    >>> from zope.interface import implements, alsoProvides, implementer, Interface
     >>> from zope.configuration.xmlconfig import XMLConfig
     >>> import zope.component
     >>> XMLConfig("meta.zcml", zope.component)()
@@ -14,47 +13,16 @@ Soup Creation
     >>> import rapido.souper
     >>> XMLConfig("configure.zcml", rapido.souper)()
 
-    >>> from rapido.core.interfaces import IDatabase, IDatabasable
+    >>> from rapido.core.interfaces import IDatabase
 
 Create object which can store soup data::
 
-    >>> from node.ext.zodb import OOBTNode
-    >>> from node.base import BaseNode
-    >>> from zope.annotation.interfaces import IAttributeAnnotatable
-    >>> class SiteNode(OOBTNode):
-    ...    implements(IAttributeAnnotatable)
+    >>> from rapido.core.tests.base import SiteNode
     >>> root = SiteNode()
 
 Create a persistent object that will be adapted as a rapido db::
-
-    >>> class SimpleDatabase(BaseNode):
-    ...    implements(IAttributeAnnotatable, IDatabasable)
-    ...    def __init__(self, uid, root):
-    ...        self.uid = uid
-    ...        self['root'] = root
-    ...        self.fake_user = 'admin'
-    ...        self.fake_groups = []
-    ...
-    ...    @property
-    ...    def root(self):
-    ...        return self['root']
-    ...
-    ...    @property
-    ...    def forms(self):
-    ...        return [el for el in self.values() if el.__class__.__name__=='SimpleForm']
-    ...
-    ...    def current_user(self):
-    ...        return self.fake_user
-    ...
-    ...    def set_fake_user(self, user):
-    ...        self.fake_user = user
-    ...
-    ...    def current_user_groups(self):
-    ...        return self.fake_groups
-    ...
-    ...    def set_fake_groups(self, groups):
-    ...        self.fake_groups = groups
-    ...
+    
+    >>> from rapido.core.tests.base import SimpleDatabase
     >>> root['mydb'] = SimpleDatabase(1, root)
     >>> db_obj = root['mydb']
     >>> db = IDatabase(db_obj)
@@ -83,12 +51,8 @@ A docid is always unique::
 
 We can use form to display documents::
 
-    >>> from rapido.core.interfaces import IForm, IFormable
-    >>> class SimpleForm(BaseNode):
-    ...    implements(IAttributeAnnotatable, IFormable)
-    ...    def __init__(self, id, title):
-    ...        self.id = id
-    ...        self.title = title
+    >>> from rapido.core.interfaces import IForm
+    >>> from rapido.core.tests.base import SimpleForm
     >>> db_obj['frmBook'] = SimpleForm('frmBook', 'Book form')
     >>> form = IForm(db_obj['frmBook'])
     >>> form.set_field('author', {'type': 'TEXT'})
@@ -231,9 +195,18 @@ Access rights
     >>> doc_6.id
     'doc_6'
 
-Database can be exported
+Database design can be exported
     >>> from rapido.core.interfaces import IExporter
     >>> exporter = IExporter(db)
     >>> exporter.export_database()
     {'forms': {'frmBook': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': 'assigned_rules: [polite]\nfields:\n  author: {index_type: text, type: TEXT}\n  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}\n  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}\nid: frmBook\ntitle: Book form\n', 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}}, 'settings.yaml': 'acl:\n  rights:\n    author: [FamousDiscoverers]\n    editor: []\n    manager: [admin]\n    reader: []\n  roles: {}\n'}
+
+Datatbase design can be imported
+    >>> root['newdb'] = SimpleDatabase(2, root)
+    >>> newdb_obj = root['newdb']
+    >>> newdb = IDatabase(newdb_obj)
+    >>> newdb.initialize()
+    >>> from rapido.core.interfaces import IImporter
+    >>> importer = IImporter(newdb)
+
 

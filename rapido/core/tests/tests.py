@@ -7,9 +7,8 @@ optionflags = doctest.NORMALIZE_WHITESPACE | \
               doctest.REPORT_ONLY_FIRST_FAILURE
 
 TESTFILES = [
-    'rapido.rst',
+    '../rapido.rst',
 ]
-
 
 def test_suite():
     return unittest.TestSuite([
