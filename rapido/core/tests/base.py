@@ -2,7 +2,7 @@ from zope.interface import implements, alsoProvides, implementer, Interface
 from node.base import BaseNode
 from node.ext.zodb import OOBTNode
 from zope.annotation.interfaces import IAttributeAnnotatable
-from rapido.core.interfaces import IDatabasable, IFormable
+from rapido.core.interfaces import IDatabasable, IFormable, IForm
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -54,5 +54,5 @@ class SimpleDatabase(BaseNode):
         for (field_id, field_settings) in settings['fields'].items():
             form.set_field(field_id, {
                 'type': field_settings['type'],
-                'index_type': field_settings['index_type'],
+                'index_type': field_settings.get('index_type', ''),
             })
