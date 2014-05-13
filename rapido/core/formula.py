@@ -1,4 +1,4 @@
-from zope.security.untrustedpython.interpreter import CompiledProgram
+from zope.untrustedpython.interpreter import CompiledProgram
 from zope.event import notify
 from zope.annotation.interfaces import IAnnotations
 import marshal

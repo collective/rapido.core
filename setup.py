@@ -29,6 +29,7 @@ setup(name='rapido.core',
           'zope.security',
           'zope.annotation',
           'zope.configuration',
+          'zope.untrustedpython',
       ],
       entry_points="""
       # -*- Entry points: -*-
