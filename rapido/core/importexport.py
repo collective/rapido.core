@@ -13,7 +13,7 @@ class Importer:
     def import_database(self, data):
         db = self.context
         if 'settings.yaml' in data:
-            db.annotation['acl'] = yaml.load(data['settings.yaml'])['acl']
+            db.annotation['acl'] = yaml.load(data['settings.yaml']).get('acl', None)
 
         if 'forms' in data:
             for (form_id, form_data) in data['forms'].items():

@@ -87,6 +87,7 @@ class AccessControlList:
             return False
 
     def has_permission(self, permission):
+        import pdb; pdb.set_trace( )
         for access_right in self.context.annotation['acl']['rights']:
             if self.has_access_right(access_right):
                 if permission in ACCESS_RIGHTS_PERMISSIONS[access_right]:
