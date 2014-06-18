@@ -25,6 +25,28 @@ class Importer:
                     form_data[form_id+'.html'],
                 )
 
+    def import_from_fs(self, import_path):
+        data = {}
+        for name in os.listdir(import_path):
+            path = os.path.join(import_path, name)
+            if os.path.isdir(path):
+                dirpath = path
+                dirname = name
+                data[dirname] = {}
+                for name in os.listdir(dirpath):
+                    path = os.path.join(dirpath, name)
+                    if os.path.isdir(path):
+                        subdirpath = path
+                        subdirname = name
+                        data[dirname][subdirname] = {}
+                        for name in os.listdir(subdirpath):
+                            path = os.path.join(subdirpath, name)
+                                data[dirname][subdirname][name] = "\n".join(open(path, 'r', 'utf-8').readlines())
+                    else:
+                        data[dirname][name] = "\n".join(open(path, 'r', 'utf-8').readlines())
+            else:
+                data[name] = "\n".join(open(path, 'r', 'utf-8').readlines())
+        self.import_database(data)
 
 class Exporter:
     implements(IExporter)
