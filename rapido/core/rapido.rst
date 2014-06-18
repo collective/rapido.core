@@ -222,7 +222,7 @@ Database design can be imported
     'Book form'
 
 Database can imported from the file system
-    >>> open(os.path.join(dir, 'tests', 'testdb', 'forms', 'frmBook', 'frmBook.html'), 'w').write("""<footer>Powered by Rapido</footer>""")
+    >>> open(os.path.join(dir, 'tests', 'testdb', 'forms', 'frmBook', 'frmBook.html'), 'w').write("""Author: <span data-rapido-field="author">author</span><footer>Powered by Rapido</footer>""")
     >>> importer.import_from_fs(os.path.join(dir, 'tests', 'testdb'))
     >>> newdb.get_form('frmBook').layout
-    dsds
+    u'Author: <span data-rapido-field="author">author</span><footer>Powered by Rapido</footer>'

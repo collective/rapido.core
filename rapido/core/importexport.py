@@ -41,11 +41,11 @@ class Importer:
                         data[dirname][subdirname] = {}
                         for name in os.listdir(subdirpath):
                             path = os.path.join(subdirpath, name)
-                                data[dirname][subdirname][name] = "\n".join(open(path, 'r', 'utf-8').readlines())
+                            data[dirname][subdirname][name] = "\n".join(codecs.open(path, 'r', 'utf-8').readlines())
                     else:
-                        data[dirname][name] = "\n".join(open(path, 'r', 'utf-8').readlines())
+                        data[dirname][name] = "\n".join(codecs.open(path, 'r', 'utf-8').readlines())
             else:
-                data[name] = "\n".join(open(path, 'r', 'utf-8').readlines())
+                data[name] = "\n".join(codecs.open(path, 'r', 'utf-8').readlines())
         self.import_database(data)
 
 class Exporter:
