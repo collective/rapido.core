@@ -12,6 +12,8 @@ Soup Creation
     >>> XMLConfig("configure.zcml", rapido.core)()
     >>> import rapido.souper
     >>> XMLConfig("configure.zcml", rapido.souper)()
+    >>> import rapido.core.tests
+    >>> XMLConfig("configure.zcml", rapido.core.tests)()
 
     >>> from rapido.core.interfaces import IDatabase
 
@@ -205,9 +207,9 @@ Database can exported to the file system
     >>> import os
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
     >>> exporter.export_to_fs(os.path.join(dir, 'tests', 'testdb'))
-    >>> "\n".join(open(os.path.join(dir, 'tests', 'testdb', 'settings.yaml')).readlines())
-    'acl:\n\n  rights:\n\n    author: [FamousDiscoverers]\n\n    editor: []\n\n    manager: [admin]\n\n    reader: []\n\n  roles: {}\n'
-    >>> "\n".join(open(os.path.join(dir, 'tests', 'testdb', 'forms', 'frmBook', 'frmBook.html')).readlines())
+    >>> "".join(open(os.path.join(dir, 'tests', 'testdb', 'settings.yaml')).readlines())
+    'acl:\n  rights:\n    author: [FamousDiscoverers]\n    editor: []\n    manager: [admin]\n    reader: []\n  roles: {}\n'
+    >>> "".join(open(os.path.join(dir, 'tests', 'testdb', 'forms', 'frmBook', 'frmBook.html')).readlines())
     'Author: <span data-rapido-field="author">author</span>'
 
 Database design can be imported
