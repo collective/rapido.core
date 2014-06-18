@@ -44,7 +44,6 @@ class Database(Index):
     @acl_check('create_document')
     def create_document(self, docid=None):
         record = self.storage.create()
-        import pdb; pdb.set_trace( )
         doc = IDocument(record)
         if not docid:
             docid = str(hash(record))

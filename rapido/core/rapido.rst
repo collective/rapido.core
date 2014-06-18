@@ -201,7 +201,16 @@ Database design can be exported
     >>> exporter.export_database()
     {'forms': {'frmBook': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': 'assigned_rules: [polite]\nfields:\n  author: {index_type: text, type: TEXT}\n  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}\n  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}\nid: frmBook\ntitle: Book form\n', 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}}, 'settings.yaml': 'acl:\n  rights:\n    author: [FamousDiscoverers]\n    editor: []\n    manager: [admin]\n    reader: []\n  roles: {}\n'}
 
-Datatbase design can be imported
+Database can exported to the file system
+    >>> import os
+    >>> dir, _f = os.path.split(os.path.abspath(__file__))
+    >>> exporter.export_to_fs(os.path.join(dir, 'tests', 'testdb'))
+    >>> "\n".join(open(os.path.join(dir, 'tests', 'testdb', 'settings.yaml')).readlines())
+    'acl:\n\n  rights:\n\n    author: [FamousDiscoverers]\n\n    editor: []\n\n    manager: [admin]\n\n    reader: []\n\n  roles: {}\n'
+    >>> "\n".join(open(os.path.join(dir, 'tests', 'testdb', 'forms', 'frmBook', 'frmBook.html')).readlines())
+    'Author: <span data-rapido-field="author">author</span>'
+
+Database design can be imported
     >>> root['newdb'] = SimpleDatabase(2, root)
     >>> newdb_obj = root['newdb']
     >>> newdb = IDatabase(newdb_obj)

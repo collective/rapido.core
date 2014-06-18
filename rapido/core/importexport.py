@@ -1,3 +1,5 @@
+import os
+import codecs
 from pyaml import yaml
 from zope.interface import implements
 
@@ -54,3 +56,35 @@ class Exporter:
         data['forms'] = forms
 
         return data
+
+    def export_to_fs(self, export_to):
+        if not os.path.isdir(export_to):
+            os.makedirs(export_to)
+        data = self.export_database()
+        file_list = []
+        for name in data.keys():
+            path = os.path.join(export_to, name)
+            if '.' in name:
+                file_list.append([path, data[name]])
+            else:
+                if not os.path.isdir(path):
+                    os.makedirs(path)
+                dirpath = path
+                dirname = name
+                for name in data[dirname].keys():
+                    path = os.path.join(dirpath, name)
+                    if '.' in name:
+                        file_list.append([path, data[dirname][name]])
+                    else:
+                        if not os.path.isdir(path):
+                            os.makedirs(path)
+                        subdirpath = path
+                        subdirname = name
+                        for name in data[dirname][subdirname].keys():
+                            path = os.path.join(subdirpath, name)
+                            file_list.append([path, data[dirname][subdirname][name]])
+        
+        for (path, content) in file_list:
+            fileobj = codecs.open(path, "w", "utf-8")
+            fileobj.write(content)
+            fileobj.close()
