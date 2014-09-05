@@ -69,6 +69,9 @@ class Form(FormulaContainer, RuleAssignee):
         return IDatabase(self.context.__parent__)
 
     def display(self, doc=None, edit=False):
+        if not self.layout:
+            return ""
+
         layout = pq(self.layout)
 
         def process_field(index, element):
