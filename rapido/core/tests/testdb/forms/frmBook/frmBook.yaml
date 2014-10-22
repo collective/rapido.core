@@ -1,0 +1,7 @@
+assigned_rules: [polite]
+fields:
+  author: {index_type: text, type: TEXT}
+  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}
+  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}
+id: frmBook
+title: Book form
