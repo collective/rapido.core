@@ -98,3 +98,27 @@ class Form(FormulaContainer, RuleAssignee):
             result = self.execute_rule(rule, 'on_save', doc)
         result = self.execute('on_save', doc)
         return result
+
+    def json(self):
+        data = {
+            "layout": self.layout,
+            "schema": {
+                "type": "object",
+                "title": self.title,
+                "properties": {},
+            },
+            "form": [{
+                  "type": "submit",
+                  "style": "btn-info",
+                  "title": "Save"
+                }],
+        }
+        for field_id in self.fields.keys():
+            settings = self.fields[field_id]
+            data["schema"]["properties"][field_id] = {
+                "title": field_id,
+                "type": "string",
+            }
+            data["form"].append(field_id)
+
+        return data
