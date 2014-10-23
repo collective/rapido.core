@@ -99,3 +99,9 @@ class Database(Index):
         for form in self.forms:
             form.remove_rule(rule_id)
 
+    def json(self):
+        data = {"forms": [], "views": []}
+        for form in self.forms:
+            data["forms"].append({"id": form.id, "title": form.title})
+        return data
+
