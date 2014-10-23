@@ -57,6 +57,7 @@ class Document(object):
             form_id = request.get('Form')
         if not form:
             form = self.database.get_form(form_id)
+        self.set_item('Form', form.id)
 
         # store submitted fields
         for field in form.fields.keys():
