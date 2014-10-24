@@ -99,7 +99,9 @@ class Form(FormulaContainer, RuleAssignee):
         result = self.execute('on_save', doc)
         return result
 
-    def json(self):
+    def json(self, context=None):
+        if not context:
+            context = self
         data = {
             "layout": self.layout,
             "schema": {
@@ -113,13 +115,33 @@ class Form(FormulaContainer, RuleAssignee):
                 "title": "Save"
             }],
         }
+        properties = {}
+        fields = []
         for field_id in self.fields.keys():
             settings = self.fields[field_id]
-            data["schema"]["properties"][field_id] = {
+            properties[field_id] = {
                 "title": settings.get('title', field_id),
                 "description": settings.get('description'),
                 "type": "string",
             }
-            data["form"].append(field_id)
+            field = {
+                'key': field_id,
+                'type': "string"
+            }
+
+            # insert computed settings
+            extra_settings = self.execute(field_id + '_settings', context)
+            if extra_settings:
+                if extra_settings.get("properties"):
+                    for (key, value) in extra_settings["properties"].items():
+                        properties[field_id][key] = value
+                if extra_settings.get("form"):
+                    for (key, value) in extra_settings["form"].items():
+                        field[key] = value
+
+            fields.append(field)
+
+        data["schema"]["properties"] = properties
+        data["form"] = fields
 
         return data
