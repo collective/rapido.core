@@ -10,6 +10,16 @@ from .fields.utils import get_field_class
 from .formula import FormulaContainer
 from .rules import RuleAssignee
 
+FIELD_TYPE_MAPPING = {
+    'TEXT': 'string',
+    'NUMBER': 'number',
+    'DATETIME': 'string',
+}
+FIELD_WIDGET_MAPPING = {
+    'TEXT': 'text',
+    'NUMBER': 'number',
+    'DATETIME': 'text',
+}
 class Form(FormulaContainer, RuleAssignee):
     """
     """
@@ -122,11 +132,11 @@ class Form(FormulaContainer, RuleAssignee):
             properties[field_id] = {
                 "title": settings.get('title', field_id),
                 "description": settings.get('description'),
-                "type": "string",
+                "type": FIELD_TYPE_MAPPING.get(settings['type'], 'TEXT'),
             }
             field = {
                 'key': field_id,
-                'type': "string"
+                'type': FIELD_WIDGET_MAPPING.get(settings['type'], 'TEXT'),
             }
 
             # insert computed settings
@@ -142,6 +152,6 @@ class Form(FormulaContainer, RuleAssignee):
             fields.append(field)
 
         data["schema"]["properties"] = properties
-        data["form"] = fields
+        data["form"] = data["form"] + fields
 
         return data
