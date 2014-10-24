@@ -116,7 +116,7 @@ class Form(FormulaContainer, RuleAssignee):
         for field_id in self.fields.keys():
             settings = self.fields[field_id]
             data["schema"]["properties"][field_id] = {
-                "title": field_id,
+                "title": settings.get('title', field_id),
                 "type": "string",
             }
             data["form"].append(field_id)
