@@ -108,15 +108,16 @@ class Form(FormulaContainer, RuleAssignee):
                 "properties": {},
             },
             "form": [{
-                  "type": "submit",
-                  "style": "btn-info",
-                  "title": "Save"
-                }],
+                "type": "submit",
+                "style": "btn-info",
+                "title": "Save"
+            }],
         }
         for field_id in self.fields.keys():
             settings = self.fields[field_id]
             data["schema"]["properties"][field_id] = {
                 "title": settings.get('title', field_id),
+                "description": settings.get('description'),
                 "type": "string",
             }
             data["form"].append(field_id)
