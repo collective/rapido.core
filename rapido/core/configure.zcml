@@ -46,4 +46,10 @@
     handler=".subscribers.on_execution_error"
     />
 
+  <adapter
+    for=".interfaces.IRestable"
+    provides=".interfaces.IRest"
+    factory=".rest.Rest"
+  />
+
 </configure>

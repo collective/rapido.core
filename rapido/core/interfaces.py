@@ -127,3 +127,11 @@ class IExportable(Interface):
 class IExporter(Interface):
     """ Exporter
     """
+
+class IRestable(Interface):
+    """ Marker interface for REST-able
+    """
+
+class IRest(Interface):
+    """ Rest features
+    """
