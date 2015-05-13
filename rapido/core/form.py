@@ -1,11 +1,7 @@
 from zope.interface import implements
-from zope import component
-from zope.annotation.interfaces import IAnnotations
-from persistent.dict import PersistentDict
 from pyquery import PyQuery as pq
 
-from interfaces import IForm, IDatabase
-from .database import ANNOTATION_KEY as KEY
+from interfaces import IForm
 from .fields.utils import get_field_class
 from .formula import FormulaContainer
 from .rules import RuleAssignee
@@ -20,63 +16,61 @@ FIELD_WIDGET_MAPPING = {
     'NUMBER': 'number',
     'DATETIME': 'text',
 }
+DEFAULT_SETTINGS = {
+    'title': "",
+    'fields': {},
+    'assigned_rules': [],
+    'actions': {},
+}
+
+
 class Form(FormulaContainer, RuleAssignee):
     """
     """
     implements(IForm)
 
-    def __init__(self, context):
-        self.context = context
-        self.id = self.context.id
-        annotations = IAnnotations(context)
-        if KEY not in annotations:
-            annotations[KEY] = PersistentDict({
-                'layout': "",
-                'fields': {},
-                'code': "",
-                'assigned_rules': [],
-            })
-        self.annotation = annotations[KEY]
+    def __init__(self, id, db):
+        self.id = id
+        self._db = db
+        self.settings = DEFAULT_SETTINGS.copy()
+        settings = self.context.get_form(id)
+        self.settings.update(settings)
 
     @property
     def title(self):
-        if hasattr(self.context, 'title'):
-            return self.context.title
-        else:
-            return self.context.Title()
+        return self.settings['title']
 
     @property
     def layout(self):
-        return self.annotation['layout']
+        if 'layout' not in self.settings:
+            self.settings['layout'] = self.db.context.get_form(
+                self.id, ftype="html")
+        return self.settings['layout']
 
-    def set_layout(self, html):
-        self.annotation['layout'] = html
-    
     @property
     def fields(self):
-        return self.annotation["fields"]
+        return self.settings['fields']
 
-    def set_field(self, field_id, field_settings):
-        self.annotation['fields'][field_id] = field_settings
-        if field_settings.get('index_type', None):
-            self.database.create_index(field_id, field_settings['index_type'])
+    def init_field(self, field_id):
+        field = self.fields.get(field_id, None)
+        if field and field.get('index_type', None):
+            self.database.create_index(field_id, field['index_type'])
 
     def remove_field(self, field_id):
-        if self.annotation['fields'].get(field_id):
-            del self.annotation['fields'][field_id]
-        #TODO: clean up index
-        
+        # TODO: clean up index
+        pass
+
     @property
     def code(self):
-        return self.annotation['code']
-
-    def set_code(self, code):
-        self.annotation['code'] = code
-        self.compile(recompile=True)
+        if 'code' not in self.settings:
+            self.settings['code'] = self.db.context.get_form(
+                self.id, ftype="py")
+            self.compile(recompile=True)
+        return self.settings['code']
 
     @property
     def database(self):
-        return IDatabase(self.context.__parent__)
+        return self._db
 
     def display(self, doc=None, edit=False):
         if not self.layout:
@@ -104,7 +98,7 @@ class Form(FormulaContainer, RuleAssignee):
 
     def on_save(self, doc):
         result = None
-        for rule in self.assigned_rules:
+        for rule in self.settings['assigned_rules']:
             result = self.execute_rule(rule, 'on_save', doc)
         result = self.execute('on_save', doc)
         return result

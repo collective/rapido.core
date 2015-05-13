@@ -1,14 +1,11 @@
 from zope.interface import implements
-from zope.annotation.interfaces import IAnnotations
-from persistent.dict import PersistentDict
 
 from interfaces import (
-    IDatabase, IStorage, IDocument, IForm, IACLable,
+    IDatabase, IStorage, IDocument, IACLable,
     IAccessControlList, IExportable, IImportable, IRestable)
 from index import Index
+from .form import Form
 from .security import acl_check
-
-ANNOTATION_KEY = "RAPIDO_ANNOTATION"
 
 
 class Database(Index):
@@ -18,10 +15,6 @@ class Database(Index):
 
     def __init__(self, context):
         self.context = context
-        annotations = IAnnotations(context)
-        if ANNOTATION_KEY not in annotations:
-            annotations[ANNOTATION_KEY] = PersistentDict()
-        self.annotation = annotations[ANNOTATION_KEY]
         if 'available_rules' not in self.annotation:
             self.annotation['available_rules'] = {}
 
@@ -75,13 +68,11 @@ class Database(Index):
         return list(self._documents())
 
     def get_form(self, form_id):
-        form_obj = self.context.get(form_id)
-        if form_obj:
-            return IForm(form_obj)
+        return Form(form_id, self)
 
     @property
     def forms(self):
-        return [IForm(obj) for obj in self.context.forms]
+        return [self.get_form(id) for id in self.context.forms]
 
     def rules(self):
         return self.annotation['available_rules']

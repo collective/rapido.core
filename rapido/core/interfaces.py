@@ -56,10 +56,6 @@ class IRecordable(Interface):
         """ return internal identifier
         """
 
-class IFormable(Interface):
-    """ Marker interface for a form
-    """
-
 
 class IForm(Interface):
     """ A Rapido form
@@ -104,33 +100,41 @@ class IStorage(Interface):
         """ search for documents
         """
 
+
 class IACLable(Interface):
     """ Marker interface for an access control
     """
-    
+
+
 class IAccessControlList(Interface):
     """ An access control list manager
     """
+
 
 class IImportable(Interface):
     """ Marker interface for importable
     """
 
+
 class IImporter(Interface):
     """ Importer
     """
+
 
 class IExportable(Interface):
     """ Marker interface for exportable
     """
 
+
 class IExporter(Interface):
     """ Exporter
     """
 
+
 class IRestable(Interface):
     """ Marker interface for REST-able
     """
+
 
 class IRest(Interface):
     """ Rest features
