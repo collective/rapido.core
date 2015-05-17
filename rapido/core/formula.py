@@ -1,10 +1,8 @@
 from zope.untrustedpython.interpreter import CompiledProgram
 from zope.event import notify
-from zope.annotation.interfaces import IAnnotations
 import marshal
 
 from .events import ExecutionErrorEvent, CompilationErrorEvent
-from .database import ANNOTATION_KEY as KEY
 
 
 class PersistentCompiledProgram(CompiledProgram):
@@ -16,9 +14,8 @@ class PersistentCompiledProgram(CompiledProgram):
         code_id = 'code'
         if prefix:
             code_id = prefix + "_" + code_id
-        annotations = IAnnotations(container)
-        self.source = annotations[KEY].get(code_id, '')
-        compiled_code = annotations[KEY].get('compiled_' + code_id, None)
+        self.source = getattr(container, code_id, '')
+        compiled_code = getattr(container, 'compiled_' + code_id, None)
         if not recompile and compiled_code:
             self.code = marshal.loads(compiled_code)
         else:
@@ -26,7 +23,7 @@ class PersistentCompiledProgram(CompiledProgram):
                 self.source,
                 "%s.py" % container.id,
                 'exec')
-            annotations[KEY]['compiled_' + code_id] = marshal.dumps(self.code)
+            setattr(container, 'compiled_' + code_id, marshal.dumps(self.code))
 
 
 class FormulaContainer(object):
@@ -36,7 +33,7 @@ class FormulaContainer(object):
         executable_id = '_%s_executable' % prefix
         try:
             setattr(self, compiled_code_id, PersistentCompiledProgram(
-                self.context,
+                self,
                 recompile=recompile,
                 prefix=prefix)
             )

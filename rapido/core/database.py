@@ -15,8 +15,6 @@ class Database(Index):
 
     def __init__(self, context):
         self.context = context
-        if 'available_rules' not in self.annotation:
-            self.annotation['available_rules'] = {}
 
     def initialize(self):
         acl = self.acl

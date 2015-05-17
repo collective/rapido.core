@@ -1,5 +1,6 @@
+import string
 from zope.interface import implements
-from pyquery import PyQuery as pq
+from pyaml import yaml
 
 from interfaces import IForm
 from .fields.utils import get_field_class
@@ -24,6 +25,25 @@ DEFAULT_SETTINGS = {
 }
 
 
+class FieldDict(dict):
+
+    def __init__(self, form, doc=None, edit=False):
+        self.form = form
+        self.doc = doc
+        self.edit = edit
+
+    def __getitem__(self, key):
+        field_settings = self.form.fields.get(key, None)
+        if not field_settings:
+            return "UNDEFINED FIELD"
+        constructor = get_field_class(field_settings['type'])
+        if constructor:
+            field = constructor(key, field_settings, self.form)
+            return field.render(self.doc, edit=self.edit)
+        else:
+            return "UNKNOWN FIELD TYPE"
+
+
 class Form(FormulaContainer, RuleAssignee):
     """
     """
@@ -33,7 +53,7 @@ class Form(FormulaContainer, RuleAssignee):
         self.id = id
         self._db = db
         self.settings = DEFAULT_SETTINGS.copy()
-        settings = self.context.get_form(id)
+        settings = yaml.load(self.database.context.get_form(id))
         self.settings.update(settings)
 
     @property
@@ -43,7 +63,7 @@ class Form(FormulaContainer, RuleAssignee):
     @property
     def layout(self):
         if 'layout' not in self.settings:
-            self.settings['layout'] = self.db.context.get_form(
+            self.settings['layout'] = self.database.context.get_form(
                 self.id, ftype="html")
         return self.settings['layout']
 
@@ -63,7 +83,7 @@ class Form(FormulaContainer, RuleAssignee):
     @property
     def code(self):
         if 'code' not in self.settings:
-            self.settings['code'] = self.db.context.get_form(
+            self.settings['code'] = self.database.context.get_form(
                 self.id, ftype="py")
             self.compile(recompile=True)
         return self.settings['code']
@@ -75,23 +95,8 @@ class Form(FormulaContainer, RuleAssignee):
     def display(self, doc=None, edit=False):
         if not self.layout:
             return ""
-
-        layout = pq(self.layout)
-
-        def process_field(index, element):
-            field_id = pq(element).attr("data-rapido-field")
-            field_settings = self.fields.get(field_id, None)
-            if not field_settings:
-                return "UNDEFINED FIELD"
-            constructor = get_field_class(field_settings['type'])
-            if constructor:
-                field = constructor(field_id, field_settings, self)
-                return field.render(doc, edit=edit)
-            else:
-                return "UNKNOWN FIELD TYPE"
-
-        layout("*[data-rapido-field]").replaceWith(process_field)
-        return layout.html()
+        values = FieldDict(self, doc, edit)
+        return string.Formatter().vformat(self.layout, (), values)
 
     def compute_field(self, field_id, context=None):
         return self.execute(field_id, context)
