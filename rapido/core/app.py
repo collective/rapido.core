@@ -1,17 +1,17 @@
 from zope.interface import implements
 
 from interfaces import (
-    IDatabase, IStorage, IDocument, IACLable,
+    IRapidoApplication, IStorage, IDocument, IACLable,
     IAccessControlList, IExportable, IImportable, IRestable)
 from index import Index
 from .form import Form
 from .security import acl_check
 
 
-class Database(Index):
+class RapidoApplication(Index):
     """
     """
-    implements(IDatabase, IACLable, IExportable, IImportable, IRestable)
+    implements(IRapidoApplication, IACLable, IExportable, IImportable, IRestable)
 
     def __init__(self, context):
         self.context = context

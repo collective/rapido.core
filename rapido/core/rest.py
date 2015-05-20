@@ -14,7 +14,7 @@ class Rest:
     def GET(self, path, body):
         # body will be always empty
         try:
-            if path[0] == "database":
+            if path[0] == "app":
                 return self.db.json()
 
             if path[0] == "form":

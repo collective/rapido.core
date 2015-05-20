@@ -1,7 +1,7 @@
 from zope.interface import Interface
 
 
-class IDatabasable(Interface):
+class IRapidable(Interface):
     """ A persistent object that will support a Rapido application
     """
 
@@ -22,8 +22,8 @@ class IDatabasable(Interface):
         """
 
 
-class IDatabase(Interface):
-    """ A Rapido database
+class IRapidoApplication(Interface):
+    """ A Rapido app
     """
 
 

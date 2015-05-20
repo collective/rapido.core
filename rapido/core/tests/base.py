@@ -2,7 +2,7 @@ from zope.interface import implements, alsoProvides, implementer, Interface
 from node.base import BaseNode
 from node.ext.zodb import OOBTNode
 from zope.annotation.interfaces import IAttributeAnnotatable
-from rapido.core.interfaces import IDatabasable, IFormable, IForm
+from rapido.core.interfaces import IRapidable, IFormable, IForm
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -15,8 +15,8 @@ class SimpleForm(BaseNode):
         self.title = title
 
 
-class SimpleDatabase(BaseNode):
-    implements(IAttributeAnnotatable, IDatabasable)
+class SimpleRapidoApplication(BaseNode):
+    implements(IAttributeAnnotatable, IRapidable)
     def __init__(self, uid, root):
         self.uid = uid
         self['root'] = root

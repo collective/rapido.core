@@ -9,14 +9,14 @@ class Document(object):
         self.context = context
         self.uid = self.context.uid()
         self.id = self.context.get_item('docid')
-        self.database = self.context.database
+        self.app = self.context.app
         form_id = self.get_item('Form')
-        self.form = self.database.get_form(form_id)
+        self.form = self.app.get_form(form_id)
 
     @property
     def url(self):
         return '/'.join([
-            self.database.url,
+            self.app.url,
             "document",
             str(self.id),
             ])
@@ -28,7 +28,7 @@ class Document(object):
     def set_item(self, name, value):
         if name=="docid":
             # make sure id is unique
-            duplicate = self.database.get_document(value)
+            duplicate = self.app.get_document(value)
             if duplicate and duplicate.uid != self.uid:
                 value = "%s-%s" % (value, str(hash(self.context)))
             self.id = value
@@ -47,7 +47,7 @@ class Document(object):
         return self.context.items()
 
     def reindex(self):
-        self.database.reindex(self)
+        self.app.reindex(self)
 
     def save(self, request, form=None, form_id=None, creation=False):
         # Note: request might be a dict containing item values
@@ -56,7 +56,7 @@ class Document(object):
         if not form_id:
             form_id = request.get('Form')
         if not form:
-            form = self.database.get_form(form_id)
+            form = self.app.get_form(form_id)
         self.set_item('Form', form.id)
 
         # store submitted fields

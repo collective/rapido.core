@@ -24,7 +24,7 @@ ACCESS_RIGHTS_PERMISSIONS = {
         'create_document',
         'edit_document',
         'delete_document',
-        'modify_database',
+        'modify_app',
         'modify_acl',
     ],
 }

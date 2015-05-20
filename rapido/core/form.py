@@ -24,15 +24,41 @@ DEFAULT_SETTINGS = {
     'actions': {},
 }
 
+FORM_TEMPLATE = """<form
+    name="{_form_name}"
+    class="{_form_classes}"
+    action="{_form_action}"
+    method="{_form_method}">%s</form>
+"""
+
 
 class FieldDict(dict):
 
-    def __init__(self, form, doc=None, edit=False):
+    def __init__(
+        self,
+        form,
+        doc=None,
+        edit=True,
+        action=None,
+        classes=[],
+        method="POST"
+    ):
         self.form = form
         self.doc = doc
         self.edit = edit
+        if not action:
+            action = self.form.url
+        classes = ' '.join(["rapido-form"] + classes)
+        self.params = {
+            '_form_name': form.id,
+            '_form_action': action,
+            '_form_classes': classes,
+            '_form_method': method,
+        }
 
     def __getitem__(self, key):
+        if key in self.params:
+            return self.params[key]
         field_settings = self.form.fields.get(key, None)
         if not field_settings:
             return "UNDEFINED FIELD"
@@ -53,7 +79,7 @@ class Form(FormulaContainer, RuleAssignee):
         self.id = id
         self._db = db
         self.settings = DEFAULT_SETTINGS.copy()
-        settings = yaml.load(self.database.context.get_form(id))
+        settings = yaml.load(self.app.context.get_form(id))
         self.settings.update(settings)
 
     @property
@@ -63,7 +89,7 @@ class Form(FormulaContainer, RuleAssignee):
     @property
     def layout(self):
         if 'layout' not in self.settings:
-            self.settings['layout'] = self.database.context.get_form(
+            self.settings['layout'] = self.app.context.get_form(
                 self.id, ftype="html")
         return self.settings['layout']
 
@@ -74,7 +100,7 @@ class Form(FormulaContainer, RuleAssignee):
     def init_field(self, field_id):
         field = self.fields.get(field_id, None)
         if field and field.get('index_type', None):
-            self.database.create_index(field_id, field['index_type'])
+            self.app.create_index(field_id, field['index_type'])
 
     def remove_field(self, field_id):
         # TODO: clean up index
@@ -83,20 +109,28 @@ class Form(FormulaContainer, RuleAssignee):
     @property
     def code(self):
         if 'code' not in self.settings:
-            self.settings['code'] = self.database.context.get_form(
+            self.settings['code'] = self.app.context.get_form(
                 self.id, ftype="py")
             self.compile(recompile=True)
         return self.settings['code']
 
     @property
-    def database(self):
+    def app(self):
         return self._db
+
+    @property
+    def url(self):
+        return '%s/form/%s' % (
+            self.app.url,
+            self.id,
+        )
 
     def display(self, doc=None, edit=False):
         if not self.layout:
             return ""
+        layout = FORM_TEMPLATE % self.layout
         values = FieldDict(self, doc, edit)
-        return string.Formatter().vformat(self.layout, (), values)
+        return string.Formatter().vformat(layout, (), values)
 
     def compute_field(self, field_id, context=None):
         return self.execute(field_id, context)

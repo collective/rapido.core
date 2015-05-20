@@ -2,8 +2,8 @@ from zope.interface import implements
 from zope.annotation.interfaces import IAnnotations
 from persistent.dict import PersistentDict
 
-from interfaces import IView, IDatabase
-from .database import ANNOTATION_KEY as KEY
+from interfaces import IView, IRapidoApplication
+from .app import ANNOTATION_KEY as KEY
 from .formula import FormulaContainer
 from .rules import RuleAssignee
 
@@ -37,7 +37,7 @@ class View(FormulaContainer, RuleAssignee):
 
     def set_column(self, column_id, column_settings):
         self.annotation['columns'][column_id] = column_settings
-        self.database.create_index(field_id, field_settings['index_type'])
+        self.app.create_index(field_id, field_settings['index_type'])
 
     def remove_column(self, column_id):
         if self.annotation['columns'].get(column_id):
@@ -53,5 +53,5 @@ class View(FormulaContainer, RuleAssignee):
         self.compile(recompile=True)
 
     @property
-    def database(self):
-        return IDatabase(self.context.__parent__)
+    def app(self):
+        return IRapidoApplication(self.context.__parent__)

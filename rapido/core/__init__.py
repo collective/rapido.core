@@ -1,4 +1,4 @@
 from zope.security.checker import NamesChecker, defineChecker
-from rapido.core.database import Database
+from rapido.core.app import RapidoApplication
 
-defineChecker(Database, NamesChecker(['search']))
+defineChecker(RapidoApplication, NamesChecker(['search']))

@@ -15,7 +15,7 @@ Soup Creation
     >>> import rapido.core.tests
     >>> XMLConfig("configure.zcml", rapido.core.tests)()
 
-    >>> from rapido.core.interfaces import IDatabase
+    >>> from rapido.core.interfaces import IRapidoApplication
 
 Create object which can store soup data::
 
@@ -24,10 +24,10 @@ Create object which can store soup data::
 
 Create a persistent object that will be adapted as a rapido db::
     
-    >>> from rapido.core.tests.base import SimpleDatabase
-    >>> root['mydb'] = SimpleDatabase(1, root)
+    >>> from rapido.core.tests.base import SimpleRapidoApplication
+    >>> root['mydb'] = SimpleRapidoApplication(1, root)
     >>> db_obj = root['mydb']
-    >>> db = IDatabase(db_obj)
+    >>> db = IRapidoApplication(db_obj)
     >>> db.initialize()
 
 Create a document::
@@ -158,7 +158,7 @@ Fields can be computed on creation::
     True
 
 A rule allows to implement a given behaviour (an action to take when saving a doc,
-a validation formula for a field, etc.). Rules are defined at the database level
+a validation formula for a field, etc.). Rules are defined at the app level
 and can then be assigned to fields, forms or views.
     >>> db.set_rule('polite', {'code': """
     ... def on_save(context):
@@ -197,13 +197,13 @@ Access rights
     >>> doc_6.id
     'doc_6'
 
-Database design can be exported
+RapidoApplication design can be exported
     >>> from rapido.core.interfaces import IExporter
     >>> exporter = IExporter(db)
-    >>> exporter.export_database()
+    >>> exporter.export_app()
     {'forms': {'frmBook': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': 'assigned_rules: [polite]\nfields:\n  author: {index_type: text, type: TEXT}\n  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}\n  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}\nid: frmBook\ntitle: Book form\n', 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}}, 'settings.yaml': 'acl:\n  rights:\n    author: [FamousDiscoverers]\n    editor: []\n    manager: [admin]\n    reader: []\n  roles: {}\n'}
 
-Database can exported to the file system
+RapidoApplication can exported to the file system
     >>> import os
     >>> dir, _f = os.path.split(os.path.abspath(__file__))
     >>> exporter.export_to_fs(os.path.join(dir, 'tests', 'testdb'))
@@ -212,18 +212,18 @@ Database can exported to the file system
     >>> "".join(open(os.path.join(dir, 'tests', 'testdb', 'forms', 'frmBook', 'frmBook.html')).readlines())
     'Author: <span data-rapido-field="author">author</span>'
 
-Database design can be imported
-    >>> root['newdb'] = SimpleDatabase(2, root)
+RapidoApplication design can be imported
+    >>> root['newdb'] = SimpleRapidoApplication(2, root)
     >>> newdb_obj = root['newdb']
-    >>> newdb = IDatabase(newdb_obj)
+    >>> newdb = IRapidoApplication(newdb_obj)
     >>> newdb.initialize()
     >>> from rapido.core.interfaces import IImporter
     >>> importer = IImporter(newdb)
-    >>> importer.import_database({'forms': {'frmBook': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': 'assigned_rules: [polite]\nfields:\n  author: {index_type: text, type: TEXT}\n  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}\n  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}\nid: frmBook\ntitle: Book form\n', 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}}, 'settings.yaml': 'acl:\n  rights:\n    author: [FamousDiscoverers]\n    editor: []\n    manager: [admin]\n    reader: []\n  roles: {}\n'})
+    >>> importer.import_app({'forms': {'frmBook': {'frmBook.py': "\ndef forever(context):\n    return 'I will never change.'", 'frmBook.yaml': 'assigned_rules: [polite]\nfields:\n  author: {index_type: text, type: TEXT}\n  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}\n  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}\nid: frmBook\ntitle: Book form\n', 'frmBook.html': 'Author: <span data-rapido-field="author">author</span>'}}, 'settings.yaml': 'acl:\n  rights:\n    author: [FamousDiscoverers]\n    editor: []\n    manager: [admin]\n    reader: []\n  roles: {}\n'})
     >>> newdb.get_form('frmBook').title
     'Book form'
 
-Database can imported from the file system
+RapidoApplication can imported from the file system
     >>> open(os.path.join(dir, 'tests', 'testdb', 'forms', 'frmBook', 'frmBook.html'), 'w').write("""Author: <span data-rapido-field="author">author</span><footer>Powered by Rapido</footer>""")
     >>> importer.import_from_fs(os.path.join(dir, 'tests', 'testdb'))
     >>> newdb.get_form('frmBook').layout

@@ -26,7 +26,7 @@ class RuleAssignee:
             if annotation.has_key('compiled_' + rule_id + '_code'):
                 del annotation['compiled_' + rule_id + '_code']
         else:
-            db = self.database
+            db = self.app
             rule = db.rules().get(rule_id)
             if not rule:
                 return

@@ -1,9 +1,9 @@
 <configure xmlns="http://namespaces.zope.org/zope">
 
   <adapter
-    for=".interfaces.IDatabasable"
-    provides=".interfaces.IDatabase"
-    factory=".database.Database"
+    for=".interfaces.IRapidable"
+    provides=".interfaces.IRapidoApplication"
+    factory=".app.RapidoApplication"
   />
 
   <adapter

@@ -12,7 +12,7 @@ class Importer:
     def __init__(self, context):
         self.context = context
 
-    def import_database(self, data):
+    def import_app(self, data):
         db = self.context
         if 'settings.yaml' in data:
             db.annotation['acl'] = yaml.load(data['settings.yaml']).get('acl', None)
@@ -46,7 +46,7 @@ class Importer:
                         data[dirname][name] = "".join(codecs.open(path, 'r', 'utf-8').readlines())
             else:
                 data[name] = "".join(codecs.open(path, 'r', 'utf-8').readlines())
-        self.import_database(data)
+        self.import_app(data)
 
 class Exporter:
     implements(IExporter)
@@ -54,7 +54,7 @@ class Exporter:
     def __init__(self, context):
         self.context = context
 
-    def export_database(self):
+    def export_app(self):
         data = {}
         dbsettings = {
             'acl': self.context.annotation['acl'],
@@ -82,7 +82,7 @@ class Exporter:
     def export_to_fs(self, export_to):
         if not os.path.isdir(export_to):
             os.makedirs(export_to)
-        data = self.export_database()
+        data = self.export_app()
         file_list = []
         for name in data.keys():
             path = os.path.join(export_to, name)
