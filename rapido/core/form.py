@@ -134,7 +134,10 @@ class Form(FormulaContainer, RuleAssignee):
         values = FieldDict(self, doc, edit)
         return string.Formatter().vformat(layout, (), values)
 
-    def compute_field(self, field_id, context=None):
+    def compute_field(self, field_id, extra_context={}):
+        context = self.app.app_context
+        for key in extra_context:
+            setattr(context, key, extra_context[key])
         return self.execute(field_id, context)
 
     def on_save(self, doc):

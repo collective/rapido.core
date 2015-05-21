@@ -15,6 +15,7 @@ class RapidoApplication(Index):
 
     def __init__(self, context):
         self.context = context
+        self.app_context = context.context
 
     def initialize(self):
         acl = self.acl
@@ -94,3 +95,9 @@ class RapidoApplication(Index):
             data["forms"].append({"id": form.id, "title": form.title})
         return data
 
+
+class Context(object):
+    """ bunch of useful objects provided by an IRapidable
+    """
+
+    pass

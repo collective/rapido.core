@@ -68,7 +68,8 @@ class Document(object):
         for (field, params) in form.fields.items():
             if (params.get('mode') == 'COMPUTED_ON_SAVE' or 
                 (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
-                self.set_item(field, form.compute_field(field, context=self))
+                self.set_item(
+                    field, form.compute_field(field, {'document': self}))
 
         # compute id if doc creation
         if creation:
@@ -80,14 +81,13 @@ class Document(object):
         form.on_save(self)
 
         # compute title
-        title = form.compute_field('title', context=self)
+        title = form.compute_field('title', {'document': self})
         if not title:
             title = form.title
         self.set_item('title', title)
-        
+
         self.reindex()
 
     def display(self, edit=False):
         if self.form:
             return self.form.display(doc=self, edit=edit)
-
