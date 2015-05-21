@@ -13,13 +13,13 @@ class Importer:
         self.context = context
 
     def import_app(self, data):
-        db = self.context
+        app = self.context
         if 'settings.yaml' in data:
-            db.annotation['acl'] = yaml.load(data['settings.yaml']).get('acl', None)
+            app.annotation['acl'] = yaml.load(data['settings.yaml']).get('acl', None)
 
         if 'forms' in data:
             for (form_id, form_data) in data['forms'].items():
-                db.context.create_form(
+                app.context.create_form(
                     yaml.load(form_data[form_id+'.yaml']),
                     form_data[form_id+'.py'],
                     form_data[form_id+'.html'],
@@ -56,10 +56,10 @@ class Exporter:
 
     def export_app(self):
         data = {}
-        dbsettings = {
+        appsettings = {
             'acl': self.context.annotation['acl'],
         }
-        data['settings.yaml'] = yaml.dump(dbsettings)
+        data['settings.yaml'] = yaml.dump(appsettings)
 
         forms = {}
         for form in self.context.forms:

@@ -16,11 +16,19 @@ class BaseField(object):
         else:
             return self.read_template.format(id=self.id, value=field_value)
 
+
+class BasicField(BaseField):
+
+    read_template = """{value}"""
+    edit_template = """{value}"""
+
+
 class TextField(BaseField):
 
     read_template = """{value}"""
     edit_template = """<input type="text" class="text-widget textline-field"
         name="{id}" value="{value}" />"""
+
 
 class DatetimeField(BaseField):
 

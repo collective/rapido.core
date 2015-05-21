@@ -1,6 +1,6 @@
 from zope.interface import implements, alsoProvides, implementer, Interface
 from node.base import BaseNode
-from node.ext.zodb import OOBTNode
+from node.ext.zoapp import OOBTNode
 from zope.annotation.interfaces import IAttributeAnnotatable
 from rapido.core.interfaces import IRapidable, IFormable, IForm
 

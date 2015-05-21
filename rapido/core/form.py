@@ -8,11 +8,13 @@ from .formula import FormulaContainer
 from .rules import RuleAssignee
 
 FIELD_TYPE_MAPPING = {
+    'BASIC': 'string',
     'TEXT': 'string',
     'NUMBER': 'number',
     'DATETIME': 'string',
 }
 FIELD_WIDGET_MAPPING = {
+    'BASIC': 'text',
     'TEXT': 'text',
     'NUMBER': 'number',
     'DATETIME': 'text',
@@ -75,9 +77,9 @@ class Form(FormulaContainer, RuleAssignee):
     """
     implements(IForm)
 
-    def __init__(self, id, db):
+    def __init__(self, id, app):
         self.id = id
-        self._db = db
+        self._app = app
         self.settings = DEFAULT_SETTINGS.copy()
         settings = yaml.load(self.app.context.get_form(id))
         self.settings.update(settings)
@@ -116,7 +118,7 @@ class Form(FormulaContainer, RuleAssignee):
 
     @property
     def app(self):
-        return self._db
+        return self._app
 
     @property
     def url(self):

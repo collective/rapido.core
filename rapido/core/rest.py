@@ -9,27 +9,27 @@ class Rest:
 
     def __init__(self, context):
         self.context = context
-        self.db = self.context
+        self.app = self.context
 
     def GET(self, path, body):
         # body will be always empty
         try:
             if path[0] == "app":
-                return self.db.json()
+                return self.app.json()
 
             if path[0] == "form":
                 formid = path[1]
-                form = self.db.get_form(formid)
+                form = self.app.get_form(formid)
                 if not form:
                     raise NotFound()
                 return form.json()
 
             if path[0] == "documents":
-                return [doc.items() for doc in self.db._documents()]
+                return [doc.items() for doc in self.app._documents()]
 
             if path[0] == "document":
                 docid = path[1]
-                doc = self.db.get_document(docid)
+                doc = self.app.get_document(docid)
                 if not doc:
                     raise NotFound()
                 if len(path) == 2:
@@ -44,13 +44,13 @@ class Rest:
     def POST(self, path, body):
         try:
             if path[0] == "_create":
-                doc = self.db.create_document()
+                doc = self.app.create_document()
                 items = json.loads(body)
                 doc.save(items, creation=True)
                 return {'success': 'created', 'model': doc.items()}
             else:
                 docid = path[1]
-                doc = self.db.get_document(docid)
+                doc = self.app.get_document(docid)
                 if not doc:
                     raise NotFound()
                 items = json.loads(body)
@@ -63,7 +63,7 @@ class Rest:
 
     def PUT(self, path, body):
         try:
-            doc = self.db.create_document()
+            doc = self.app.create_document()
             items = json.loads(body)
             doc.save(items, creation=True)
             return {'success': 'created', 'model': doc.items()}
@@ -73,7 +73,7 @@ class Rest:
     def PATCH(self, path, body):
         try:
             docid = path[0]
-            doc = self.db.get_document(docid)
+            doc = self.app.get_document(docid)
             if not doc:
                 raise NotFound()
             items = json.loads(body)
