@@ -11,10 +11,19 @@ class BaseField(object):
             field_value = self.form.compute_field(self.id, {'form': self.form})
         if not field_value:
             field_value = ''
+        label = self.settings.get('label', self.id)
         if edit:
-            return self.edit_template.format(id=self.id, value=field_value)
+            return self.edit_template.format(
+                id=self.id,
+                value=field_value,
+                label=label,
+            )
         else:
-            return self.read_template.format(id=self.id, value=field_value)
+            return self.read_template.format(
+                id=self.id,
+                value=field_value,
+                label=label,
+            )
 
 
 class BasicField(BaseField):
@@ -26,13 +35,25 @@ class BasicField(BaseField):
 class TextField(BaseField):
 
     read_template = """{value}"""
-    edit_template = """<input type="text" class="text-widget textline-field"
+    edit_template = """<input type="text"
         name="{id}" value="{value}" />"""
+
+
+class ActionField(BaseField):
+
+    template = """<input type="submit"
+        name="action.{id}" value="{label}" />"""
+
+    def render(self, doc=None, edit=False):
+        label = self.settings.get('label', self.id)
+        return self.template.format(
+            id=self.id,
+            label=label,
+        )
 
 
 class DatetimeField(BaseField):
 
     read_template = """{value}"""
-    edit_template = """<input type="date" class="text-widget textline-field"
+    edit_template = """<input type="date"
         name="{id}" value="{value}" />"""
-

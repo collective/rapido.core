@@ -30,7 +30,7 @@ FORM_TEMPLATE = """<form
     name="{_form_name}"
     class="{_form_classes}"
     action="{_form_action}"
-    method="{_form_method}">%s</form>
+    method="POST">%s</form>
 """
 
 
@@ -42,8 +42,7 @@ class FieldDict(dict):
         doc=None,
         edit=True,
         action=None,
-        classes=[],
-        method="POST"
+        classes=[]
     ):
         self.form = form
         self.doc = doc
@@ -55,7 +54,6 @@ class FieldDict(dict):
             '_form_name': form.id,
             '_form_action': action,
             '_form_classes': classes,
-            '_form_method': method,
         }
 
     def __getitem__(self, key):
@@ -131,7 +129,11 @@ class Form(FormulaContainer, RuleAssignee):
         if not self.layout:
             return ""
         layout = FORM_TEMPLATE % self.layout
-        values = FieldDict(self, doc, edit)
+        classes = []
+        target = self.settings.get('target', None)
+        if target:
+            classes.append('rapido-target-%s' % target)
+        values = FieldDict(self, doc, edit, classes=classes)
         return string.Formatter().vformat(layout, (), values)
 
     def compute_field(self, field_id, extra_context={}):
