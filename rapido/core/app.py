@@ -33,6 +33,22 @@ class RapidoApplication(Index):
     def url(self):
         return self.context.url()
 
+    def process(self, method, directive, obj_id, action):
+        if directive == "form":
+            form = self.get_form(obj_id)
+            if method == "POST":
+                # execute submitted actions
+                actions = [key for key in self.app_context.request.keys()
+                    if key.startswith("action.")]
+                for id in actions:
+                    field_id = id[7:]
+                    if form.fields.get(field_id, None):
+                        form.compute_field(field_id, {'form': form})
+            result = form.display(edit=True)
+        else:
+            result = "Unknown directive"
+        return result
+
     @acl_check('create_document')
     def create_document(self, docid=None):
         record = self.storage.create()
