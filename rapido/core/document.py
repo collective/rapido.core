@@ -2,6 +2,7 @@ from zope.interface import implements
 
 from .interfaces import IDocument
 
+
 class Document(object):
     implements(IDocument)
 
@@ -11,7 +12,10 @@ class Document(object):
         self.id = self.context.get_item('docid')
         self.app = self.context.app
         form_id = self.get_item('Form')
-        self.form = self.app.get_form(form_id)
+        if form_id:
+            self.form = self.app.get_form(form_id)
+        else:
+            self.form = None
 
     @property
     def url(self):
@@ -19,14 +23,14 @@ class Document(object):
             self.app.url,
             "document",
             str(self.id),
-            ])
+        ])
 
     @property
     def title(self):
         return self.get_item('title')
 
     def set_item(self, name, value):
-        if name=="docid":
+        if name == "docid":
             # make sure id is unique
             duplicate = self.app.get_document(value)
             if duplicate and duplicate.uid != self.uid:
@@ -66,7 +70,7 @@ class Document(object):
 
         # compute fields
         for (field, params) in form.fields.items():
-            if (params.get('mode') == 'COMPUTED_ON_SAVE' or 
+            if (params.get('mode') == 'COMPUTED_ON_SAVE' or
                 (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
                 self.set_item(
                     field, form.compute_field(field, {'document': self}))

@@ -54,22 +54,22 @@ class AccessControlList:
 
     def __init__(self, context):
         self.context = context
-        if 'acl' not in self.context.annotation:
-            self.context.annotation['acl'] = {
+        if 'acl' not in self.context.settings:
+            self.context.settings['acl'] = {
                 'rights': {
                     'reader': [],
                     'author': [],
                     'editor': [],
                     'manager': [self.current_user()],
-                    },
+                },
                 'roles': {},
             }
 
     def allowed_as(self, access_right):
-        return self.context.annotation['acl']['rights'][access_right]
+        return self.context.settings['acl']['rights'][access_right]
 
     def roles(self):
-        return self.context.annotation['acl']['roles']
+        return self.context.settings['acl']['roles']
 
     def current_user(self):
         return self.context.context.current_user()
@@ -87,7 +87,7 @@ class AccessControlList:
             return False
 
     def has_permission(self, permission):
-        for access_right in self.context.annotation['acl']['rights']:
+        for access_right in self.context.settings['acl']['rights']:
             if self.has_access_right(access_right):
                 if permission in ACCESS_RIGHTS_PERMISSIONS[access_right]:
                     return True
@@ -95,4 +95,4 @@ class AccessControlList:
 
     @acl_check('modify_acl')
     def grant_access(self, users_or_groups, access_right):
-        self.context.annotation['acl']['rights'][access_right] = users_or_groups
+        self.context.settings['acl']['rights'][access_right] = users_or_groups

@@ -1,9 +1,11 @@
 from zope.interface import implements
 
 from interfaces import (
-    IRapidoApplication, IStorage, IDocument, IACLable,
+    IRapidable, IRapidoApplication, IStorage, IDocument, IACLable,
     IAccessControlList, IExportable, IImportable, IRestable)
 from index import Index
+from pyaml import yaml
+
 from .form import Form
 from .security import acl_check
 
@@ -11,11 +13,12 @@ from .security import acl_check
 class RapidoApplication(Index):
     """
     """
-    implements(IRapidoApplication, IACLable, IExportable, IImportable, IRestable)
+    implements(IRapidoApplication, IRapidable, IACLable, IExportable, IImportable, IRestable)
 
     def __init__(self, context):
         self.context = context
         self.app_context = context.context
+        self.settings = yaml.load(self.context.get_settings())
 
     def initialize(self):
         acl = self.acl
@@ -56,6 +59,7 @@ class RapidoApplication(Index):
         if not docid:
             docid = str(hash(record))
         doc.set_item('docid', docid)
+        doc.reindex()
         return doc
 
     def get_document(self, id):

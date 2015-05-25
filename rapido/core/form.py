@@ -138,6 +138,7 @@ class Form(FormulaContainer, RuleAssignee):
 
     def compute_field(self, field_id, extra_context={}):
         context = self.app.app_context
+        context.app = self.app
         for key in extra_context:
             setattr(context, key, extra_context[key])
         return self.execute(field_id, context)
