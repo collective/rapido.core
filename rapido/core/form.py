@@ -26,7 +26,7 @@ DEFAULT_SETTINGS = {
     'actions': {},
 }
 
-FORM_TEMPLATE = """<form
+FORM_TEMPLATE = u"""<form
     name="{_form_name}"
     class="{_form_classes}"
     action="{_form_action}"
