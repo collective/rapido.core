@@ -2,7 +2,7 @@ from zope.interface import implements
 
 from interfaces import (
     IRapidable, IRapidoApplication, IStorage, IDocument, IACLable,
-    IAccessControlList, IExportable, IImportable, IRestable)
+    IAccessControlList, IRestable)
 from index import Index
 from pyaml import yaml
 
@@ -13,7 +13,7 @@ from .security import acl_check
 class RapidoApplication(Index):
     """
     """
-    implements(IRapidoApplication, IRapidable, IACLable, IExportable, IImportable, IRestable)
+    implements(IRapidoApplication, IRapidable, IACLable, IRestable)
 
     def __init__(self, context):
         self.context = context

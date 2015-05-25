@@ -111,26 +111,6 @@ class IAccessControlList(Interface):
     """
 
 
-class IImportable(Interface):
-    """ Marker interface for importable
-    """
-
-
-class IImporter(Interface):
-    """ Importer
-    """
-
-
-class IExportable(Interface):
-    """ Marker interface for exportable
-    """
-
-
-class IExporter(Interface):
-    """ Exporter
-    """
-
-
 class IRestable(Interface):
     """ Marker interface for REST-able
     """

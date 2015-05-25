@@ -18,18 +18,6 @@
     factory=".security.AccessControlList"
   />
 
-  <adapter
-    for=".interfaces.IExportable"
-    provides=".interfaces.IExporter"
-    factory=".importexport.Exporter"
-  />
-
-  <adapter
-    for=".interfaces.IImportable"
-    provides=".interfaces.IImporter"
-    factory=".importexport.Importer"
-  />
-
   <subscriber
     for=".events.ICompilationErrorEvent"
     handler=".subscribers.on_compilation_error"
