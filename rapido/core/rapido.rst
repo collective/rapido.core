@@ -25,7 +25,7 @@ Create object which can store soup data::
 Create a persistent object that will be adapted as a rapido app::
     
     >>> from rapido.core.tests.base import SimpleRapidoApplication
-    >>> root['myapp'] = SimpleRapidoApplication(1, root)
+    >>> root['myapp'] = SimpleRapidoApplication("testdb", root)
     >>> app_obj = root['myapp']
     >>> app = IRapidoApplication(app_obj)
     >>> app.initialize()
@@ -54,33 +54,13 @@ A docid is always unique::
 We can use form to display documents::
 
     >>> from rapido.core.interfaces import IForm
-    >>> from rapido.core.tests.base import SimpleForm
-    >>> app_obj['frmBook'] = SimpleForm('frmBook', 'Book form')
-    >>> form = IForm(app_obj['frmBook'])
-    >>> form.set_field('author', {'type': 'TEXT'})
-    >>> form.set_layout("""Author: <span data-rapido-field="author">author</span>""")
+    >>> form = app.get_form('frmBook')
     >>> form.display(None, edit=True)
-    u'Author: <input type="text" class="text-widget textline-field" name="author" value=""/>'
+    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
     >>> form.display(doc)
-    'Author: Joseph Conrad'
+    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
     >>> form.display(doc, edit=True)
-    u'Author: <input type="text" class="text-widget textline-field" name="author" value="Joseph Conrad"/>'
-
-A form can contain some code::
-    >>> form = IForm(app_obj['frmBook'])
-    >>> form.set_code("""
-    ... # default value for the 'author' field
-    ... def author(context):
-    ...     return "Victor Hugo"
-    ...
-    ... # executed everytime we save a doc with this form
-    ... def on_save(context):
-    ...     author = context.get_item('author')
-    ...     context.set_item('author', author.upper())""")
-
-Default value is now 'Victor Hugo'::
-    >>> form.display(None, edit=True)
-    u'Author: <input type="text" class="text-widget textline-field" name="author" value="Victor Hugo"/>'
+    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
 
 After saving the doc, the author has been changed to uppercase::
     >>> doc.save({}, form=form)
@@ -90,24 +70,23 @@ After saving the doc, the author has been changed to uppercase::
 Documents can be searched::
     >>> [doc.get_item('author') for doc in app.search('docid=="doc_1"')]
     ['JOSEPH CONRAD']
-    >>> form.set_field('author', {'type': 'TEXT', 'index_type': 'field'})
     >>> [doc.get_item('author') for doc in app.search('author=="JOSEPH CONRAD"')]
     ['JOSEPH CONRAD']
-    >>> form.set_field('author', {'type': 'TEXT', 'index_type': 'text'})
     >>> [doc.get_item('author') for doc in app.search('"joseph" in author')]
     ['JOSEPH CONRAD']
 
 Documents can be deleted::
     >>> doc2 = app.create_document()
     >>> the_id = doc2.id
-    >>> app.delete_document(doc2)
+    >>> app.delete_document(doc=doc2)
     >>> app.get_document(the_id) is None
     True
 
 The doc id can be computed::
-    >>> form.set_code("""
+    >>> app_obj.set_fake_form_data('py', """
     ... def doc_id(context):
     ...     return 'my-id'""")
+    >>> form = app.get_form('frmBook')
     >>> doc2 = app.create_document()
     >>> doc2.save({'author': "John DosPassos"}, form=form, creation=True)
     >>> doc2.id
@@ -122,21 +101,23 @@ By default, the doc title is the form title::
     'Book form'
 
 But it can be computed::
-    >>> form.set_code("""
+    >>> app_obj.set_fake_form_data('py', """
     ... def title(context):
     ...     return context.get_item('author')""")
+    >>> form = app.get_form('frmBook')
     >>> doc.save({}, form=form)
     >>> doc.title
     'JOSEPH CONRAD'
 
 Fields can be computed on save::
     >>> form.set_field('famous_quote', {'type': 'TEXT', 'mode': 'COMPUTED_ON_SAVE'})
-    >>> form.set_code("""
+    >>> app_obj.set_fake_form_data('py', """
     ... def famous_quote(context):
     ...     existing = context.get_item('famous_quote')
     ...     if not existing:
     ...         return 'A good plan violently executed now is better than a perfect plan executed next week.'
     ...     return existing + " Or next week." """)
+    >>> form = app.get_form('frmBook')
     >>> doc.save({}, form=form)
     >>> doc.get_item('famous_quote')
     'A good plan violently executed now is better than a perfect plan executed next week.'
@@ -146,9 +127,10 @@ Fields can be computed on save::
 
 Fields can be computed on creation::
     >>> form.set_field('forever', {'type': 'TEXT', 'mode': 'COMPUTED_ON_CREATION'})
-    >>> form.set_code("""
+    >>> app_obj.set_fake_form_data('py', """
     ... def forever(context):
     ...     return 'I will never change.'""")
+    >>> form = app.get_form('frmBook')
     >>> doc4 = app.create_document()
     >>> doc4.save({}, form=form, creation=True)
     >>> doc4.get_item('forever')

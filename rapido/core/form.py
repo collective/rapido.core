@@ -81,6 +81,10 @@ class Form(FormulaContainer, RuleAssignee):
         self.settings = DEFAULT_SETTINGS.copy()
         settings = yaml.load(self.app.context.get_form(id))
         self.settings.update(settings)
+        for field in self.settings['fields']:
+            if (self.settings['fields'][field].get('index_type', None)
+            and field not in app.indexes):
+                self.init_field(field)
 
     @property
     def title(self):
@@ -177,7 +181,7 @@ class Form(FormulaContainer, RuleAssignee):
             }
             field = {
                 'key': field_id,
-                'type': FIELD_WIDGET_MAPPING.get(settings['type'], 'TEXT'),
+                'type': FIELD_WIDGET_MAPPING.get(settings['type'], 'BASIC'),
             }
 
             # insert computed settings
