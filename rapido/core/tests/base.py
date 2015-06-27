@@ -6,8 +6,7 @@ from rapido.core.app import Context
 from rapido.core.interfaces import IRapidable
 
 FAKE = {
-    'yaml': """assigned_rules: [polite]
-fields:
+    'yaml': """fields:
   author:
     index_type: text
     type: TEXT

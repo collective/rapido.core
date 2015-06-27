@@ -1,7 +1,0 @@
-acl:
-  rights:
-    author: [FamousDiscoverers]
-    editor: []
-    manager: [admin]
-    reader: []
-  roles: {}

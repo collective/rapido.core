@@ -10,12 +10,9 @@ class PersistentCompiledProgram(CompiledProgram):
     The annotation must contain the source code in a dictionary entry named
     'code' or '<rule_id>_code'.
     """
-    def __init__(self, container, recompile=False, prefix=None):
-        code_id = 'code'
-        if prefix:
-            code_id = prefix + "_" + code_id
-        self.source = getattr(container, code_id, '')
-        compiled_code = getattr(container, 'compiled_' + code_id, None)
+    def __init__(self, container, recompile=False):
+        self.source = getattr(container, 'code', '')
+        compiled_code = getattr(container, 'compiled_code', None)
         if not recompile and compiled_code:
             self.code = marshal.loads(compiled_code)
         else:
@@ -23,40 +20,32 @@ class PersistentCompiledProgram(CompiledProgram):
                 self.source,
                 "%s.py" % container.id,
                 'exec')
-            setattr(container, 'compiled_' + code_id, marshal.dumps(self.code))
+            container.compiled_code = marshal.dumps(self.code)
 
 
 class FormulaContainer(object):
 
-    def compile(self, recompile=False, prefix=''):
-        compiled_code_id = '_%s_compiled_code' % prefix
-        executable_id = '_%s_executable' % prefix
+    def compile(self, recompile=False):
         try:
-            setattr(self, compiled_code_id, PersistentCompiledProgram(
+            self._compiled_code = PersistentCompiledProgram(
                 self,
-                recompile=recompile,
-                prefix=prefix)
-            )
+                recompile=recompile)
         except Exception, e:
-            setattr(self, compiled_code_id, None)
-            setattr(self, executable_id, None)
+            self._compiled_code = None
+            self._executable = None
             notify(CompilationErrorEvent(e, self))
             return
-        setattr(self, executable_id, {})
-        getattr(self, compiled_code_id).exec_(getattr(self, executable_id))
+        self._executable = {}
+        self._compiled_code.exec_(self._executable)
 
-    def _execute(self, prefix, func, *args, **kwargs):
-        executable_id = '_%s_executable' % prefix
-        if not hasattr(self, executable_id):
-            self.compile(prefix=prefix)
-        if func in getattr(self, executable_id):
+    def _execute(self, func, *args, **kwargs):
+        if not hasattr(self, '_executable'):
+            self.compile()
+        if func in self._executable:
             try:
-                return getattr(self, executable_id)[func](*args, **kwargs)
+                return self._executable[func](*args, **kwargs)
             except Exception, e:
                 notify(ExecutionErrorEvent(e, self))
 
     def execute(self, func, *args, **kwargs):
-        return self._execute('', func, *args, **kwargs)
-
-    def execute_rule(self, rule_id, func, *args, **kwargs):
-        return self._execute(rule_id, func, *args, **kwargs)
+        return self._execute(func, *args, **kwargs)

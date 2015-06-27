@@ -5,7 +5,6 @@ from pyaml import yaml
 from interfaces import IForm
 from .fields.utils import get_field_class
 from .formula import FormulaContainer
-from .rules import RuleAssignee
 
 FIELD_TYPE_MAPPING = {
     'BASIC': 'string',
@@ -22,7 +21,6 @@ FIELD_WIDGET_MAPPING = {
 DEFAULT_SETTINGS = {
     'title': "",
     'fields': {},
-    'assigned_rules': [],
     'actions': {},
 }
 
@@ -70,7 +68,7 @@ class FieldDict(dict):
             return "UNKNOWN FIELD TYPE"
 
 
-class Form(FormulaContainer, RuleAssignee):
+class Form(FormulaContainer):
     """
     """
     implements(IForm)
@@ -148,9 +146,6 @@ class Form(FormulaContainer, RuleAssignee):
         return self.execute(field_id, context)
 
     def on_save(self, doc):
-        result = None
-        for rule in self.settings['assigned_rules']:
-            result = self.execute_rule(rule, 'on_save', doc)
         result = self.execute('on_save', doc)
         return result
 

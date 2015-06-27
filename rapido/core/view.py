@@ -5,9 +5,9 @@ from persistent.dict import PersistentDict
 from interfaces import IView, IRapidoApplication
 from .app import ANNOTATION_KEY as KEY
 from .formula import FormulaContainer
-from .rules import RuleAssignee
 
-class View(FormulaContainer, RuleAssignee):
+
+class View(FormulaContainer):
     """
     """
     implements(IView)
@@ -20,7 +20,6 @@ class View(FormulaContainer, RuleAssignee):
             annotations[KEY] = PersistentDict({
                 'columns': [],
                 'code': "",
-                'assigned_rules': [],
             })
         self.annotation = annotations[KEY]
 
@@ -30,20 +29,20 @@ class View(FormulaContainer, RuleAssignee):
             return self.context.title
         else:
             return self.context.Title()
-    
+
     @property
     def columns(self):
         return self.annotation["columns"]
 
     def set_column(self, column_id, column_settings):
         self.annotation['columns'][column_id] = column_settings
-        self.app.create_index(field_id, field_settings['index_type'])
+        self.app.create_index(column_id, column_settings['index_type'])
 
     def remove_column(self, column_id):
         if self.annotation['columns'].get(column_id):
             del self.annotation['columns'][column_id]
-        #TODO: clean up index
-        
+        # TODO: clean up index
+
     @property
     def code(self):
         return self.annotation['code']

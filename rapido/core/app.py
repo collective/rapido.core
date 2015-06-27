@@ -93,22 +93,6 @@ class RapidoApplication(Index):
     def forms(self):
         return [self.get_form(id) for id in self.context.forms]
 
-    def rules(self):
-        return self.annotation['available_rules']
-
-    def set_rule(self, rule_id, rule_settings):
-        if 'available_rules' not in self.annotation:
-            self.annotation['available_rules'] = {}
-        self.annotation['available_rules'][rule_id] = rule_settings
-        for form in self.forms:
-            form.refresh_rule(rule_id)
-
-    def remove_rule(self, rule_id):
-        if self.annotation['available_rules'].get(rule_id):
-            del self.annotation['available_rules'][rule_id]
-        for form in self.forms:
-            form.remove_rule(rule_id)
-
     def json(self):
         data = {"forms": [], "views": []}
         for form in self.forms:
