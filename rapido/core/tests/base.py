@@ -8,9 +8,18 @@ from rapido.core.interfaces import IRapidable
 FAKE = {
     'yaml': """assigned_rules: [polite]
 fields:
-  author: {index_type: text, type: TEXT}
-  famous_quote: {mode: COMPUTED_ON_SAVE, type: TEXT}
-  forever: {mode: COMPUTED_ON_CREATION, type: TEXT}
+  author:
+    index_type: text
+    type: TEXT
+  famous_quote:
+    mode: COMPUTED_ON_SAVE
+    type: TEXT
+  forever:
+    mode: COMPUTED_ON_CREATION
+    type: TEXT
+  famous_quote:
+    type: TEXT
+    mode: COMPUTED_ON_SAVE
 id: frmBook
 title: Book form""",
 

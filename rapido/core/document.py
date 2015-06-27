@@ -53,20 +53,21 @@ class Document(object):
     def reindex(self):
         self.app.reindex(self)
 
-    def save(self, request, form=None, form_id=None, creation=False):
+    def save(self, request=None, form=None, form_id=None, creation=False):
         # Note: request might be a dict containing item values
-        if not(form or form_id or request.get('Form')):
+        if not(form or form_id or (request and request.get('Form'))):
             raise Exception("Cannot save without a form")
-        if not form_id:
+        if not form_id and request:
             form_id = request.get('Form')
         if not form:
             form = self.app.get_form(form_id)
         self.set_item('Form', form.id)
 
         # store submitted fields
-        for field in form.fields.keys():
-            if field in request.keys():
-                self.set_item(field, request.get(field))
+        if request:
+            for field in form.fields.keys():
+                if field in request.keys():
+                    self.set_item(field, request.get(field))
 
         # compute fields
         for (field, params) in form.fields.items():
