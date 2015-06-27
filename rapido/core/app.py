@@ -93,12 +93,6 @@ class RapidoApplication(Index):
     def forms(self):
         return [self.get_form(id) for id in self.context.forms]
 
-    def json(self):
-        data = {"forms": [], "views": []}
-        for form in self.forms:
-            data["forms"].append({"id": form.id, "title": form.title})
-        return data
-
 
 class Context(object):
     """ bunch of useful objects provided by an IRapidable
