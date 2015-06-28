@@ -52,6 +52,17 @@ class RapidoApplication(Index):
             result = "Unknown directive"
         return result
 
+    def json(self, method, request, directive, obj_id):
+        if directive == "form":
+            form = self.get_form(obj_id)
+            if method == "POST":
+                doc = self.create_document()
+                doc.save(request, form)
+                return {'success': True}
+        else:
+            result = {'error': "Unknown directive"}
+        return result
+
     @acl_check('create_document')
     def create_document(self, docid=None):
         record = self.storage.create()
