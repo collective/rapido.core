@@ -111,8 +111,11 @@ class Form(FormulaContainer):
     @property
     def code(self):
         if 'code' not in self.settings:
-            self.settings['code'] = self.app.context.get_form(
-                self.id, ftype="py")
+            try:
+                self.settings['code'] = self.app.context.get_form(
+                    self.id, ftype="py")
+            except KeyError:
+                self.settings['code'] = '# no code'
             self.compile(recompile=True)
         return self.settings['code']
 
