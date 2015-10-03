@@ -54,9 +54,19 @@ class Document(object):
         self.app.reindex(self)
 
     def save(self, request=None, form=None, form_id=None, creation=False):
-        # Note: request might be a dict containing item values
+        """ Update the document with the provided items.
+        Request can be an actual HTTP request or a dictionnary.
+        If a form is mentionned, formulas will be executed.
+        If no form (and request is a dict), we just save the items values.
+        """
         if not(form or form_id or (request and request.get('Form'))):
-            raise Exception("Cannot save without a form")
+            if type(request) is dict:
+                for (key, value) in request.items():
+                    self.set_item(key, value)
+                self.reindex()
+                return
+            else:
+                raise Exception("Cannot save without a form")
         if not form_id and request:
             form_id = request.get('Form')
         if not form:

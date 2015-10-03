@@ -146,7 +146,7 @@ Access rights
     >>> doc_5 = app.create_document(docid='doc_5')
     Traceback (most recent call last):
     ...
-    NotAllowed: create_document permission required
+    Unauthorized: create_document permission required
     >>> app_obj.set_fake_user("admin")
     >>> app.acl.grant_access(['marie.curie'], 'author')
     >>> app_obj.set_fake_user("marie.curie")
@@ -159,7 +159,7 @@ Access rights
     >>> doc_6 = app.create_document(docid='doc_6')
     Traceback (most recent call last):
     ...
-    NotAllowed: create_document permission required
+    Unauthorized: create_document permission required
     >>> app_obj.set_fake_groups(['FamousDiscoverers', 'FamousWomen'])
     >>> doc_6 = app.create_document(docid='doc_6')
     >>> doc_6.id

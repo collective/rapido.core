@@ -1,7 +1,7 @@
 from zope.interface import implements
 
 from .interfaces import IAccessControlList
-from .exceptions import NotAllowed
+from .exceptions import Unauthorized
 
 ACCESS_RIGHTS_PERMISSIONS = {
     'reader': [
@@ -43,7 +43,7 @@ class acl_check:
             if acl.has_permission(self.permission):
                 return f(*args, **kwds)
             else:
-                raise NotAllowed, "%s permission required" % self.permission
+                raise Unauthorized("%s permission required" % self.permission)
 
         newf.__doc__ = f.__doc__
         return newf

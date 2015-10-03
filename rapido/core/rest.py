@@ -4,6 +4,7 @@ from zope.interface import implements
 from .interfaces import IRest
 from .exceptions import NotAllowed, NotFound
 
+
 class Rest:
     implements(IRest)
 
@@ -14,7 +15,7 @@ class Rest:
     def GET(self, path, body):
         # body will be always empty
         try:
-            if path[0] == "app":
+            if not path:
                 return self.app.json()
 
             if path[0] == "form":
@@ -25,7 +26,12 @@ class Rest:
                 return form.json()
 
             if path[0] == "documents":
-                return [doc.items() for doc in self.app._documents()]
+                base_path = self.app.context.url(rest=True) + "/document/"
+                return [{
+                    'id': doc.id,
+                    'path': base_path + doc.id,
+                    'items': doc.items()
+                } for doc in self.app._documents()]
 
             if path[0] == "document":
                 docid = path[1]
@@ -38,46 +44,72 @@ class Rest:
                     return doc.form.json(doc)
         except IndexError:
             raise NotAllowed()
-        except Exception, e:
-            return {'error': str(e)}
 
     def POST(self, path, body):
         try:
-            if path[0] == "_create":
+            if len(path) == 0:
                 doc = self.app.create_document()
                 items = json.loads(body)
                 doc.save(items, creation=True)
-                return {'success': 'created', 'model': doc.items()}
-            else:
+                base_path = self.app.context.url(rest=True) + "/document/"
+                return {
+                    'success': 'created',
+                    'id': doc.id,
+                    'path': base_path + doc.id
+                }
+            elif path[0] == "document":
                 docid = path[1]
                 doc = self.app.get_document(docid)
                 if not doc:
                     raise NotFound()
                 items = json.loads(body)
                 doc.save(items)
-                data = {'success': 'updated', 'model': doc.items()}
+                return {'success': 'updated'}
+            else:
+                raise NotAllowed()
         except IndexError:
             raise NotAllowed()
-        except Exception, e:
-            return {'error': str(e)}
+
+    def DELETE(self, path, body):
+        try:
+            if path[0] != "document":
+                raise NotAllowed()
+            docid = path[1]
+            doc = self.app.get_document(docid)
+            if not doc:
+                raise NotFound()
+            self.app.delete_document(doc=doc)
+            return {'success': 'deleted'}
+        except IndexError:
+            raise NotAllowed()
 
     def PUT(self, path, body):
         try:
-            doc = self.app.create_document()
+            if path[0] != "document":
+                raise NotAllowed()
+            docid = path[1]
+            doc = self.app.create_document(docid=docid)
             items = json.loads(body)
             doc.save(items, creation=True)
-            return {'success': 'created', 'model': doc.items()}
-        except Exception, e:
-            return {'error': str(e)}
+            base_path = self.app.context.url(rest=True) + "/document/"
+            return {
+                'success': 'created',
+                'id': doc.id,
+                'path': base_path + doc.id
+            }
+        except IndexError:
+            raise NotAllowed()
 
     def PATCH(self, path, body):
         try:
+            if path[0] != "document":
+                raise NotAllowed()
             docid = path[0]
             doc = self.app.get_document(docid)
             if not doc:
                 raise NotFound()
             items = json.loads(body)
             doc.save(items)
-            data = {'success': 'updated', 'model': doc.items()}
-        except Exception, e:
-            return {'error': str(e)}
+            return {'success': 'updated'}
+        except IndexError:
+            raise NotAllowed()
