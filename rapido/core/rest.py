@@ -65,6 +65,15 @@ class Rest:
                 items = json.loads(body)
                 doc.save(items)
                 return {'success': 'updated'}
+            elif path[0] == "bulk":
+                rows = json.loads(body)
+                for row in rows:
+                    doc = self.app.create_document()
+                    doc.save(row, creation=True)
+                return {
+                    'success': 'created',
+                    'total': len(rows),
+                }
             else:
                 raise NotAllowed()
         except IndexError:
@@ -72,7 +81,11 @@ class Rest:
 
     def DELETE(self, path, body):
         try:
-            if path[0] != "document":
+            if path[0] == "documents":
+                for doc in self.app.documents():
+                    self.app.delete_document(doc=doc)
+                return {'success': 'deleted'}
+            elif path[0] != "document":
                 raise NotAllowed()
             docid = path[1]
             doc = self.app.get_document(docid)
