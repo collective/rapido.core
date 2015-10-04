@@ -23,7 +23,7 @@ class Rest:
                 form = self.app.get_form(formid)
                 if not form:
                     raise NotFound()
-                return form.json()
+                return form.settings
 
             if path[0] == "documents":
                 base_path = self.app.context.url(rest=True) + "/document/"
@@ -65,7 +65,7 @@ class Rest:
                 items = json.loads(body)
                 doc.save(items)
                 return {'success': 'updated'}
-            elif path[0] == "bulk":
+            elif path[0] == "documents":
                 rows = json.loads(body)
                 for row in rows:
                     doc = self.app.create_document()
@@ -74,6 +74,19 @@ class Rest:
                     'success': 'created',
                     'total': len(rows),
                 }
+            elif path[0] == "search":
+                params = json.loads(body)
+                results = self.app.search(
+                    params.get("query"),
+                    sort_index=params.get("sort_index"),
+                    reverse=params.get("reverse")
+                )
+                base_path = self.app.context.url(rest=True) + "/document/"
+                return [{
+                    'id': doc.id,
+                    'path': base_path + doc.id,
+                    'items': doc.items()
+                } for doc in results]
             else:
                 raise NotAllowed()
         except IndexError:
