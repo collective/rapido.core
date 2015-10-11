@@ -1,6 +1,11 @@
 rapido.core
 ===========
 
+|travisstatus|_
+
+.. |travisstatus| image:: https://secure.travis-ci.org/plomino/rapido.core.png?branch=master
+.. _travisstatus:  http://travis-ci.org/plomino/rapido.core
+
 rapido.core allows to run a Rapido application.
 
 rapido.core can run different ZODB-enabled servers (Zope/Plone or Pyramid).
