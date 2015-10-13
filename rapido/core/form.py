@@ -37,9 +37,9 @@ class FieldDict(dict):
     def __init__(
         self,
         form,
+        action,
         doc=None,
         edit=True,
-        action=None,
         classes=[]
     ):
         self.form = form
@@ -134,11 +134,15 @@ class Form(FormulaContainer):
         if not self.layout:
             return ""
         layout = FORM_TEMPLATE % self.layout
+        if doc:
+            action = doc.url
+        else:
+            action = self.url
         classes = []
         target = self.settings.get('target', None)
         if target:
             classes.append('rapido-target-%s' % target)
-        values = FieldDict(self, doc, edit, classes=classes)
+        values = FieldDict(self, action, doc, edit, classes=classes)
         return string.Formatter().vformat(layout, (), values)
 
     def compute_field(self, field_id, extra_context={}):

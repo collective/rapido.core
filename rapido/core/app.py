@@ -37,20 +37,42 @@ class RapidoApplication(Index):
         return self.context.url()
 
     def process(self, method, directive, obj_id, action):
+        result = ""
+        redirect = ""
+        request = self.app_context.request
         if directive == "form":
             form = self.get_form(obj_id)
             if method == "POST":
                 # execute submitted actions
-                actions = [key for key in self.app_context.request.keys()
+                actions = [key for key in request.keys()
                     if key.startswith("action.")]
                 for id in actions:
                     field_id = id[7:]
                     if form.fields.get(field_id, None):
                         form.compute_field(field_id, {'form': form})
-            result = form.display(edit=True)
+                # create doc if special action _save
+                if request.get("_save"):
+                    doc = self.create_document()
+                    doc.save(request=request, form=form, creation=True)
+                    redirect = doc.url
+                else:
+                    result = form.display(edit=True)
+            else:
+                result = form.display(edit=True)
+        elif directive == "document":
+            doc = self.get_document(obj_id)
+            editmode = (action == "edit")
+            if method == "POST" and request.get("_save"):
+                doc.save(request=request)
+            if method == "POST" and request.get("_delete"):
+                self.delete_document(doc=doc)
+                # TODO: use on_delete to provide redirection
+                result = "deleted"
+            else:
+                result = doc.display(edit=editmode)
         else:
             result = "Unknown directive"
-        return result
+        return (result, redirect)
 
     def json(self):
         return self.settings

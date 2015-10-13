@@ -42,12 +42,16 @@ class TextField(BaseField):
 class ActionField(BaseField):
 
     template = """<input type="submit"
-        name="action.{id}" value="{label}" />"""
+        name="{id}" value="{label}" />"""
 
     def render(self, doc=None, edit=False):
+        if self.id.startswith('_'):
+            id = self.id
+        else:
+            id = "action." + self.id
         label = self.settings.get('label', self.id)
         return self.template.format(
-            id=self.id,
+            id=id,
             label=label,
         )
 

@@ -62,7 +62,8 @@ We can use form to display documents::
     >>> form.display(doc, edit=True)
     u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
 
-After saving the doc, the author has been changed to uppercase::
+After saving the doc, the `on_save` method is called. In our case, the author
+has been changed to uppercase::
     >>> doc.save(form=form)
     >>> doc.get_item('author')
     'JOSEPH CONRAD'
