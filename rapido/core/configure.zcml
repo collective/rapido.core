@@ -34,4 +34,10 @@
     factory=".rest.Rest"
   />
 
+  <adapter
+    for=".interfaces.IDisplayable"
+    provides=".interfaces.IDisplay"
+    factory=".display.Display"
+  />
+
 </configure>

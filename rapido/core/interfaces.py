@@ -119,3 +119,13 @@ class IRestable(Interface):
 class IRest(Interface):
     """ Rest features
     """
+
+
+class IDisplayable(Interface):
+    """ Marker interface for Display-able
+    """
+
+
+class IDisplay(Interface):
+    """ Display features
+    """
