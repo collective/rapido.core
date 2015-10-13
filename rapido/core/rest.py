@@ -22,7 +22,7 @@ class Rest:
                 formid = path[1]
                 form = self.app.get_form(formid)
                 if not form:
-                    raise NotFound()
+                    raise NotFound(formid)
                 return form.settings
 
             if path[0] == "documents":
@@ -37,7 +37,7 @@ class Rest:
                 docid = path[1]
                 doc = self.app.get_document(docid)
                 if not doc:
-                    raise NotFound()
+                    raise NotFound(docid)
                 if len(path) == 2:
                     return doc.items()
                 if len(path) == 3 and path[2] == "_full":
@@ -61,7 +61,7 @@ class Rest:
                 docid = path[1]
                 doc = self.app.get_document(docid)
                 if not doc:
-                    raise NotFound()
+                    raise NotFound(docid)
                 items = json.loads(body)
                 doc.save(items)
                 return {'success': 'updated'}
@@ -103,7 +103,7 @@ class Rest:
             docid = path[1]
             doc = self.app.get_document(docid)
             if not doc:
-                raise NotFound()
+                raise NotFound(docid)
             self.app.delete_document(doc=doc)
             return {'success': 'deleted'}
         except IndexError:
@@ -133,7 +133,7 @@ class Rest:
             docid = path[0]
             doc = self.app.get_document(docid)
             if not doc:
-                raise NotFound()
+                raise NotFound(docid)
             items = json.loads(body)
             doc.save(items)
             return {'success': 'updated'}
