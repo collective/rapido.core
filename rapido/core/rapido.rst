@@ -58,9 +58,9 @@ We can use form to display documents::
     >>> form.display(None, edit=True)
     u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
     >>> form.display(doc)
-    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
+    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/document/doc_1"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
     >>> form.display(doc, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
+    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/document/doc_1"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
 
 After saving the doc, the `on_save` method is called. In our case, the author
 has been changed to uppercase::
