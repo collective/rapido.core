@@ -4,9 +4,9 @@ class BaseField(object):
         self.settings = settings
         self.form = form
 
-    def render(self, doc=None, edit=False):
-        if doc:
-            field_value = doc.get_item(self.id)
+    def render(self, record=None, edit=False):
+        if record:
+            field_value = record.get_item(self.id)
         else:
             field_value = self.form.compute_field(self.id, {'form': self.form})
         if not field_value:
@@ -44,7 +44,7 @@ class ActionField(BaseField):
     template = """<input type="submit"
         name="{id}" value="{label}" />"""
 
-    def render(self, doc=None, edit=False):
+    def render(self, record=None, edit=False):
         if self.id.startswith('_'):
             id = self.id
         else:

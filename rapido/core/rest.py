@@ -25,51 +25,51 @@ class Rest:
                     raise NotFound(formid)
                 return form.settings
 
-            if path[0] == "documents":
-                base_path = self.app.context.url(rest=True) + "/document/"
+            if path[0] == "records":
+                base_path = self.app.context.url(rest=True) + "/record/"
                 return [{
-                    'id': doc.id,
-                    'path': base_path + doc.id,
-                    'items': doc.items()
-                } for doc in self.app._documents()]
+                    'id': record.id,
+                    'path': base_path + record.id,
+                    'items': record.items()
+                } for record in self.app._records()]
 
-            if path[0] == "document":
-                docid = path[1]
-                doc = self.app.get_document(docid)
-                if not doc:
-                    raise NotFound(docid)
+            if path[0] == "record":
+                id = path[1]
+                record = self.app.get_record(id)
+                if not record:
+                    raise NotFound(id)
                 if len(path) == 2:
-                    return doc.items()
+                    return record.items()
                 if len(path) == 3 and path[2] == "_full":
-                    return doc.form.json(doc)
+                    return record.form.json(record)
         except IndexError:
             raise NotAllowed()
 
     def POST(self, path, body):
         try:
             if len(path) == 0:
-                doc = self.app.create_document()
+                record = self.app.create_record()
                 items = json.loads(body)
-                doc.save(items, creation=True)
-                base_path = self.app.context.url(rest=True) + "/document/"
+                record.save(items, creation=True)
+                base_path = self.app.context.url(rest=True) + "/record/"
                 return {
                     'success': 'created',
-                    'id': doc.id,
-                    'path': base_path + doc.id
+                    'id': record.id,
+                    'path': base_path + record.id
                 }
-            elif path[0] == "document":
-                docid = path[1]
-                doc = self.app.get_document(docid)
-                if not doc:
-                    raise NotFound(docid)
+            elif path[0] == "record":
+                id = path[1]
+                record = self.app.get_record(id)
+                if not record:
+                    raise NotFound(id)
                 items = json.loads(body)
-                doc.save(items)
+                record.save(items)
                 return {'success': 'updated'}
-            elif path[0] == "documents":
+            elif path[0] == "records":
                 rows = json.loads(body)
                 for row in rows:
-                    doc = self.app.create_document()
-                    doc.save(row, creation=True)
+                    record = self.app.create_record()
+                    record.save(row, creation=True)
                 return {
                     'success': 'created',
                     'total': len(rows),
@@ -81,12 +81,12 @@ class Rest:
                     sort_index=params.get("sort_index"),
                     reverse=params.get("reverse")
                 )
-                base_path = self.app.context.url(rest=True) + "/document/"
+                base_path = self.app.context.url(rest=True) + "/record/"
                 return [{
-                    'id': doc.id,
-                    'path': base_path + doc.id,
-                    'items': doc.items()
-                } for doc in results]
+                    'id': record.id,
+                    'path': base_path + record.id,
+                    'items': record.items()
+                } for record in results]
             else:
                 raise NotAllowed()
         except IndexError:
@@ -94,48 +94,48 @@ class Rest:
 
     def DELETE(self, path, body):
         try:
-            if path[0] == "documents":
-                for doc in self.app.documents():
-                    self.app.delete_document(doc=doc)
+            if path[0] == "records":
+                for record in self.app.records():
+                    self.app.delete_record(record=record)
                 return {'success': 'deleted'}
-            elif path[0] != "document":
+            elif path[0] != "record":
                 raise NotAllowed()
-            docid = path[1]
-            doc = self.app.get_document(docid)
-            if not doc:
-                raise NotFound(docid)
-            self.app.delete_document(doc=doc)
+            id = path[1]
+            record = self.app.get_record(id)
+            if not record:
+                raise NotFound(id)
+            self.app.delete_record(record=record)
             return {'success': 'deleted'}
         except IndexError:
             raise NotAllowed()
 
     def PUT(self, path, body):
         try:
-            if path[0] != "document":
+            if path[0] != "record":
                 raise NotAllowed()
-            docid = path[1]
-            doc = self.app.create_document(docid=docid)
+            id = path[1]
+            record = self.app.create_record(id=id)
             items = json.loads(body)
-            doc.save(items, creation=True)
-            base_path = self.app.context.url(rest=True) + "/document/"
+            record.save(items, creation=True)
+            base_path = self.app.context.url(rest=True) + "/record/"
             return {
                 'success': 'created',
-                'id': doc.id,
-                'path': base_path + doc.id
+                'id': record.id,
+                'path': base_path + record.id
             }
         except IndexError:
             raise NotAllowed()
 
     def PATCH(self, path, body):
         try:
-            if path[0] != "document":
+            if path[0] != "record":
                 raise NotAllowed()
-            docid = path[0]
-            doc = self.app.get_document(docid)
-            if not doc:
-                raise NotFound(docid)
+            id = path[0]
+            record = self.app.get_record(id)
+            if not record:
+                raise NotFound(id)
             items = json.loads(body)
-            doc.save(items)
+            record.save(items)
             return {'success': 'updated'}
         except IndexError:
             raise NotAllowed()

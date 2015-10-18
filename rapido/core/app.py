@@ -1,7 +1,7 @@
 from zope.interface import implements
 
 from interfaces import (
-    IRapidable, IRapidoApplication, IStorage, IDocument, IACLable,
+    IRapidable, IRapidoApplication, IStorage, IRecord, IACLable,
     IAccessControlList, IRestable, IDisplayable)
 from index import Index
 from pyaml import yaml
@@ -40,39 +40,39 @@ class RapidoApplication(Index):
     def json(self):
         return self.settings
 
-    @acl_check('create_document')
-    def create_document(self, docid=None):
+    @acl_check('create_record')
+    def create_record(self, id=None):
         record = self.storage.create()
-        doc = IDocument(record)
-        if not docid:
-            docid = str(hash(record))
-        doc.set_item('docid', docid)
-        doc.reindex()
-        return doc
+        record = IRecord(record)
+        if not id:
+            id = str(hash(record))
+        record.set_item('id', id)
+        record.reindex()
+        return record
 
-    def get_document(self, id):
+    def get_record(self, id):
         if type(id) is int:
             record = self.storage.get(id)
             if record:
-                return IDocument(record)
+                return IRecord(record)
         elif type(id) is str:
-            search = self.search('docid=="%s"' % id)
+            search = self.search('id=="%s"' % id)
             if len(search) == 1:
                 return search[0]
 
-    @acl_check('delete_document')
-    def delete_document(self, docid=None, doc=None):
-        if not doc:
-            doc = self.get_document(docid)
-        if doc:
-            self.storage.delete(doc.context)
+    @acl_check('delete_record')
+    def delete_record(self, id=None, record=None):
+        if not record:
+            record = self.get_record(id)
+        if record:
+            self.storage.delete(record.context)
 
-    def _documents(self):
-        for record in self.storage.documents():
-            yield IDocument(record)
+    def _records(self):
+        for record in self.storage.records():
+            yield IRecord(record)
 
-    def documents(self):
-        return list(self._documents())
+    def records(self):
+        return list(self._records())
 
     def get_form(self, form_id):
         return Form(form_id, self)

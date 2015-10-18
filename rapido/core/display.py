@@ -29,12 +29,12 @@ class Display:
             if not form:
                 raise NotFound(obj_id)
             result = form.display(edit=True)
-        elif directive == "document":
-            doc = self.app.get_document(obj_id)
-            if not doc:
+        elif directive == "record":
+            record = self.app.get_record(obj_id)
+            if not record:
                 raise NotFound(obj_id)
             editmode = (action == "edit")
-            result = doc.display(edit=editmode)
+            result = record.display(edit=editmode)
         else:
             raise NotAllowed()
         return (result, redirect)
@@ -54,28 +54,28 @@ class Display:
                 field_id = id[7:]
                 if form.fields.get(field_id, None):
                     form.compute_field(field_id, {'form': form})
-            # create doc if special action _save
+            # create record if special action _save
             if request.get("_save"):
-                doc = self.app.create_document()
-                doc.save(request=request, form=form, creation=True)
-                redirect = doc.url
+                record = self.app.create_record()
+                record.save(request=request, form=form, creation=True)
+                redirect = record.url
             else:
                 result = form.display(edit=True)
-        elif directive == "document":
-            doc = self.app.get_document(obj_id)
-            if not doc:
+        elif directive == "record":
+            record = self.app.get_record(obj_id)
+            if not record:
                 raise NotFound(obj_id)
             editmode = (action == "edit")
             if request.get("_save"):
-                doc.save(request=request)
+                record.save(request=request)
             if request.get("_edit"):
-                doc.save(request=request)
+                record.save(request=request)
             if request.get("_delete"):
-                self.app.delete_document(doc=doc)
+                self.app.delete_record(record=record)
                 # TODO: use on_delete to provide redirection
                 result = "deleted"
             else:
-                result = doc.display(edit=editmode)
+                result = record.display(edit=editmode)
         else:
             raise NotAllowed()
         return (result, redirect)

@@ -8,8 +8,8 @@
 
   <adapter
     for=".interfaces.IRecordable"
-    provides=".interfaces.IDocument"
-    factory=".document.Document"
+    provides=".interfaces.IRecord"
+    factory=".record.Record"
   />
 
   <adapter

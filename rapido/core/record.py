@@ -1,15 +1,15 @@
 from zope.interface import implements
 
-from .interfaces import IDocument
+from .interfaces import IRecord
 
 
-class Document(object):
-    implements(IDocument)
+class Record(object):
+    implements(IRecord)
 
     def __init__(self, context):
         self.context = context
         self.uid = self.context.uid()
-        self.id = self.context.get_item('docid')
+        self.id = self.context.get_item('id')
         self.app = self.context.app
         form_id = self.get_item('Form')
         if form_id:
@@ -21,7 +21,7 @@ class Document(object):
     def url(self):
         return '/'.join([
             self.app.url,
-            "document",
+            "record",
             str(self.id),
         ])
 
@@ -30,9 +30,9 @@ class Document(object):
         return self.get_item('title')
 
     def set_item(self, name, value):
-        if name == "docid":
+        if name == "id":
             # make sure id is unique
-            duplicate = self.app.get_document(value)
+            duplicate = self.app.get_record(value)
             if duplicate and duplicate.uid != self.uid:
                 value = "%s-%s" % (value, str(hash(self.context)))
             self.id = value
@@ -54,7 +54,7 @@ class Document(object):
         self.app.reindex(self)
 
     def save(self, request=None, form=None, form_id=None, creation=False):
-        """ Update the document with the provided items.
+        """ Update the record with the provided items.
         Request can be an actual HTTP request or a dictionnary.
         If a form is mentionned, formulas will be executed.
         If no form (and request is a dict), we just save the items values.
@@ -84,19 +84,19 @@ class Document(object):
             if (params.get('mode') == 'COMPUTED_ON_SAVE' or
                 (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
                 self.set_item(
-                    field, form.compute_field(field, {'document': self}))
+                    field, form.compute_field(field, {'record': self}))
 
-        # compute id if doc creation
+        # compute id if record creation
         if creation:
-            docid = form.execute('doc_id', self)
-            if docid:
-                self.set_item('docid', docid)
+            id = form.execute('record_id', self)
+            if id:
+                self.set_item('id', id)
 
         # execute on_save
         form.on_save(self)
 
         # compute title
-        title = form.compute_field('title', {'document': self})
+        title = form.compute_field('title', {'record': self})
         if not title:
             title = form.title
         self.set_item('title', title)
@@ -105,4 +105,4 @@ class Document(object):
 
     def display(self, edit=False):
         if self.form:
-            return self.form.display(doc=self, edit=edit)
+            return self.form.display(record=self, edit=edit)

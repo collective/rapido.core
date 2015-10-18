@@ -30,99 +30,99 @@ Create a persistent object that will be adapted as a rapido app::
     >>> app = IRapidoApplication(app_obj)
     >>> app.initialize()
 
-Create a document::
+Create a record::
 
-    >>> doc = app.create_document(docid='doc_1')
-    >>> doc.id == 'doc_1'
+    >>> record = app.create_record(id='record_1')
+    >>> record.id == 'record_1'
     True
-    >>> uid = doc.uid
-    >>> doc.set_item('author', "Joseph Conrad")
-    >>> doc.set_item('book_tile', "Lord Jim")
-    >>> doc.get_item('author')
+    >>> uid = record.uid
+    >>> record.set_item('author', "Joseph Conrad")
+    >>> record.set_item('book_tile', "Lord Jim")
+    >>> record.get_item('author')
     'Joseph Conrad'
 
-Documents can be found by uid or by id::
-    >>> doc.reindex()
-    >>> app.get_document(uid).uid == app.get_document('doc_1').uid
+Records can be found by uid or by id::
+    >>> record.reindex()
+    >>> app.get_record(uid).uid == app.get_record('record_1').uid
     True
 
-A docid is always unique::
-    >>> doc_bis = app.create_document(docid='doc_1')
-    >>> doc_bis.id
-    'doc_1-...'
+A id is always unique::
+    >>> record_bis = app.create_record(id='record_1')
+    >>> record_bis.id
+    'record_1-...'
 
-We can use form to display documents::
+We can use form to display records::
 
     >>> from rapido.core.interfaces import IForm
     >>> form = app.get_form('frmBook')
     >>> form.display(None, edit=True)
     u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
-    >>> form.display(doc)
-    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/document/doc_1"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
-    >>> form.display(doc, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/document/doc_1"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
+    >>> form.display(record)
+    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/record/record_1"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
+    >>> form.display(record, edit=True)
+    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/record/record_1"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
 
-After saving the doc, the `on_save` method is called. In our case, the author
+After saving the record, the `on_save` method is called. In our case, the author
 has been changed to uppercase::
-    >>> doc.save(form=form)
-    >>> doc.get_item('author')
+    >>> record.save(form=form)
+    >>> record.get_item('author')
     'JOSEPH CONRAD'
 
-Documents can be searched::
-    >>> [doc.get_item('author') for doc in app.search('docid=="doc_1"')]
+Records can be searched::
+    >>> [record.get_item('author') for record in app.search('id=="record_1"')]
     ['JOSEPH CONRAD']
-    >>> [doc.get_item('author') for doc in app.search('author=="JOSEPH CONRAD"')]
+    >>> [record.get_item('author') for record in app.search('author=="JOSEPH CONRAD"')]
     ['JOSEPH CONRAD']
-    >>> [doc.get_item('author') for doc in app.search('"joseph" in author')]
+    >>> [record.get_item('author') for record in app.search('"joseph" in author')]
     ['JOSEPH CONRAD']
 
-Documents can be deleted::
-    >>> doc2 = app.create_document()
-    >>> the_id = doc2.id
-    >>> app.delete_document(doc=doc2)
-    >>> app.get_document(the_id) is None
+Records can be deleted::
+    >>> record2 = app.create_record()
+    >>> the_id = record2.id
+    >>> app.delete_record(record=record2)
+    >>> app.get_record(the_id) is None
     True
 
-The doc id can be computed::
+The record id can be computed::
     >>> app_obj.set_fake_form_data('py', """
-    ... def doc_id(context):
+    ... def record_id(context):
     ...     return 'my-id'""")
     >>> form = app.get_form('frmBook')
-    >>> doc2 = app.create_document()
-    >>> doc2.save({'author': "John DosPassos"}, form=form, creation=True)
-    >>> doc2.id
+    >>> record2 = app.create_record()
+    >>> record2.save({'author': "John DosPassos"}, form=form, creation=True)
+    >>> record2.id
     'my-id'
-    >>> doc3 = app.create_document()
-    >>> doc3.save({'author': "John DosPassos"}, form=form, creation=True)
-    >>> doc3.id
+    >>> record3 = app.create_record()
+    >>> record3.save({'author': "John DosPassos"}, form=form, creation=True)
+    >>> record3.id
     'my-id-...'
 
-By default, the doc title is the form title::
-    >>> doc.title
+By default, the record title is the form title::
+    >>> record.title
     'Book form'
 
 But it can be computed::
     >>> app_obj.set_fake_form_data('py', """
     ... def title(context):
-    ...     return context.document.get_item('author')""")
+    ...     return context.record.get_item('author')""")
     >>> form = app.get_form('frmBook')
-    >>> doc.save(form=form)
-    >>> doc.title
+    >>> record.save(form=form)
+    >>> record.title
     'JOSEPH CONRAD'
 
 Fields can be computed on save::
     >>> app_obj.set_fake_form_data('py', """
     ... def famous_quote(context):
-    ...     existing = context.document.get_item('famous_quote')
+    ...     existing = context.record.get_item('famous_quote')
     ...     if not existing:
     ...         return 'A good plan violently executed now is better than a perfect plan executed next week.'
     ...     return existing + " Or next week." """)
     >>> form = app.get_form('frmBook')
-    >>> doc.save(form=form)
-    >>> doc.get_item('famous_quote')
+    >>> record.save(form=form)
+    >>> record.get_item('famous_quote')
     'A good plan violently executed now is better than a perfect plan executed next week.'
-    >>> doc.save(form=form)
-    >>> doc.get_item('famous_quote')
+    >>> record.save(form=form)
+    >>> record.get_item('famous_quote')
     'A good plan violently executed now is better than a perfect plan executed next week. Or next week.'
 
 Fields can be computed on creation::
@@ -130,12 +130,12 @@ Fields can be computed on creation::
     ... def forever(context):
     ...     return 'I will never change.'""")
     >>> form = app.get_form('frmBook')
-    >>> doc4 = app.create_document()
-    >>> doc4.save(form=form, creation=True)
-    >>> doc4.get_item('forever')
+    >>> record4 = app.create_record()
+    >>> record4.save(form=form, creation=True)
+    >>> record4.get_item('forever')
     'I will never change.'
-    >>> doc.save(form=form)
-    >>> doc.get_item('forever') is None
+    >>> record.save(form=form)
+    >>> record.get_item('forever') is None
     True
 
 Access rights
@@ -144,24 +144,24 @@ Access rights
     'marie.curie'
     >>> app.acl.has_access_right("author")
     False
-    >>> doc_5 = app.create_document(docid='doc_5')
+    >>> record_5 = app.create_record(id='record_5')
     Traceback (most recent call last):
     ...
-    Unauthorized: create_document permission required
+    Unauthorized: create_record permission required
     >>> app_obj.set_fake_user("admin")
     >>> app.acl.grant_access(['marie.curie'], 'author')
     >>> app_obj.set_fake_user("marie.curie")
-    >>> doc_5 = app.create_document(docid='doc_5')
-    >>> doc_5.id
-    'doc_5'
+    >>> record_5 = app.create_record(id='record_5')
+    >>> record_5.id
+    'record_5'
     >>> app_obj.set_fake_user("admin")
     >>> app.acl.grant_access(['FamousDiscoverers'], 'author')
     >>> app_obj.set_fake_user("marie.curie")
-    >>> doc_6 = app.create_document(docid='doc_6')
+    >>> record_6 = app.create_record(id='record_6')
     Traceback (most recent call last):
     ...
-    Unauthorized: create_document permission required
+    Unauthorized: create_record permission required
     >>> app_obj.set_fake_groups(['FamousDiscoverers', 'FamousWomen'])
-    >>> doc_6 = app.create_document(docid='doc_6')
-    >>> doc_6.id
-    'doc_6'
+    >>> record_6 = app.create_record(id='record_6')
+    >>> record_6.id
+    'record_6'

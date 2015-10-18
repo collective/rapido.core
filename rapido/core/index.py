@@ -1,10 +1,10 @@
-from interfaces import IDocument
+from interfaces import IRecord
 
 
 class Index(object):
 
-    def reindex(self, doc):
-        self.storage.reindex(doc.context)
+    def reindex(self, record):
+        self.storage.reindex(record.context)
 
     def reindex_all(self, rebuild=False):
         if rebuild:
@@ -17,7 +17,7 @@ class Index(object):
                 query,
                 sort_index=sort_index,
                 reverse=reverse):
-            yield IDocument(record)
+            yield IRecord(record)
 
     def search(self, query, sort_index=None, reverse=False):
         return list(self._search(query, sort_index=sort_index,

@@ -30,7 +30,7 @@ def forever(context):
 def author(context):
     return "Victor Hugo"
 
-# executed everytime we save a doc with this form
+# executed everytime we save a record with this form
 def on_save(context):
     author = context.get_item('author')
     context.set_item('author', author.upper())""",

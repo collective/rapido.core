@@ -38,12 +38,12 @@ class FieldDict(dict):
         self,
         form,
         action,
-        doc=None,
+        record=None,
         edit=True,
         classes=[]
     ):
         self.form = form
-        self.doc = doc
+        self.record = record
         self.edit = edit
         if not action:
             action = self.form.url
@@ -63,7 +63,7 @@ class FieldDict(dict):
         constructor = get_field_class(field_settings['type'])
         if constructor:
             field = constructor(key, field_settings, self.form)
-            return field.render(self.doc, edit=self.edit)
+            return field.render(self.record, edit=self.edit)
         else:
             return "UNKNOWN FIELD TYPE"
 
@@ -130,19 +130,19 @@ class Form(FormulaContainer):
             self.id,
         )
 
-    def display(self, doc=None, edit=False):
+    def display(self, record=None, edit=False):
         if not self.layout:
             return ""
         layout = FORM_TEMPLATE % self.layout
-        if doc:
-            action = doc.url
+        if record:
+            action = record.url
         else:
             action = self.url
         classes = []
         target = self.settings.get('target', None)
         if target:
             classes.append('rapido-target-%s' % target)
-        values = FieldDict(self, action, doc, edit, classes=classes)
+        values = FieldDict(self, action, record, edit, classes=classes)
         return string.Formatter().vformat(layout, (), values)
 
     def compute_field(self, field_id, extra_context={}):
@@ -152,6 +152,6 @@ class Form(FormulaContainer):
             setattr(context, key, extra_context[key])
         return self.execute(field_id, context)
 
-    def on_save(self, doc):
-        result = self.execute('on_save', doc)
+    def on_save(self, record):
+        result = self.execute('on_save', record)
         return result

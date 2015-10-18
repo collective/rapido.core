@@ -25,11 +25,11 @@ It's probably better to have one .py file per form, rather than many small ones
 per formula. That also makes it tempting for such a .py file to have a shared
 section that is global to all the formulas in that file.
 
-Document storage
-----------------
+Record storage
+---------------
 
 Storage is not handled directly by rapido.core.
-By default, we use rapido.souper which allows to store documents in a soup.
+By default, we use rapido.souper which allows to store records in a soup.
 But a different storage could be implemented if needed.
 
 A separate storage mechanism will be needed for attached files.

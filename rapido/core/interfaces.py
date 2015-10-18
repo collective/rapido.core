@@ -27,13 +27,13 @@ class IRapidoApplication(Interface):
     """
 
 
-class IDocument(Interface):
-    """ A document
+class IRecord(Interface):
+    """ A record
     """
 
 
 class IRecordable(Interface):
-    """ A record containing a document
+    """ Something able to handle a record
     """
 
     def set_item(self, name, value):
@@ -73,7 +73,7 @@ class IView(Interface):
 
 
 class IStorage(Interface):
-    """ A storage service for Rapido documents
+    """ A storage service for Rapido records
     """
 
     def initialize(self):
@@ -81,23 +81,23 @@ class IStorage(Interface):
         """
 
     def create(self):
-        """ return a new document
+        """ return a new record
         """
 
     def get(self, uid=None):
-        """ return an existing document
+        """ return an existing record
         """
 
-    def save(self, doc):
-        """ save a document
+    def save(self, record):
+        """ save a record
         """
 
-    def delete(self, doc):
-        """ delete a document
+    def delete(self, record):
+        """ delete a record
         """
 
     def search(self, query):
-        """ search for documents
+        """ search for records
         """
 
 
