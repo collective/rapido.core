@@ -51,20 +51,20 @@ A id is always unique::
     >>> record_bis.id
     'record_1-...'
 
-We can use form to display records::
+We can use block to display records::
 
-    >>> from rapido.core.interfaces import IForm
-    >>> form = app.get_form('frmBook')
-    >>> form.display(None, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/form/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
-    >>> form.display(record)
-    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/record/record_1"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
-    >>> form.display(record, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-form"\n    action="http://here/record/record_1"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
+    >>> from rapido.core.interfaces import IBlock
+    >>> block = app.get_block('frmBook')
+    >>> block.display(None, edit=True)
+    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/block/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
+    >>> block.display(record)
+    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
+    >>> block.display(record, edit=True)
+    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
 
 After saving the record, the `on_save` method is called. In our case, the author
 has been changed to uppercase::
-    >>> record.save(form=form)
+    >>> record.save(block=block)
     >>> record.get_item('author')
     'JOSEPH CONRAD'
 
@@ -84,57 +84,57 @@ Records can be deleted::
     True
 
 The record id can be computed::
-    >>> app_obj.set_fake_form_data('py', """
+    >>> app_obj.set_fake_block_data('py', """
     ... def record_id(context):
     ...     return 'my-id'""")
-    >>> form = app.get_form('frmBook')
+    >>> block = app.get_block('frmBook')
     >>> record2 = app.create_record()
-    >>> record2.save({'author': "John DosPassos"}, form=form, creation=True)
+    >>> record2.save({'author': "John DosPassos"}, block=block, creation=True)
     >>> record2.id
     'my-id'
     >>> record3 = app.create_record()
-    >>> record3.save({'author': "John DosPassos"}, form=form, creation=True)
+    >>> record3.save({'author': "John DosPassos"}, block=block, creation=True)
     >>> record3.id
     'my-id-...'
 
-By default, the record title is the form title::
+By default, the record title is the block title::
     >>> record.title
-    'Book form'
+    'Book'
 
 But it can be computed::
-    >>> app_obj.set_fake_form_data('py', """
+    >>> app_obj.set_fake_block_data('py', """
     ... def title(context):
     ...     return context.record.get_item('author')""")
-    >>> form = app.get_form('frmBook')
-    >>> record.save(form=form)
+    >>> block = app.get_block('frmBook')
+    >>> record.save(block=block)
     >>> record.title
     'JOSEPH CONRAD'
 
 Fields can be computed on save::
-    >>> app_obj.set_fake_form_data('py', """
+    >>> app_obj.set_fake_block_data('py', """
     ... def famous_quote(context):
     ...     existing = context.record.get_item('famous_quote')
     ...     if not existing:
     ...         return 'A good plan violently executed now is better than a perfect plan executed next week.'
     ...     return existing + " Or next week." """)
-    >>> form = app.get_form('frmBook')
-    >>> record.save(form=form)
+    >>> block = app.get_block('frmBook')
+    >>> record.save(block=block)
     >>> record.get_item('famous_quote')
     'A good plan violently executed now is better than a perfect plan executed next week.'
-    >>> record.save(form=form)
+    >>> record.save(block=block)
     >>> record.get_item('famous_quote')
     'A good plan violently executed now is better than a perfect plan executed next week. Or next week.'
 
 Fields can be computed on creation::
-    >>> app_obj.set_fake_form_data('py', """
+    >>> app_obj.set_fake_block_data('py', """
     ... def forever(context):
     ...     return 'I will never change.'""")
-    >>> form = app.get_form('frmBook')
+    >>> block = app.get_block('frmBook')
     >>> record4 = app.create_record()
-    >>> record4.save(form=form, creation=True)
+    >>> record4.save(block=block, creation=True)
     >>> record4.get_item('forever')
     'I will never change.'
-    >>> record.save(form=form)
+    >>> record.save(block=block)
     >>> record.get_item('forever') is None
     True
 

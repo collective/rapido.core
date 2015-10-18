@@ -24,11 +24,11 @@ class Display:
         (directive, obj_id, action) = self._parse_path(path)
         result = ""
         redirect = ""
-        if directive == "form":
-            form = self.app.get_form(obj_id)
-            if not form:
+        if directive == "block":
+            block = self.app.get_block(obj_id)
+            if not block:
                 raise NotFound(obj_id)
-            result = form.display(edit=True)
+            result = block.display(edit=True)
         elif directive == "record":
             record = self.app.get_record(obj_id)
             if not record:
@@ -43,24 +43,24 @@ class Display:
         (directive, obj_id, action) = self._parse_path(path)
         result = ""
         redirect = ""
-        if directive == "form":
-            form = self.app.get_form(obj_id)
-            if not form:
+        if directive == "block":
+            block = self.app.get_block(obj_id)
+            if not block:
                 raise NotFound(obj_id)
             # execute submitted actions
             actions = [key for key in request.keys()
                 if key.startswith("action.")]
             for id in actions:
                 field_id = id[7:]
-                if form.fields.get(field_id, None):
-                    form.compute_field(field_id, {'form': form})
+                if block.fields.get(field_id, None):
+                    block.compute_field(field_id, {'block': block})
             # create record if special action _save
             if request.get("_save"):
                 record = self.app.create_record()
-                record.save(request=request, form=form, creation=True)
+                record.save(request=request, block=block, creation=True)
                 redirect = record.url
             else:
-                result = form.display(edit=True)
+                result = block.display(edit=True)
         elif directive == "record":
             record = self.app.get_record(obj_id)
             if not record:

@@ -11,11 +11,11 @@ class Record(object):
         self.uid = self.context.uid()
         self.id = self.context.get_item('id')
         self.app = self.context.app
-        form_id = self.get_item('Form')
-        if form_id:
-            self.form = self.app.get_form(form_id)
+        block_id = self.get_item('block')
+        if block_id:
+            self.block = self.app.get_block(block_id)
         else:
-            self.form = None
+            self.block = None
 
     @property
     def url(self):
@@ -53,56 +53,56 @@ class Record(object):
     def reindex(self):
         self.app.reindex(self)
 
-    def save(self, request=None, form=None, form_id=None, creation=False):
+    def save(self, request=None, block=None, block_id=None, creation=False):
         """ Update the record with the provided items.
         Request can be an actual HTTP request or a dictionnary.
-        If a form is mentionned, formulas will be executed.
-        If no form (and request is a dict), we just save the items values.
+        If a block is mentionned, formulas will be executed.
+        If no block (and request is a dict), we just save the items values.
         """
-        if not(form or form_id or (request and request.get('Form'))):
+        if not(block or block_id or (request and request.get('block'))):
             if type(request) is dict:
                 for (key, value) in request.items():
                     self.set_item(key, value)
                 self.reindex()
                 return
             else:
-                raise Exception("Cannot save without a form")
-        if not form_id and request:
-            form_id = request.get('Form')
-        if not form:
-            form = self.app.get_form(form_id)
-        self.set_item('Form', form.id)
+                raise Exception("Cannot save without a block")
+        if not block_id and request:
+            block_id = request.get('block')
+        if not block:
+            block = self.app.get_block(block_id)
+        self.set_item('block', block.id)
 
         # store submitted fields
         if request:
-            for field in form.fields.keys():
+            for field in block.fields.keys():
                 if field in request.keys():
                     self.set_item(field, request.get(field))
 
         # compute fields
-        for (field, params) in form.fields.items():
+        for (field, params) in block.fields.items():
             if (params.get('mode') == 'COMPUTED_ON_SAVE' or
                 (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
                 self.set_item(
-                    field, form.compute_field(field, {'record': self}))
+                    field, block.compute_field(field, {'record': self}))
 
         # compute id if record creation
         if creation:
-            id = form.execute('record_id', self)
+            id = block.execute('record_id', self)
             if id:
                 self.set_item('id', id)
 
         # execute on_save
-        form.on_save(self)
+        block.on_save(self)
 
         # compute title
-        title = form.compute_field('title', {'record': self})
+        title = block.compute_field('title', {'record': self})
         if not title:
-            title = form.title
+            title = block.title
         self.set_item('title', title)
 
         self.reindex()
 
     def display(self, edit=False):
-        if self.form:
-            return self.form.display(record=self, edit=edit)
+        if self.block:
+            return self.block.display(record=self, edit=edit)

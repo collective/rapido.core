@@ -5,15 +5,15 @@ class IRapidable(Interface):
     """ A persistent object that will support a Rapido application
     """
 
-    def get_form(self, formid):
-        """ return the form object
+    def get_block(self, blockid):
+        """ return the block object
         """
 
-    def get_forms(self):
-        """ return all the forms
+    def get_blocks(self):
+        """ return all the blocks
         """
 
-    def get_view(self, formid):
+    def get_view(self, blockid):
         """ return the view object
         """
 
@@ -57,8 +57,8 @@ class IRecordable(Interface):
         """
 
 
-class IForm(Interface):
-    """ A Rapido form
+class IBlock(Interface):
+    """ A Rapido block
     """
 
 

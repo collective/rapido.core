@@ -6,7 +6,7 @@ from interfaces import (
 from index import Index
 from pyaml import yaml
 
-from .form import Form
+from .block import Block
 from .security import acl_check
 
 
@@ -74,12 +74,12 @@ class RapidoApplication(Index):
     def records(self):
         return list(self._records())
 
-    def get_form(self, form_id):
-        return Form(form_id, self)
+    def get_block(self, block_id):
+        return Block(block_id, self)
 
     @property
-    def forms(self):
-        return [self.get_form(id) for id in self.context.forms]
+    def blocks(self):
+        return [self.get_block(id) for id in self.context.blocks]
 
 
 class Context(object):

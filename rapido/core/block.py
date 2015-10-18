@@ -2,7 +2,7 @@ import string
 from zope.interface import implements
 from pyaml import yaml
 
-from interfaces import IForm
+from interfaces import IBlock
 from .fields.utils import get_field_class
 from .formula import FormulaContainer
 
@@ -24,10 +24,10 @@ DEFAULT_SETTINGS = {
     'actions': {},
 }
 
-FORM_TEMPLATE = u"""<form
-    name="{_form_name}"
-    class="{_form_classes}"
-    action="{_form_action}"
+BLOCK_TEMPLATE = u"""<form
+    name="{_block_name}"
+    class="{_block_classes}"
+    action="{_block_action}"
     method="POST">%s</form>
 """
 
@@ -36,48 +36,48 @@ class FieldDict(dict):
 
     def __init__(
         self,
-        form,
+        block,
         action,
         record=None,
         edit=True,
         classes=[]
     ):
-        self.form = form
+        self.block = block
         self.record = record
         self.edit = edit
         if not action:
-            action = self.form.url
-        classes = ' '.join(["rapido-form"] + classes)
+            action = self.block.url
+        classes = ' '.join(["rapido-block"] + classes)
         self.params = {
-            '_form_name': form.id,
-            '_form_action': action,
-            '_form_classes': classes,
+            '_block_name': block.id,
+            '_block_action': action,
+            '_block_classes': classes,
         }
 
     def __getitem__(self, key):
         if key in self.params:
             return self.params[key]
-        field_settings = self.form.fields.get(key, None)
+        field_settings = self.block.fields.get(key, None)
         if not field_settings:
             return "UNDEFINED FIELD"
         constructor = get_field_class(field_settings['type'])
         if constructor:
-            field = constructor(key, field_settings, self.form)
+            field = constructor(key, field_settings, self.block)
             return field.render(self.record, edit=self.edit)
         else:
             return "UNKNOWN FIELD TYPE"
 
 
-class Form(FormulaContainer):
+class Block(FormulaContainer):
     """
     """
-    implements(IForm)
+    implements(IBlock)
 
     def __init__(self, id, app):
         self.id = id
         self._app = app
         self.settings = DEFAULT_SETTINGS.copy()
-        settings = yaml.load(self.app.context.get_form(id))
+        settings = yaml.load(self.app.context.get_block(id))
         self.settings.update(settings)
         for field in self.settings['fields']:
             if (self.settings['fields'][field].get('index_type', None)
@@ -91,7 +91,7 @@ class Form(FormulaContainer):
     @property
     def layout(self):
         if 'layout' not in self.settings:
-            self.settings['layout'] = self.app.context.get_form(
+            self.settings['layout'] = self.app.context.get_block(
                 self.id, ftype="html")
         return self.settings['layout']
 
@@ -112,7 +112,7 @@ class Form(FormulaContainer):
     def code(self):
         if 'code' not in self.settings:
             try:
-                self.settings['code'] = self.app.context.get_form(
+                self.settings['code'] = self.app.context.get_block(
                     self.id, ftype="py")
             except KeyError:
                 self.settings['code'] = '# no code'
@@ -125,7 +125,7 @@ class Form(FormulaContainer):
 
     @property
     def url(self):
-        return '%s/form/%s' % (
+        return '%s/block/%s' % (
             self.app.url,
             self.id,
         )
@@ -133,7 +133,7 @@ class Form(FormulaContainer):
     def display(self, record=None, edit=False):
         if not self.layout:
             return ""
-        layout = FORM_TEMPLATE % self.layout
+        layout = BLOCK_TEMPLATE % self.layout
         if record:
             action = record.url
         else:

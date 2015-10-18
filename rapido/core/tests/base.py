@@ -20,7 +20,7 @@ FAKE = {
     type: TEXT
     mode: COMPUTED_ON_SAVE
 id: frmBook
-title: Book form""",
+title: Book""",
 
     'py': """
 def forever(context):
@@ -30,7 +30,7 @@ def forever(context):
 def author(context):
     return "Victor Hugo"
 
-# executed everytime we save a record with this form
+# executed everytime we save a record with this block
 def on_save(context):
     author = context.get_item('author')
     context.set_item('author', author.upper())""",
@@ -53,7 +53,7 @@ class SimpleRapidoApplication(BaseNode):
         self.fake_user = 'admin'
         self.fake_groups = []
         self.context = Context()
-        self.fake_form = FAKE
+        self.fake_block = FAKE
 
     @property
     def root(self):
@@ -63,7 +63,7 @@ class SimpleRapidoApplication(BaseNode):
         return "http://here"
 
     @property
-    def forms(self):
+    def blocks(self):
         return ['frmBook']
 
     def get_settings(self):
@@ -75,11 +75,11 @@ class SimpleRapidoApplication(BaseNode):
     reader: []
   roles: {}"""
 
-    def get_form(self, form_id, ftype='yaml'):
-        return self.fake_form[ftype]
+    def get_block(self, block_id, ftype='yaml'):
+        return self.fake_block[ftype]
 
-    def set_fake_form_data(self, ftype, data):
-        self.fake_form[ftype] = data
+    def set_fake_block_data(self, ftype, data):
+        self.fake_block[ftype] = data
 
     def current_user(self):
         return self.fake_user

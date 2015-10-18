@@ -18,12 +18,12 @@ class Rest:
             if not path:
                 return self.app.json()
 
-            if path[0] == "form":
-                formid = path[1]
-                form = self.app.get_form(formid)
-                if not form:
-                    raise NotFound(formid)
-                return form.settings
+            if path[0] == "block":
+                blockid = path[1]
+                block = self.app.get_block(blockid)
+                if not block:
+                    raise NotFound(blockid)
+                return block.settings
 
             if path[0] == "records":
                 base_path = self.app.context.url(rest=True) + "/record/"
@@ -41,7 +41,7 @@ class Rest:
                 if len(path) == 2:
                     return record.items()
                 if len(path) == 3 and path[2] == "_full":
-                    return record.form.json(record)
+                    return record.block.json(record)
         except IndexError:
             raise NotAllowed()
 

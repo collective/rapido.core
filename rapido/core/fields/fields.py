@@ -1,14 +1,14 @@
 class BaseField(object):
-    def __init__(self, id, settings, form):
+    def __init__(self, id, settings, block):
         self.id = id
         self.settings = settings
-        self.form = form
+        self.block = block
 
     def render(self, record=None, edit=False):
         if record:
             field_value = record.get_item(self.id)
         else:
-            field_value = self.form.compute_field(self.id, {'form': self.form})
+            field_value = self.block.compute_field(self.id, {'block': self.block})
         if not field_value:
             field_value = ''
         label = self.settings.get('label', self.id)
