@@ -110,7 +110,7 @@ But it can be computed::
     >>> record.title
     'JOSEPH CONRAD'
 
-Fields can be computed on save::
+Elements can be computed on save::
     >>> app_obj.set_fake_block_data('py', """
     ... def famous_quote(context):
     ...     existing = context.record.get_item('famous_quote')
@@ -125,7 +125,7 @@ Fields can be computed on save::
     >>> record.get_item('famous_quote')
     'A good plan violently executed now is better than a perfect plan executed next week. Or next week.'
 
-Fields can be computed on creation::
+Elements can be computed on creation::
     >>> app_obj.set_fake_block_data('py', """
     ... def forever(context):
     ...     return 'I will never change.'""")

@@ -73,18 +73,18 @@ class Record(object):
             block = self.app.get_block(block_id)
         self.set_item('block', block.id)
 
-        # store submitted fields
+        # store submitted elements
         if request:
-            for field in block.fields.keys():
-                if field in request.keys():
-                    self.set_item(field, request.get(field))
+            for element in block.elements.keys():
+                if element in request.keys():
+                    self.set_item(element, request.get(element))
 
-        # compute fields
-        for (field, params) in block.fields.items():
+        # compute elements
+        for (element, params) in block.elements.items():
             if (params.get('mode') == 'COMPUTED_ON_SAVE' or
                 (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
                 self.set_item(
-                    field, block.compute_field(field, {'record': self}))
+                    element, block.compute_element(element, {'record': self}))
 
         # compute id if record creation
         if creation:
@@ -96,7 +96,7 @@ class Record(object):
         block.on_save(self)
 
         # compute title
-        title = block.compute_field('title', {'record': self})
+        title = block.compute_element('title', {'record': self})
         if not title:
             title = block.title
         self.set_item('title', title)

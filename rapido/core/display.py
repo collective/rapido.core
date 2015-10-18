@@ -51,9 +51,9 @@ class Display:
             actions = [key for key in request.keys()
                 if key.startswith("action.")]
             for id in actions:
-                field_id = id[7:]
-                if block.fields.get(field_id, None):
-                    block.compute_field(field_id, {'block': block})
+                element_id = id[7:]
+                if block.elements.get(element_id, None):
+                    block.compute_element(element_id, {'block': block})
             # create record if special action _save
             if request.get("_save"):
                 record = self.app.create_record()

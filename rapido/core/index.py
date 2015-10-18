@@ -27,9 +27,9 @@ class Index(object):
     def indexes(self):
         return self.storage.indexes
 
-    def create_index(self, fieldname, indextype, refresh=True):
+    def create_index(self, elementname, indextype, refresh=True):
         """
         """
-        self.storage.create_index(fieldname, indextype)
+        self.storage.create_index(elementname, indextype)
         if refresh:
             self.reindex_all()

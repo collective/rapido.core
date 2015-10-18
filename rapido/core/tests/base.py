@@ -6,7 +6,7 @@ from rapido.core.app import Context
 from rapido.core.interfaces import IRapidable
 
 FAKE = {
-    'yaml': """fields:
+    'yaml': """elements:
   author:
     index_type: text
     type: TEXT
@@ -26,7 +26,7 @@ title: Book""",
 def forever(context):
     return 'I will never change.'
 
-# default value for the 'author' field
+# default value for the 'author' element
 def author(context):
     return "Victor Hugo"
 

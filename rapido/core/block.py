@@ -3,16 +3,16 @@ from zope.interface import implements
 from pyaml import yaml
 
 from interfaces import IBlock
-from .fields.utils import get_field_class
+from .elements.utils import get_element_class
 from .formula import FormulaContainer
 
-FIELD_TYPE_MAPPING = {
+ELEMENT_TYPE_MAPPING = {
     'BASIC': 'string',
     'TEXT': 'string',
     'NUMBER': 'number',
     'DATETIME': 'string',
 }
-FIELD_WIDGET_MAPPING = {
+ELEMENT_WIDGET_MAPPING = {
     'BASIC': 'text',
     'TEXT': 'text',
     'NUMBER': 'number',
@@ -20,7 +20,7 @@ FIELD_WIDGET_MAPPING = {
 }
 DEFAULT_SETTINGS = {
     'title': "",
-    'fields': {},
+    'elements': {},
     'actions': {},
 }
 
@@ -32,7 +32,7 @@ BLOCK_TEMPLATE = u"""<form
 """
 
 
-class FieldDict(dict):
+class ElementDict(dict):
 
     def __init__(
         self,
@@ -57,15 +57,15 @@ class FieldDict(dict):
     def __getitem__(self, key):
         if key in self.params:
             return self.params[key]
-        field_settings = self.block.fields.get(key, None)
-        if not field_settings:
-            return "UNDEFINED FIELD"
-        constructor = get_field_class(field_settings['type'])
+        element_settings = self.block.elements.get(key, None)
+        if not element_settings:
+            return "UNDEFINED ELEMENT"
+        constructor = get_element_class(element_settings['type'])
         if constructor:
-            field = constructor(key, field_settings, self.block)
-            return field.render(self.record, edit=self.edit)
+            element = constructor(key, element_settings, self.block)
+            return element.render(self.record, edit=self.edit)
         else:
-            return "UNKNOWN FIELD TYPE"
+            return "UNKNOWN ELEMENT TYPE"
 
 
 class Block(FormulaContainer):
@@ -79,10 +79,10 @@ class Block(FormulaContainer):
         self.settings = DEFAULT_SETTINGS.copy()
         settings = yaml.load(self.app.context.get_block(id))
         self.settings.update(settings)
-        for field in self.settings['fields']:
-            if (self.settings['fields'][field].get('index_type', None)
-            and field not in app.indexes):
-                self.init_field(field)
+        for element in self.settings['elements']:
+            if (self.settings['elements'][element].get('index_type', None)
+            and element not in app.indexes):
+                self.init_element(element)
 
     @property
     def title(self):
@@ -96,15 +96,15 @@ class Block(FormulaContainer):
         return self.settings['layout']
 
     @property
-    def fields(self):
-        return self.settings['fields']
+    def elements(self):
+        return self.settings['elements']
 
-    def init_field(self, field_id):
-        field = self.fields.get(field_id, None)
-        if field and field.get('index_type', None):
-            self.app.create_index(field_id, field['index_type'])
+    def init_element(self, element_id):
+        element = self.elements.get(element_id, None)
+        if element and element.get('index_type', None):
+            self.app.create_index(element_id, element['index_type'])
 
-    def remove_field(self, field_id):
+    def remove_element(self, element_id):
         # TODO: clean up index
         pass
 
@@ -142,15 +142,15 @@ class Block(FormulaContainer):
         target = self.settings.get('target', None)
         if target:
             classes.append('rapido-target-%s' % target)
-        values = FieldDict(self, action, record, edit, classes=classes)
+        values = ElementDict(self, action, record, edit, classes=classes)
         return string.Formatter().vformat(layout, (), values)
 
-    def compute_field(self, field_id, extra_context={}):
+    def compute_element(self, element_id, extra_context={}):
         context = self.app.app_context
         context.app = self.app
         for key in extra_context:
             setattr(context, key, extra_context[key])
-        return self.execute(field_id, context)
+        return self.execute(element_id, context)
 
     def on_save(self, record):
         result = self.execute('on_save', record)
