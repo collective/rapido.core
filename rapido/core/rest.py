@@ -25,15 +25,15 @@ class Rest:
                     raise NotFound(blockid)
                 return block.settings
 
-            if path[0] == "records":
-                base_path = self.app.context.url(rest=True) + "/record/"
+            elif path[0] == "records":
+                base_path = self.app.context.url() + "/record/"
                 return [{
                     'id': record.id,
                     'path': base_path + record.id,
                     'items': record.items()
                 } for record in self.app._records()]
 
-            if path[0] == "record":
+            elif path[0] == "record":
                 id = path[1]
                 record = self.app.get_record(id)
                 if not record:
@@ -42,6 +42,10 @@ class Rest:
                     return record.items()
                 if len(path) == 3 and path[2] == "_full":
                     return record.block.json(record)
+
+            else:
+                raise NotAllowed()
+
         except IndexError:
             raise NotAllowed()
 
@@ -51,7 +55,7 @@ class Rest:
                 record = self.app.create_record()
                 items = json.loads(body)
                 record.save(items, creation=True)
-                base_path = self.app.context.url(rest=True) + "/record/"
+                base_path = self.app.context.url() + "/record/"
                 return {
                     'success': 'created',
                     'id': record.id,
@@ -81,7 +85,7 @@ class Rest:
                     sort_index=params.get("sort_index"),
                     reverse=params.get("reverse")
                 )
-                base_path = self.app.context.url(rest=True) + "/record/"
+                base_path = self.app.context.url() + "/record/"
                 return [{
                     'id': record.id,
                     'path': base_path + record.id,
@@ -122,7 +126,7 @@ class Rest:
             record = self.app.create_record(id=id)
             items = json.loads(body)
             record.save(items, creation=True)
-            base_path = self.app.context.url(rest=True) + "/record/"
+            base_path = self.app.context.url() + "/record/"
             return {
                 'success': 'created',
                 'id': record.id,
