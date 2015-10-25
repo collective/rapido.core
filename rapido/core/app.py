@@ -67,6 +67,10 @@ class RapidoApplication(Index):
         if record:
             self.storage.delete(record.context)
 
+    @acl_check('modify_app')
+    def clear_storage(self):
+        self.storage.clear()
+
     def _records(self):
         for record in self.storage.records():
             yield IRecord(record)

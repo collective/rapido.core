@@ -87,6 +87,11 @@ class Rest:
                     'path': base_path + record.id,
                     'items': record.items()
                 } for record in results]
+            elif path[0] == "clear":
+                self.app.clear_storage()
+                return {
+                    'success': 'clear_storage',
+                }
             else:
                 raise NotAllowed()
         except IndexError:
