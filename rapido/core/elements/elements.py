@@ -39,6 +39,13 @@ class TextElement(BaseElement):
         name="{id}" value="{value}" />"""
 
 
+class NumberElement(BaseElement):
+
+    read_template = """{value}"""
+    edit_template = """<input type="number"
+        name="{id}" value="{value}" />"""
+
+
 class ActionElement(BaseElement):
 
     template = """<input type="submit"
