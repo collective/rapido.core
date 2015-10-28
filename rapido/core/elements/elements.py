@@ -1,14 +1,27 @@
 class BaseElement(object):
+
     def __init__(self, id, settings, block):
         self.id = id
         self.settings = settings
         self.block = block
 
-    def render(self, record=None, edit=False):
+    def get_value(self, record=None, edit=False):
         if record:
             element_value = record.get_item(self.id)
         else:
-            element_value = self.block.compute_element(self.id, {'block': self.block})
+            element_value = self.block.compute_element(
+                self.id, {'block': self.block})
+        return element_value
+
+    def render(self, record=None, edit=False):
+        element_value = self.get_value(record, edit)
+        if not element_value:
+            element_value = ''
+        if record:
+            element_value = record.get_item(self.id)
+        else:
+            element_value = self.block.compute_element(
+                self.id, {'block': self.block})
         if not element_value:
             element_value = ''
         label = self.settings.get('label', self.id)
@@ -68,3 +81,7 @@ class DatetimeElement(BaseElement):
     read_template = """{value}"""
     edit_template = """<input type="date"
         name="{id}" value="{value}" />"""
+
+    def get_value(self, record=None, edit=False):
+        value = BaseElement.get_value(self, record, edit)
+        return value.strftime("%Y-%m-%d")
