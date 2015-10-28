@@ -155,3 +155,7 @@ class Block(FormulaContainer):
     def on_save(self, record):
         result = self.execute('on_save', record)
         return result
+
+    def on_delete(self, record):
+        result = self.execute('on_delete', record)
+        return result

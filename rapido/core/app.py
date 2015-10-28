@@ -61,10 +61,12 @@ class RapidoApplication(Index):
                 return search[0]
 
     @acl_check('delete_record')
-    def delete_record(self, id=None, record=None):
+    def delete_record(self, id=None, record=None, ondelete=True):
         if not record:
             record = self.get_record(id)
         if record:
+            if ondelete and record.block:
+                block.on_delete(record)
             self.storage.delete(record.context)
 
     @acl_check('modify_app')
