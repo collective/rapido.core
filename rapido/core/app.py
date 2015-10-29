@@ -66,12 +66,19 @@ class RapidoApplication(Index):
             record = self.get_record(id)
         if record:
             if ondelete and record.block:
-                block.on_delete(record)
+                record.block.on_delete(record)
             self.storage.delete(record.context)
 
     @acl_check('modify_app')
     def clear_storage(self):
         self.storage.clear()
+
+    @acl_check('modify_app')
+    def refresh(self):
+        # call the blocks so indexed elements are properly declared
+        # to the index
+        blocks = self.blocks
+        self.reindex_all()
 
     def _records(self):
         for record in self.storage.records():

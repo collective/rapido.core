@@ -96,6 +96,14 @@ class Rest:
                 return {
                     'success': 'clear_storage',
                 }
+            elif path[0] == "refresh":
+                self.app.refresh()
+                indexes = self.app.indexes
+                indexes.sort()
+                return {
+                    'success': 'refresh',
+                    'indexes': indexes,
+                }
             else:
                 raise NotAllowed()
         except IndexError:

@@ -13,6 +13,8 @@ class Display:
 
     def _parse_path(self, path):
         directive = path[1]
+        if len(path) == 2:
+            return (directive, None, None)
         obj_id = path[2]
         if len(path) > 3:
             action = path[3]
@@ -35,6 +37,11 @@ class Display:
                 raise NotFound(obj_id)
             editmode = (action == "edit")
             result = record.display(edit=editmode)
+        elif directive == "refresh":
+            self.app.refresh()
+            indexes = self.app.indexes
+            indexes.sort()
+            result = "Refreshed (%s)" % (', '.join(indexes))
         else:
             raise NotAllowed()
         return (result, redirect)
