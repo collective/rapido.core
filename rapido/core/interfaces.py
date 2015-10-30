@@ -62,16 +62,6 @@ class IBlock(Interface):
     """
 
 
-class IViewable(Interface):
-    """ Marker interface for a view
-    """
-
-
-class IView(Interface):
-    """ A Rapido view
-    """
-
-
 class IStorage(Interface):
     """ A storage service for Rapido records
     """
