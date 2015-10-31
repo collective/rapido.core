@@ -70,9 +70,8 @@ class SimpleRapidoApplication(BaseNode):
         return """acl:
   rights:
     author: [FamousDiscoverers]
-    editor: []
-    manager: [admin]
-    reader: []
+    editor: [marie.curie]
+    reader: [isaac.newton]
   roles: {}"""
 
     def get_block(self, block_id, ftype='yaml'):
@@ -92,3 +91,8 @@ class SimpleRapidoApplication(BaseNode):
 
     def set_fake_groups(self, groups):
         self.fake_groups = groups
+
+    def is_manager(self):
+        if self.fake_user == 'admin':
+            return True
+        return False

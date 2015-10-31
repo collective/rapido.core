@@ -25,7 +25,7 @@ Create object which can store soup data::
 Create a persistent object that will be adapted as a rapido app::
     
     >>> from rapido.core.tests.base import SimpleRapidoApplication
-    >>> root['myapp'] = SimpleRapidoApplication("testdb", root)
+    >>> root['myapp'] = SimpleRapidoApplication("testapp", root)
     >>> app_obj = root['myapp']
     >>> app = IRapidoApplication(app_obj)
     >>> app.initialize()
@@ -139,29 +139,41 @@ Elements can be computed on creation::
     True
 
 Access rights
-    >>> app_obj.set_fake_user("marie.curie")
-    >>> app.acl.current_user()
-    'marie.curie'
-    >>> app.acl.has_access_right("author")
+    >>> from rapido.core.interfaces import IDisplay
+    >>> display = IDisplay(app)
+    >>> app_obj.set_fake_user("nobody")
+    >>> app.acl.has_access_right("reader")
     False
-    >>> record_5 = app.create_record(id='record_5')
+    >>> display.GET(['testapp', 'record', 'record_1'], {})
     Traceback (most recent call last):
     ...
-    Unauthorized: create_record permission required
-    >>> app_obj.set_fake_user("admin")
-    >>> app.acl.grant_access(['marie.curie'], 'author')
-    >>> app_obj.set_fake_user("marie.curie")
-    >>> record_5 = app.create_record(id='record_5')
-    >>> record_5.id
-    'record_5'
-    >>> app_obj.set_fake_user("admin")
-    >>> app.acl.grant_access(['FamousDiscoverers'], 'author')
-    >>> app_obj.set_fake_user("marie.curie")
-    >>> record_6 = app.create_record(id='record_6')
+    Unauthorized
+    >>> app_obj.set_fake_user("isaac.newton")
+    >>> app.acl.has_access_right("reader")
+    True
+    >>> display.GET(['testapp', 'record', 'record_1'], {})
+    (u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: JOSEPH CONRAD\n<footer>Powered by Rapido</footer></form>\n', '')
+    >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
     Traceback (most recent call last):
     ...
-    Unauthorized: create_record permission required
-    >>> app_obj.set_fake_groups(['FamousDiscoverers', 'FamousWomen'])
-    >>> record_6 = app.create_record(id='record_6')
-    >>> record_6.id
-    'record_6'
+    Unauthorized
+    >>> app_obj.set_fake_user("FamousDiscoverers")
+    >>> app.acl.has_access_right("author")
+    True
+    >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
+    Traceback (most recent call last):
+    ...
+    Unauthorized
+    >>> display.POST(['testapp', 'record', 'record_1'], {'_delete': True})
+    Traceback (most recent call last):
+    ...
+    Unauthorized
+    >>> display.POST(['testapp', 'block', 'frmBook'], {'_save': True, 'item1': 'value1'})
+    ('', 'http://here/record/...')
+    >>> app_obj.set_fake_user("marie.curie")
+    >>> app.acl.has_access_right("editor")
+    True
+    >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
+    (u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: JOSEPH CONRAD\n<footer>Powered by Rapido</footer></form>\n', '')
+    >>> display.POST(['testapp', 'record', 'record_1'], {'_delete': True})
+    ('deleted', '')

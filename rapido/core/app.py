@@ -7,7 +7,6 @@ from index import Index
 from pyaml import yaml
 
 from .block import Block
-from .security import acl_check
 
 
 class RapidoApplication(Index):
@@ -40,7 +39,6 @@ class RapidoApplication(Index):
     def json(self):
         return self.settings
 
-    @acl_check('create_record')
     def create_record(self, id=None):
         record = self.storage.create()
         record = IRecord(record)
@@ -60,7 +58,6 @@ class RapidoApplication(Index):
             if len(search) == 1:
                 return search[0]
 
-    @acl_check('delete_record')
     def delete_record(self, id=None, record=None, ondelete=True):
         if not record:
             record = self.get_record(id)
@@ -69,11 +66,9 @@ class RapidoApplication(Index):
                 record.block.on_delete(record)
             self.storage.delete(record.context)
 
-    @acl_check('modify_app')
     def clear_storage(self):
         self.storage.clear()
 
-    @acl_check('modify_app')
     def refresh(self):
         # call the blocks so indexed elements are properly declared
         # to the index

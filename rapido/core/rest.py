@@ -2,7 +2,7 @@ import json
 from zope.interface import implements
 
 from .interfaces import IRest
-from .exceptions import NotAllowed, NotFound
+from .exceptions import NotAllowed, NotFound, Unauthorized
 
 
 class Rest:
@@ -26,6 +26,8 @@ class Rest:
                 return block.settings
 
             elif path[0] == "records":
+                if not self.app.acl.has_permission('view'):
+                    raise Unauthorized()
                 base_path = self.app.context.url() + "/record/"
                 return [{
                     'id': record.id,
@@ -34,6 +36,8 @@ class Rest:
                 } for record in self.app._records()]
 
             elif path[0] == "record":
+                if not self.app.acl.has_permission('view'):
+                    raise Unauthorized()
                 id = path[1]
                 record = self.app.get_record(id)
                 if not record:
@@ -52,6 +56,8 @@ class Rest:
     def POST(self, path, body):
         try:
             if len(path) == 0:
+                if not self.app.acl.has_permission('create_record'):
+                    raise Unauthorized()
                 record = self.app.create_record()
                 items = json.loads(body)
                 record.save(items, creation=True)
@@ -62,6 +68,8 @@ class Rest:
                     'path': base_path + record.id
                 }
             elif path[0] == "record":
+                if not self.app.acl.has_permission('edit_record'):
+                    raise Unauthorized()
                 id = path[1]
                 record = self.app.get_record(id)
                 if not record:
@@ -70,6 +78,8 @@ class Rest:
                 record.save(items)
                 return {'success': 'updated'}
             elif path[0] == "records":
+                if not self.app.acl.has_permission('create_record'):
+                    raise Unauthorized()
                 rows = json.loads(body)
                 for row in rows:
                     record = self.app.create_record()
@@ -79,6 +89,8 @@ class Rest:
                     'total': len(rows),
                 }
             elif path[0] == "search":
+                if not self.app.acl.has_permission('view'):
+                    raise Unauthorized()
                 params = json.loads(body)
                 results = self.app.search(
                     params.get("query"),
@@ -92,11 +104,15 @@ class Rest:
                     'items': record.items()
                 } for record in results]
             elif path[0] == "clear":
+                if not self.app.acl.is_manager():
+                    raise Unauthorized()
                 self.app.clear_storage()
                 return {
                     'success': 'clear_storage',
                 }
             elif path[0] == "refresh":
+                if not self.app.acl.is_manager():
+                    raise Unauthorized()
                 self.app.refresh()
                 indexes = self.app.indexes
                 indexes.sort()
@@ -110,6 +126,8 @@ class Rest:
             raise NotAllowed()
 
     def DELETE(self, path, body):
+        if not self.app.acl.has_permission('delete'):
+            raise Unauthorized()
         try:
             if path[0] == "records":
                 for record in self.app.records():
@@ -127,6 +145,8 @@ class Rest:
             raise NotAllowed()
 
     def PUT(self, path, body):
+        if not self.app.acl.has_permission('create'):
+            raise Unauthorized()
         try:
             if path[0] != "record":
                 raise NotAllowed()
@@ -144,6 +164,8 @@ class Rest:
             raise NotAllowed()
 
     def PATCH(self, path, body):
+        if not self.app.acl.has_permission('edit'):
+            raise Unauthorized()
         try:
             if path[0] != "record":
                 raise NotAllowed()

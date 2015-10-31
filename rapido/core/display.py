@@ -1,7 +1,7 @@
 from zope.interface import implements
 
 from .interfaces import IDisplay
-from .exceptions import NotAllowed, NotFound
+from .exceptions import NotAllowed, NotFound, Unauthorized
 
 
 class Display:
@@ -32,12 +32,16 @@ class Display:
                 raise NotFound(obj_id)
             result = block.display(edit=True)
         elif directive == "record":
+            if not self.app.acl.has_permission('view'):
+                raise Unauthorized()
             record = self.app.get_record(obj_id)
             if not record:
                 raise NotFound(obj_id)
             editmode = (action == "edit")
             result = record.display(edit=editmode)
         elif directive == "refresh":
+            if not self.app.acl.is_manager():
+                raise Unauthorized()
             self.app.refresh()
             indexes = self.app.indexes
             indexes.sort()
@@ -63,7 +67,10 @@ class Display:
                     block.compute_element(element_id, {'block': block})
             # create record if special action _save
             if request.get("_save"):
+                if not self.app.acl.has_permission('create'):
+                    raise Unauthorized()
                 record = self.app.create_record()
+                record.set_item('_author', [self.app.acl.current_user(), ])
                 record.save(request=request, block=block, creation=True)
                 redirect = record.url
             else:
@@ -74,14 +81,22 @@ class Display:
                 raise NotFound(obj_id)
             editmode = (action == "edit")
             if request.get("_save"):
+                if not self.app.acl.has_permission('edit'):
+                    raise Unauthorized()
                 record.save(request=request)
             if request.get("_edit"):
-                record.save(request=request)
+                if not self.app.acl.has_permission('edit'):
+                    raise Unauthorized()
+                result = record.display(edit=True)
             if request.get("_delete"):
+                if not self.app.acl.has_permission('delete'):
+                    raise Unauthorized()
                 self.app.delete_record(record=record)
                 # TODO: use on_delete to provide redirection
                 result = "deleted"
             else:
+                if not self.app.acl.has_permission('view'):
+                    raise Unauthorized()
                 result = record.display(edit=editmode)
         else:
             raise NotAllowed()
