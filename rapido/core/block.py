@@ -1,3 +1,4 @@
+import json
 import string
 from zope.interface import implements
 from pyaml import yaml
@@ -21,13 +22,13 @@ ELEMENT_WIDGET_MAPPING = {
 DEFAULT_SETTINGS = {
     'title': "",
     'elements': {},
-    'actions': {},
 }
 
 BLOCK_TEMPLATE = u"""<form
     name="{_block_name}"
     class="{_block_classes}"
     action="{_block_action}"
+    rapido-settings='{_block_settings}'
     method="POST">%s</form>
 """
 
@@ -40,7 +41,8 @@ class ElementDict(dict):
         action,
         record=None,
         edit=True,
-        classes=[]
+        classes=[],
+        settings={},
     ):
         self.block = block
         self.record = record
@@ -52,6 +54,7 @@ class ElementDict(dict):
             '_block_name': block.id,
             '_block_action': action,
             '_block_classes': classes,
+            '_block_settings': json.dumps(settings),
         }
 
     def __getitem__(self, key):
@@ -142,7 +145,12 @@ class Block(FormulaContainer):
         target = self.settings.get('target', None)
         if target:
             classes.append('rapido-target-%s' % target)
-        values = ElementDict(self, action, record, edit, classes=classes)
+        settings = self.settings.copy()
+        del settings['elements']
+        del settings['layout']
+        settings['url'] = self.app.url
+        values = ElementDict(
+            self, action, record, edit, classes=classes, settings=settings)
         return string.Formatter().vformat(layout, (), values)
 
     def compute_element(self, element_id, extra_context={}):
