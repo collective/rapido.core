@@ -17,13 +17,6 @@ class BaseElement(object):
         element_value = self.get_value(record, edit)
         if not element_value:
             element_value = ''
-        if record:
-            element_value = record.get_item(self.id)
-        else:
-            element_value = self.block.compute_element(
-                self.id, {'block': self.block})
-        if not element_value:
-            element_value = ''
         label = self.settings.get('label', self.id)
         if edit:
             return self.edit_template.format(
