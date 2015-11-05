@@ -19,6 +19,7 @@ class RapidoApplication(Index):
         self.context = context
         self.app_context = context.context
         self.settings = yaml.load(self.context.get_settings())
+        self._messages = []
 
     def initialize(self):
         acl = self.acl
@@ -88,6 +89,13 @@ class RapidoApplication(Index):
     @property
     def blocks(self):
         return [self.get_block(id) for id in self.context.blocks]
+
+    def log(self, message):
+        self._messages.append(message)
+
+    @property
+    def messages(self):
+        return self._messages
 
 
 class Context(object):

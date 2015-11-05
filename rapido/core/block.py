@@ -146,8 +146,9 @@ class Block(FormulaContainer):
         if target:
             classes.append('rapido-target-%s' % target)
         settings = self.settings.copy()
-        del settings['elements']
-        del settings['layout']
+        for key in ['elements', 'layout', 'code']:
+            if key in settings:
+                del settings[key]
         settings['url'] = self.app.url
         values = ElementDict(
             self, action, record, edit, classes=classes, settings=settings)

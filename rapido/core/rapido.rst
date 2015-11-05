@@ -56,11 +56,11 @@ We can use block to display records::
     >>> from rapido.core.interfaces import IBlock
     >>> block = app.get_block('frmBook')
     >>> block.display(None, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/block/frmBook"\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
+    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"url": "http://here", "id": "frmBook", "title": "Book"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
     >>> block.display(record)
-    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
+    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"title": "Book", "url": "http://here", "id": "frmBook"}\'\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
     >>> block.display(record, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
+    u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"title": "Book", "url": "http://here", "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
 
 After saving the record, the `on_save` method is called. In our case, the author
 has been changed to uppercase::
@@ -152,7 +152,7 @@ Access rights
     >>> app.acl.has_access_right("reader")
     True
     >>> display.GET(['testapp', 'record', 'record_1'], {})
-    (u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: JOSEPH CONRAD\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"url": "http://here", "id": "frmBook", "title": "Book"}\'\n    method="POST">Author: JOSEPH CONRAD\n<footer>Powered by Rapido</footer></form>\n', '')
     >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
     Traceback (most recent call last):
     ...
@@ -174,6 +174,6 @@ Access rights
     >>> app.acl.has_access_right("editor")
     True
     >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
-    (u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    method="POST">Author: JOSEPH CONRAD\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'<form\n    name="frmBook"\n    class="rapido-block"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"url": "http://here", "id": "frmBook", "title": "Book"}\'\n    method="POST">Author: JOSEPH CONRAD\n<footer>Powered by Rapido</footer></form>\n', '')
     >>> display.POST(['testapp', 'record', 'record_1'], {'_delete': True})
     ('deleted', '')
