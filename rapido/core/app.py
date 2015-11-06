@@ -4,10 +4,12 @@ from interfaces import (
     IRapidable, IRapidoApplication, IStorage, IRecord, IACLable,
     IAccessControlList, IRestable, IDisplayable)
 from index import Index
+import logging
 from pyaml import yaml
 
 from .block import Block
 
+logger = logging.getLogger("Rapido")
 
 class RapidoApplication(Index):
     """
@@ -91,6 +93,7 @@ class RapidoApplication(Index):
         return [self.get_block(id) for id in self.context.blocks]
 
     def log(self, message):
+        logger.info(message)
         self._messages.append(message)
 
     @property
