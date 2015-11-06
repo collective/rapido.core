@@ -149,7 +149,9 @@ class Block(FormulaContainer):
         for key in ['elements', 'layout', 'code']:
             if key in settings:
                 del settings[key]
-        settings['url'] = self.app.url
+        settings['app'] = {'url': self.app.url}
+        if self.app.settings.get('debug', False):
+            settings['app']['debug'] = True
         values = ElementDict(
             self, action, record, edit, classes=classes, settings=settings)
         return string.Formatter().vformat(layout, (), values)
