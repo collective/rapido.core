@@ -42,9 +42,7 @@ class ExecutionErrorEvent(ObjectEvent):
         else:
             error_msg = self.error.message
         error_line = self.traceback[-2].replace('  File "<string>", ', '')
-        self.message = """in %s: %s, %s""" % (
-            container.id,
+        self.message = """%s, %s""" % (
             error_msg,
             error_line,
         )
-    

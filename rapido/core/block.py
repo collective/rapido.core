@@ -119,7 +119,6 @@ class Block(FormulaContainer):
                     self.id, ftype="py")
             except KeyError:
                 self.settings['code'] = '# no code'
-            self.compile(recompile=True)
         return self.settings['code']
 
     @property

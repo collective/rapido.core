@@ -34,14 +34,17 @@ class FormulaContainer(object):
             self._compiled_code = None
             self._executable = None
             notify(CompilationErrorEvent(e, self))
-            return
+            return False
         self._executable = {}
         self._compiled_code.exec_(self._executable)
+        return True
 
     def _execute(self, func, *args, **kwargs):
         if not hasattr(self, '_executable'):
-            self.compile()
-        if func in self._executable:
+            compiled = self.compile()
+        else:
+            compiled = True
+        if compiled and func in self._executable:
             try:
                 return self._executable[func](*args, **kwargs)
             except Exception, e:
