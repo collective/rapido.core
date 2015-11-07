@@ -12,6 +12,9 @@ install:
 script:
   - bin/test
   - bin/createcoverage
+after_success:
+  - pip install coveralls
+  - coveralls
 notifications:
   irc:
     - "irc.freenode.org#plomino"
