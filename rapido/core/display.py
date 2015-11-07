@@ -4,7 +4,7 @@ from .interfaces import IDisplay
 from .exceptions import NotAllowed, NotFound, Unauthorized
 
 
-class Display:
+class Display(object):
     implements(IDisplay)
 
     def __init__(self, context):
@@ -61,8 +61,8 @@ class Display:
             # execute submitted actions
             actions = [key for key in request.keys()
                 if key.startswith("action.")]
-            for id in actions:
-                element_id = id[7:]
+            for action_id in actions:
+                element_id = action_id[7:]
                 if block.elements.get(element_id, None):
                     block.compute_element(element_id, {'block': block})
             # create record if special action _save

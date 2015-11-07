@@ -39,10 +39,10 @@ class ElementDict(dict):
         self,
         block,
         action,
-        record=None,
-        edit=True,
-        classes=[],
-        settings={},
+        record,
+        edit,
+        classes,
+        settings,
     ):
         self.block = block
         self.record = record
@@ -76,11 +76,11 @@ class Block(FormulaContainer):
     """
     implements(IBlock)
 
-    def __init__(self, id, app):
-        self.id = id
+    def __init__(self, block_id, app):
+        self.id = block_id
         self._app = app
         self.settings = DEFAULT_SETTINGS.copy()
-        settings = yaml.load(self.app.context.get_block(id))
+        settings = yaml.load(self.app.context.get_block(block_id))
         self.settings.update(settings)
         for element in self.settings['elements']:
             if (self.settings['elements'][element].get('index_type', None)
@@ -155,7 +155,7 @@ class Block(FormulaContainer):
             self, action, record, edit, classes=classes, settings=settings)
         return string.Formatter().vformat(layout, (), values)
 
-    def compute_element(self, element_id, extra_context={}):
+    def compute_element(self, element_id, extra_context):
         context = self.app.app_context
         context.app = self.app
         for key in extra_context:

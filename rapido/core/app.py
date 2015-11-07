@@ -11,6 +11,7 @@ from .block import Block
 
 logger = logging.getLogger("Rapido")
 
+
 class RapidoApplication(Index):
     """
     """
@@ -24,7 +25,7 @@ class RapidoApplication(Index):
         self._messages = []
 
     def initialize(self):
-        acl = self.acl
+        self.acl
         self.storage.initialize()
 
     @property
@@ -75,7 +76,7 @@ class RapidoApplication(Index):
     def refresh(self):
         # call the blocks so indexed elements are properly declared
         # to the index
-        blocks = self.blocks
+        self.blocks
         self.reindex_all()
 
     def _records(self):
@@ -90,15 +91,18 @@ class RapidoApplication(Index):
 
     @property
     def blocks(self):
-        return [self.get_block(id) for id in self.context.blocks]
+        return [self.get_block(block_id) for block_id in self.context.blocks]
 
     def log(self, message):
         logger.info(message)
-        self._messages.append(message)
+        self.add_message(message)
 
     @property
     def messages(self):
         return self._messages
+
+    def add_message(self, message):
+        self._messages.append(message)
 
 
 class Context(object):

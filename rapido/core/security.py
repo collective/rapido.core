@@ -30,7 +30,7 @@ ACCESS_RIGHTS_PERMISSIONS = {
 }
 
 
-class AccessControlList:
+class AccessControlList(object):
     implements(IAccessControlList)
 
     def __init__(self, context):

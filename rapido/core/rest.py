@@ -5,7 +5,7 @@ from .interfaces import IRest
 from .exceptions import NotAllowed, NotFound, Unauthorized
 
 
-class Rest:
+class Rest(object):
     implements(IRest)
 
     def __init__(self, context):
@@ -38,10 +38,10 @@ class Rest:
             elif path[0] == "record":
                 if not self.app.acl.has_permission('view'):
                     raise Unauthorized()
-                id = path[1]
-                record = self.app.get_record(id)
+                record_id = path[1]
+                record = self.app.get_record(record_id)
                 if not record:
-                    raise NotFound(id)
+                    raise NotFound(record_id)
                 if len(path) == 2:
                     return record.items()
                 if len(path) == 3 and path[2] == "_full":
@@ -70,10 +70,10 @@ class Rest:
             elif path[0] == "record":
                 if not self.app.acl.has_permission('edit_record'):
                     raise Unauthorized()
-                id = path[1]
-                record = self.app.get_record(id)
+                record_id = path[1]
+                record = self.app.get_record(record_id)
                 if not record:
-                    raise NotFound(id)
+                    raise NotFound(record_id)
                 items = json.loads(body)
                 record.save(items)
                 return {'success': 'updated'}
@@ -135,10 +135,10 @@ class Rest:
                 return {'success': 'deleted'}
             elif path[0] != "record":
                 raise NotAllowed()
-            id = path[1]
-            record = self.app.get_record(id)
+            record_id = path[1]
+            record = self.app.get_record(record_id)
             if not record:
-                raise NotFound(id)
+                raise NotFound(record_id)
             self.app.delete_record(record=record)
             return {'success': 'deleted'}
         except IndexError:
@@ -150,8 +150,8 @@ class Rest:
         try:
             if path[0] != "record":
                 raise NotAllowed()
-            id = path[1]
-            record = self.app.create_record(id=id)
+            record_id = path[1]
+            record = self.app.create_record(id=record_id)
             items = json.loads(body)
             record.save(items, creation=True)
             base_path = self.app.context.url() + "/record/"
@@ -169,10 +169,10 @@ class Rest:
         try:
             if path[0] != "record":
                 raise NotAllowed()
-            id = path[0]
-            record = self.app.get_record(id)
+            record_id = path[0]
+            record = self.app.get_record(record_id)
             if not record:
-                raise NotFound(id)
+                raise NotFound(record_id)
             items = json.loads(body)
             record.save(items)
             return {'success': 'updated'}

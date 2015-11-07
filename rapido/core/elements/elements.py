@@ -5,7 +5,7 @@ class BaseElement(object):
         self.settings = settings
         self.block = block
 
-    def get_value(self, record=None, edit=False):
+    def get_value(self, record=None):
         if record:
             element_value = record.get_item(self.id)
         else:
@@ -14,7 +14,7 @@ class BaseElement(object):
         return element_value
 
     def render(self, record=None, edit=False):
-        element_value = self.get_value(record, edit)
+        element_value = self.get_value(record)
         if not element_value:
             element_value = ''
         label = self.settings.get('label', self.id)
@@ -75,6 +75,6 @@ class DatetimeElement(BaseElement):
     edit_template = """<input type="date"
         name="{id}" value="{value}" />"""
 
-    def get_value(self, record=None, edit=False):
-        value = BaseElement.get_value(self, record, edit)
+    def get_value(self, record=None):
+        value = BaseElement.get_value(self, record)
         return value.strftime("%Y-%m-%d")

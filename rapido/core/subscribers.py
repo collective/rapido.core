@@ -12,7 +12,7 @@ def on_compilation_error(event):
         '-' * (event.error.offset - 1) + '^',
     )
     app = event.container.app
-    event.container.app._messages.append(
+    event.container.app.add_message(
         "Rapido compilation error - %s:\n%s" % (app.context.id, message)
     )
     logger.error(message)
@@ -20,10 +20,10 @@ def on_compilation_error(event):
 
 def on_execution_error(event):
     app = event.container.app
-    event.container.app._messages.append(
+    event.container.app.add_message(
         "Rapido execution error - %s:\n   %s" % (
             app.context.id,
-            event.message.replace(',   ','\n   ')
+            event.message.replace(',   ', '\n   ')
         )
     )
     logger.error(event.message)

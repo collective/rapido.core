@@ -82,15 +82,15 @@ class Record(object):
         # compute elements
         for (element, params) in block.elements.items():
             if (params.get('mode') == 'COMPUTED_ON_SAVE' or
-                (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
+            (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
                 self.set_item(
                     element, block.compute_element(element, {'record': self}))
 
         # compute id if record creation
         if creation:
-            id = block.execute('record_id', self)
-            if id:
-                self.set_item('id', id)
+            record_id = block.execute('record_id', self)
+            if record_id:
+                self.set_item('id', record_id)
 
         # execute on_save
         block.on_save(self)
