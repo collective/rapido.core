@@ -6,30 +6,30 @@ rapido.core
 .. |travisstatus| image:: https://secure.travis-ci.org/plomino/rapido.core.png?branch=master
 .. _travisstatus:  http://travis-ci.org/plomino/rapido.core
 
-rapido.core allows to run a Rapido application.
+rapido.core allows to run Rapido applications.
 
-rapido.core can run different ZODB-enabled servers (Zope/Plone or Pyramid).
+rapido.core can run on Zope or Pyramid. The initial target is Plone (using
+`rapido.plone <https://github.com/plomino/rapido.plone>`_), but a POC has been
+successfully implemented on Substance D.
 
 Database design
 ---------------
 
 A Rapido application can be built from Plone using rapido.plone or provided from
-sources (read from the local file system or downloaded from a remote server).
+sources (read from the local file system).
 
-Anyhow, at the end, the database design is just a set of YAML/HTML/Python files:
-i.e. YAML metadata that defines properties about a block but links to separate
-layout.html and good naming conventions, making clear the relation between YAML
-metadata and layout/formula files.
+Anyhow, at the end, the database design is just a set of YAML/HTML/Python files.
 
-It's probably better to have one .py file per block, rather than many small ones
-per formula. That also makes it tempting for such a .py file to have a shared
-section that is global to all the formulas in that file.
+The `rapido.plone documentation <http://rapidoplone.readthedocs.org/en/latest/>`_
+gives a good overview of Rapido features.
 
 Record storage
 ---------------
 
 Storage is not handled directly by rapido.core.
-By default, we use rapido.souper which allows to store records in a soup.
-But a different storage could be implemented if needed.
 
-A separate storage mechanism will be needed for attached files.
+By default, we use `rapido.souper <https://github.com/plomino/rapido.souper>`_
+which allows to store records in a `soup <https://pypi.python.org/pypi/souper>`_.
+
+Using ZODB is not mandatory, different storages could be easily implemented
+(SQL-based storage, remote storage services, etc.).
