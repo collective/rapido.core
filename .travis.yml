@@ -11,7 +11,7 @@ install:
   - bin/buildout -Nc travis.cfg
 script:
   - bin/test
-
+  - bin/createcoverage
 notifications:
   irc:
     - "irc.freenode.org#plomino"
