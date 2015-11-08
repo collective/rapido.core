@@ -107,10 +107,6 @@ class Block(FormulaContainer):
         if element and element.get('index_type', None):
             self.app.create_index(element_id, element['index_type'])
 
-    def remove_element(self, element_id):
-        # TODO: clean up index
-        pass
-
     @property
     def code(self):
         if 'code' not in self.settings:

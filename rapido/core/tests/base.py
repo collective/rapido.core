@@ -6,19 +6,31 @@ from rapido.core.app import Context
 from rapido.core.interfaces import IRapidable
 
 FAKE = {
-    'yaml': """elements:
-  author:
-    index_type: text
-    type: TEXT
-  famous_quote:
-    mode: COMPUTED_ON_SAVE
-    type: TEXT
-  forever:
-    mode: COMPUTED_ON_CREATION
-    type: TEXT
-  famous_quote:
-    type: TEXT
-    mode: COMPUTED_ON_SAVE
+    'yaml': """target: ajax
+debug: true
+elements:
+    author:
+        index_type: text
+        type: TEXT
+    year:
+        type: NUMBER
+    famous_quote:
+        mode: COMPUTED_ON_SAVE
+        type: TEXT
+    forever:
+        mode: COMPUTED_ON_CREATION
+        type: TEXT
+    famous_quote:
+        type: TEXT
+        mode: COMPUTED_ON_SAVE
+    publication:
+        type: DATETIME
+    do_something:
+        type: ACTION
+        label: Do
+    _save:
+        type: ACTION
+        label: Save
 id: frmBook
 title: Book""",
 
@@ -26,9 +38,15 @@ title: Book""",
 def forever(context):
     return 'I will never change.'
 
+def do_something(context):
+    context.app.log('Hello')
+
 # default value for the 'author' element
 def author(context):
     return "Victor Hugo"
+
+def year(context):
+    return 1845
 
 # executed everytime we save a record with this block
 def on_save(context):
@@ -72,10 +90,16 @@ class SimpleRapidoApplication(BaseNode):
     author: [FamousDiscoverers]
     editor: [marie.curie]
     reader: [isaac.newton]
-  roles: {}"""
+  roles: {"boss": ["marie.curie"]}"""
 
     def get_block(self, block_id, ftype='yaml'):
-        return self.fake_block[ftype]
+        if block_id == 'frmBook':
+            return self.fake_block[ftype]
+        else:
+            if ftype == 'yaml':
+                return 'id: ' + block_id
+            else:
+                raise KeyError
 
     def set_fake_block_data(self, ftype, data):
         self.fake_block[ftype] = data

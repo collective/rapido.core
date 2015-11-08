@@ -21,8 +21,6 @@ class Rest(object):
             if path[0] == "block":
                 blockid = path[1]
                 block = self.app.get_block(blockid)
-                if not block:
-                    raise NotFound(blockid)
                 return block.settings
 
             elif path[0] == "records":
@@ -44,9 +42,6 @@ class Rest(object):
                     raise NotFound(record_id)
                 if len(path) == 2:
                     return record.items()
-                if len(path) == 3 and path[2] == "_full":
-                    return record.block.json(record)
-
             else:
                 raise NotAllowed()
 
@@ -103,17 +98,15 @@ class Rest(object):
                     'path': base_path + record.id,
                     'items': record.items()
                 } for record in results]
-            elif path[0] == "clear":
-                if not self.app.acl.is_manager():
-                    raise Unauthorized()
-                self.app.clear_storage()
-                return {
-                    'success': 'clear_storage',
-                }
             elif path[0] == "refresh":
                 if not self.app.acl.is_manager():
                     raise Unauthorized()
-                self.app.refresh()
+                if body:
+                    params = json.loads(body)
+                    rebuild = params and params['rebuild']
+                else:
+                    rebuild = False
+                self.app.refresh(rebuild=rebuild)
                 indexes = self.app.indexes
                 indexes.sort()
                 return {
@@ -130,8 +123,7 @@ class Rest(object):
             raise Unauthorized()
         try:
             if path[0] == "records":
-                for record in self.app.records():
-                    self.app.delete_record(record=record)
+                self.app.clear_storage()
                 return {'success': 'deleted'}
             elif path[0] != "record":
                 raise NotAllowed()
@@ -151,6 +143,9 @@ class Rest(object):
             if path[0] != "record":
                 raise NotAllowed()
             record_id = path[1]
+            existing = self.app.get_record(record_id)
+            if existing:
+                raise NotAllowed()
             record = self.app.create_record(id=record_id)
             items = json.loads(body)
             record.save(items, creation=True)
@@ -169,7 +164,7 @@ class Rest(object):
         try:
             if path[0] != "record":
                 raise NotAllowed()
-            record_id = path[0]
+            record_id = path[1]
             record = self.app.get_record(record_id)
             if not record:
                 raise NotFound(record_id)

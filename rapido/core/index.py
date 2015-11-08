@@ -6,11 +6,8 @@ class Index(object):
     def reindex(self, record):
         self.storage.reindex(record.context)
 
-    def reindex_all(self, rebuild=False):
-        if rebuild:
-            self.storage.rebuild()
-        else:
-            self.storage.reindex()
+    def reindex_all(self):
+        self.storage.reindex()
 
     def _search(self, query, sort_index=None, reverse=False):
         for record in self.storage.search(

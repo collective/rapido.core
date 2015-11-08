@@ -77,4 +77,7 @@ class DatetimeElement(BaseElement):
 
     def get_value(self, record=None):
         value = BaseElement.get_value(self, record)
-        return value.strftime("%Y-%m-%d")
+        if value:
+            return value.strftime("%Y-%m-%d")
+        else:
+            return ''

@@ -28,9 +28,10 @@ class Display(object):
         redirect = ""
         if directive == "block":
             block = self.app.get_block(obj_id)
-            if not block:
+            try:
+                result = block.display(edit=True)
+            except KeyError:
                 raise NotFound(obj_id)
-            result = block.display(edit=True)
         elif directive == "record":
             if not self.app.acl.has_permission('view'):
                 raise Unauthorized()
@@ -56,8 +57,6 @@ class Display(object):
         redirect = ""
         if directive == "block":
             block = self.app.get_block(obj_id)
-            if not block:
-                raise NotFound(obj_id)
             # execute submitted actions
             actions = [key for key in request.keys()
                 if key.startswith("action.")]
@@ -74,7 +73,10 @@ class Display(object):
                 record.save(request=request, block=block, creation=True)
                 redirect = record.url
             else:
-                result = block.display(edit=True)
+                try:
+                    result = block.display(edit=True)
+                except KeyError:
+                    raise NotFound(obj_id)
         elif directive == "record":
             record = self.app.get_record(obj_id)
             if not record:
@@ -84,11 +86,12 @@ class Display(object):
                 if not self.app.acl.has_permission('edit'):
                     raise Unauthorized()
                 record.save(request=request)
-            if request.get("_edit"):
+                result = record.display(edit=editmode)
+            elif request.get("_edit"):
                 if not self.app.acl.has_permission('edit'):
                     raise Unauthorized()
                 result = record.display(edit=True)
-            if request.get("_delete"):
+            elif request.get("_delete"):
                 if not self.app.acl.has_permission('delete'):
                     raise Unauthorized()
                 self.app.delete_record(record=record)

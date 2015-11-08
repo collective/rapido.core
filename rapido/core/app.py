@@ -23,6 +23,7 @@ class RapidoApplication(Index):
         self.app_context = context.context
         self.settings = yaml.load(self.context.get_settings())
         self._messages = []
+        self._blocks = {}
 
     def initialize(self):
         self.acl
@@ -73,9 +74,12 @@ class RapidoApplication(Index):
     def clear_storage(self):
         self.storage.clear()
 
-    def refresh(self):
-        # call the blocks so indexed elements are properly declared
-        # to the index
+    def refresh(self, rebuild=False):
+        if rebuild:
+            self.storage.rebuild()
+        # clean up and call the blocks so indexed elements are properly
+        # declared to the index
+        self._blocks = {}
         self.blocks
         self.reindex_all()
 
@@ -87,7 +91,9 @@ class RapidoApplication(Index):
         return list(self._records())
 
     def get_block(self, block_id):
-        return Block(block_id, self)
+        if block_id not in self._blocks:
+            self._blocks[block_id] = Block(block_id, self)
+        return self._blocks[block_id]
 
     @property
     def blocks(self):
