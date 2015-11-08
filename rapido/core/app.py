@@ -48,7 +48,7 @@ class RapidoApplication(Index):
         record = IRecord(record)
         if not id:
             id = str(hash(record))
-        record.set_item('id', id)
+        record['id'] = id
         record.reindex()
         return record
 

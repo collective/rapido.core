@@ -4,7 +4,7 @@ Changelog
 1.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- More pythonic access to record items
 
 
 1.0 (2015-11-07)

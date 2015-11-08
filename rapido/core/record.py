@@ -9,9 +9,9 @@ class Record(object):
     def __init__(self, context):
         self.context = context
         self.uid = self.context.uid()
-        self.id = self.context.get_item('id')
+        self.id = self.context.get('id')
         self.app = self.context.app
-        block_id = self.get_item('block')
+        block_id = self.get('block', None)
         if block_id:
             self.block = self.app.get_block(block_id)
         else:
@@ -27,25 +27,34 @@ class Record(object):
 
     @property
     def title(self):
-        return self.get_item('title')
+        return self.get('title', None)
 
-    def set_item(self, name, value):
+    def get(self, name, default=None):
+        if name in self.context:
+            return self.context[name]
+        else:
+            return default
+
+    def __getitem__(self, name):
+        return self.context[name]
+
+    def __setitem__(self, name, value):
         if name == "id":
             # make sure id is unique
             duplicate = self.app.get_record(value)
             if duplicate and duplicate.uid != self.uid:
                 value = "%s-%s" % (value, str(hash(self.context)))
             self.id = value
-        self.context.set_item(name, value)
+        self.context[name] = value
 
-    def get_item(self, name, default=None):
-        if self.context.has_item(name):
-            return self.context.get_item(name)
-        else:
-            return default
+    def __contains__(self, name):
+        return name in self.context
 
-    def remove_item(self, name):
-        self.context.remove_item(name)
+    def __delitem__(self, name):
+        del self.context[name]
+
+    def __iter__(self):
+        return iter(self.items())
 
     def items(self):
         return self.context.items()
@@ -62,7 +71,7 @@ class Record(object):
         if not(block or block_id or (request and request.get('block'))):
             if type(request) is dict:
                 for (key, value) in request.items():
-                    self.set_item(key, value)
+                    self[key] = value
                 self.reindex()
                 return
             else:
@@ -71,26 +80,26 @@ class Record(object):
             block_id = request.get('block')
         if not block:
             block = self.app.get_block(block_id)
-        self.set_item('block', block.id)
+        self['block'] = block.id
 
         # store submitted elements
         if request:
             for element in block.elements.keys():
                 if element in request.keys():
-                    self.set_item(element, request.get(element))
+                    self[element] = request.get(element)
 
         # compute elements
         for (element, params) in block.elements.items():
             if (params.get('mode') == 'COMPUTED_ON_SAVE' or
             (params.get('mode') == 'COMPUTED_ON_CREATION' and creation)):
-                self.set_item(
-                    element, block.compute_element(element, {'record': self}))
+                self[element] = block.compute_element(
+                    element, {'record': self})
 
         # compute id if record creation
         if creation:
             record_id = block.execute('record_id', self)
             if record_id:
-                self.set_item('id', record_id)
+                self['id'] = record_id
 
         # execute on_save
         block.on_save(self)
@@ -99,7 +108,7 @@ class Record(object):
         title = block.compute_element('title', {'record': self})
         if not title:
             title = block.title
-        self.set_item('title', title)
+        self['title'] = title
 
         self.reindex()
 

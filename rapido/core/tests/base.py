@@ -32,8 +32,8 @@ def author(context):
 
 # executed everytime we save a record with this block
 def on_save(context):
-    author = context.get_item('author')
-    context.set_item('author', author.upper())""",
+    author = context['author']
+    context['author'] = author.upper()""",
 
     'html': """Author: {author}
 <footer>Powered by Rapido</footer>"""

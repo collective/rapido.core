@@ -70,7 +70,7 @@ class Display(object):
                 if not self.app.acl.has_permission('create'):
                     raise Unauthorized()
                 record = self.app.create_record()
-                record.set_item('_author', [self.app.acl.current_user(), ])
+                record['_author'] = [self.app.acl.current_user(), ]
                 record.save(request=request, block=block, creation=True)
                 redirect = record.url
             else:

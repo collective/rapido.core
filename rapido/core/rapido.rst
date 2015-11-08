@@ -36,10 +36,16 @@ Create a record::
     >>> record.id == 'record_1'
     True
     >>> uid = record.uid
-    >>> record.set_item('author', "Joseph Conrad")
-    >>> record.set_item('book_tile', "Lord Jim")
-    >>> record.get_item('author')
+    >>> record['author'] = "Joseph Conrad"
+    >>> record['book_tile'] = "Lord Jim"
+    >>> record['author']
     'Joseph Conrad'
+    >>> record['not_important'] = 2
+    >>> 'not_important' in record
+    True
+    >>> del record['not_important']
+    >>> [key for key in record]
+    ['book_tile', 'id', 'author']
 
 Records can be found by uid or by id::
     >>> record.reindex()
@@ -65,15 +71,15 @@ We can use block to display records::
 After saving the record, the `on_save` method is called. In our case, the author
 has been changed to uppercase::
     >>> record.save(block=block)
-    >>> record.get_item('author')
+    >>> record['author']
     'JOSEPH CONRAD'
 
 Records can be searched::
-    >>> [record.get_item('author') for record in app.search('id=="record_1"')]
+    >>> [record['author'] for record in app.search('id=="record_1"')]
     ['JOSEPH CONRAD']
-    >>> [record.get_item('author') for record in app.search('author=="JOSEPH CONRAD"')]
+    >>> [record['author'] for record in app.search('author=="JOSEPH CONRAD"')]
     ['JOSEPH CONRAD']
-    >>> [record.get_item('author') for record in app.search('"joseph" in author')]
+    >>> [record['author'] for record in app.search('"joseph" in author')]
     ['JOSEPH CONRAD']
 
 Records can be deleted::
@@ -104,7 +110,7 @@ By default, the record title is the block title::
 But it can be computed::
     >>> app_obj.set_fake_block_data('py', """
     ... def title(context):
-    ...     return context.record.get_item('author')""")
+    ...     return context.record['author']""")
     >>> block = app.get_block('frmBook')
     >>> record.save(block=block)
     >>> record.title
@@ -113,16 +119,16 @@ But it can be computed::
 Elements can be computed on save::
     >>> app_obj.set_fake_block_data('py', """
     ... def famous_quote(context):
-    ...     existing = context.record.get_item('famous_quote')
+    ...     existing = context.record['famous_quote']
     ...     if not existing:
     ...         return 'A good plan violently executed now is better than a perfect plan executed next week.'
     ...     return existing + " Or next week." """)
     >>> block = app.get_block('frmBook')
     >>> record.save(block=block)
-    >>> record.get_item('famous_quote')
+    >>> record['famous_quote']
     'A good plan violently executed now is better than a perfect plan executed next week.'
     >>> record.save(block=block)
-    >>> record.get_item('famous_quote')
+    >>> record['famous_quote']
     'A good plan violently executed now is better than a perfect plan executed next week. Or next week.'
 
 Elements can be computed on creation::
@@ -132,10 +138,10 @@ Elements can be computed on creation::
     >>> block = app.get_block('frmBook')
     >>> record4 = app.create_record()
     >>> record4.save(block=block, creation=True)
-    >>> record4.get_item('forever')
+    >>> record4['forever']
     'I will never change.'
     >>> record.save(block=block)
-    >>> record.get_item('forever') is None
+    >>> record.get('forever') is None
     True
 
 Access rights

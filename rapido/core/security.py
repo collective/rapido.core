@@ -92,7 +92,7 @@ class AccessControlList(object):
                 if permission in ACCESS_RIGHTS_PERMISSIONS[access_right]:
                     return True
                 if (access_right == 'author' and record
-                and self.current_user() in record.get_item('_author', [])
+                and self.current_user() in record.get('_author', [])
                 and permission in ACCESS_RIGHTS_PERMISSIONS['if-author']):
                     return True
         return False

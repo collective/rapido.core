@@ -36,22 +36,6 @@ class IRecordable(Interface):
     """ Something able to handle a record
     """
 
-    def set_item(self, name, value):
-        """ set an item value
-        """
-
-    def get_item(self, name):
-        """ return an item value
-        """
-
-    def has_item(self, name):
-        """ test if item exists
-        """
-
-    def remove_item(self, name):
-        """ remove an item
-        """
-
     def uid(self):
         """ return internal identifier
         """
