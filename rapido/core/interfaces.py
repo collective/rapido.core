@@ -78,10 +78,6 @@ class IStorage(Interface):
         """ return an existing record
         """
 
-    def save(self, record):
-        """ save a record
-        """
-
     def delete(self, record):
         """ delete a record
         """
