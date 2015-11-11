@@ -66,7 +66,7 @@ We can use block to display records::
     >>> block.display(record)
     u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
     >>> block.display(record, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="Joseph Conrad" />\n<footer>Powered by Rapido</footer></form>\n'
+    u'...<input type="text"\n        name="author" value="Joseph Conrad" />...'
 
 After saving the record, the `on_save` method is called. In our case, the author
 has been changed to uppercase::
@@ -111,6 +111,17 @@ The record id can be computed::
     >>> record3.id
     'my-id-...'
 
+When saving value from a dict, the block is optional::
+    >>> record3.save({'author': "John DosPassos"})
+
+When saving value from a request, the block is mandatory::
+    >>> from zope.publisher.browser import TestRequest
+    >>> request = TestRequest()
+    >>> record3.save(request)
+    Traceback (most recent call last):
+    ...
+    Exception: Cannot save without a block
+
 By default, the record title is the block title::
     >>> record.title
     'Book'
@@ -126,6 +137,13 @@ But it can be computed::
     >>> record.save(block=block)
     >>> record.title
     'JOSEPH CONRAD'
+
+Python file is not mandatory for rendering
+    >>> app_obj.delete_fake_block_data('py')
+    >>> del app._blocks['frmBook']
+    >>> block = app.get_block('frmBook')
+    >>> block.display(None, edit=True)
+    u'...Author: <input type="text"\n        name="author" value="" />...'
 
 Python errors handling
     >>> app_obj.set_fake_block_data('py', """
@@ -180,6 +198,22 @@ Elements can be computed on creation::
     >>> record.get('forever') is None
     True
 
+Undefined elements
+    >>> app_obj.set_fake_block_data('html', """Author: {author}
+    ... {summary}<footer>Powered by Rapido</footer>""")
+    >>> del app._blocks['frmBook']
+    >>> block = app.get_block('frmBook')
+    >>> block.display(None, edit=True)
+    u'...UNDEFINED ELEMENT...'
+
+Undefined element type
+    >>> app_obj.set_fake_block_data('html', """Author: {author}
+    ... {bad_field}<footer>Powered by Rapido</footer>""")
+    >>> del app._blocks['frmBook']
+    >>> block = app.get_block('frmBook')
+    >>> block.display(None, edit=True)
+    u'...UNKNOWN ELEMENT TYPE...'
+
 Datetime and number fields
     >>> app_obj.set_fake_block_data('py', """
     ... def author(context):
@@ -191,7 +225,7 @@ Datetime and number fields
     >>> del app._blocks['frmBook']
     >>> block = app.get_block('frmBook')
     >>> block.display(None, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<input type="date"\n        name="publication" value="" /> <input type="number"\n        name="year" value="1845" /><footer>Powered by Rapido</footer></form>\n'
+    u'...<input type="date"\n        name="publication" value="" /> <input type="number"\n        name="year" value="1845" />...'
 
     >>> app_obj.set_fake_block_data('html', """Author: {author}
     ... <footer>Powered by Rapido</footer>""")
@@ -205,7 +239,7 @@ Actions
     >>> del app._blocks['frmBook']
     >>> block = app.get_block('frmBook')
     >>> block.display(None, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="" />\n<input type="submit"\n        name="action.do_something" value="Do" /> <input type="submit"\n        name="_save" value="Save" /><footer>Powered by Rapido</footer></form>\n'
+    u'...<input type="submit"\n        name="action.do_something" value="Do" /> <input type="submit"\n        name="_save" value="Save" />...'
     >>> app_obj.set_fake_block_data('html', """Author: {author}
     ... <footer>Powered by Rapido</footer>""")
     >>> del app._blocks['frmBook']
@@ -221,7 +255,7 @@ HTTP commands
     ...
     NotFound
     >>> display.GET(['testapp', 'record', 'record_1'], {})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: JOSEPH CONRAD\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'...Author: JOSEPH CONRAD...', '')
     >>> display.GET(['testapp', 'record', 'record_1_not_existing'], {})
     Traceback (most recent call last):
     ...
@@ -233,22 +267,22 @@ HTTP commands
     ...
     NotAllowed
     >>> display.POST(['testapp', 'block', 'frmBook'], {})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="" />\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'...Author: <input type="text"\n        name="author" value="" />...', '')
     >>> display.POST(['testapp', 'block', 'not_existing'], {})
     Traceback (most recent call last):
     ...
     NotFound
     >>> result = display.POST(['testapp', 'block', 'frmBook'], {'action.do_something': True})
     >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'author': 'J. Conrad'})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: J. Conrad\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'...Author: J. Conrad...', '')
     >>> display.POST(['testapp', 'record', 'record_1111'], {'_save': True, 'author': 'J. Conrad'})
     Traceback (most recent call last):
     ...
     NotFound
     >>> display.POST(['testapp', 'record', 'record_1'], {})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: J. Conrad\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'...Author: J. Conrad...', '')
     >>> display.POST(['testapp', 'record', 'record_1'], {'_edit': True})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="J. Conrad" />\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'...Author: <input type="text"\n        name="author" value="J. Conrad" />...', '')
     >>> display.POST(['testapp', 'bad_directive'], {})
     Traceback (most recent call last):
     ...
@@ -264,7 +298,7 @@ REST commands
     ...
     NotAllowed
     >>> rest.GET(['block', 'frmBook'], "")
-    {'code': '', 'elements': {'forever': {'type': 'TEXT', 'mode': 'COMPUTED_ON_CREATION'}, 'publication': {'type': 'DATETIME'}, 'author': {'index_type': 'text', 'type': 'TEXT'}, 'famous_quote': {'type': 'TEXT', 'mode': 'COMPUTED_ON_SAVE'}, 'year': {'type': 'NUMBER'}, 'do_something': {'type': 'ACTION', 'label': 'Do'}, '_save': {'type': 'ACTION', 'label': 'Save'}}, 'layout': 'Author: {author}\n<footer>Powered by Rapido</footer>', 'target': 'ajax', 'title': 'Book', 'debug': True, 'id': 'frmBook'}
+    {'code': '', 'elements': {'forever': {'type': 'TEXT', 'mode': 'COMPUTED_ON_CREATION'}, 'publication': {'type': 'DATETIME'}, 'author': {'index_type': 'text', 'type': 'TEXT'}, 'bad_field': {'type': 'WHATEVER'}, 'do_something': {'type': 'ACTION', 'label': 'Do'}, 'year': {'type': 'NUMBER'}, 'famous_quote': {'type': 'TEXT', 'mode': 'COMPUTED_ON_SAVE'}, '_save': {'type': 'ACTION', 'label': 'Save'}}, 'layout': 'Author: {author}\n<footer>Powered by Rapido</footer>', 'target': 'ajax', 'title': 'Book', 'debug': True, 'id': 'frmBook'}
     >>> rest.GET(['block', 'not_existing'], {})
     {'elements': {}, 'id': 'not_existing', 'title': ''}
     >>> len(rest.GET(['records'], ""))
@@ -395,7 +429,7 @@ Access rights
     >>> app.acl.has_access_right("reader")
     True
     >>> display.GET(['testapp', 'record', 'record_1'], {})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: J. Conrad\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'...Author: J. Conrad...', '')
     >>> display.POST(['testapp', 'block', 'frmBook'], {'_save': True, 'item2': 'value2'})
     Traceback (most recent call last):
     ...
@@ -441,7 +475,7 @@ Access rights
     >>> app.acl.has_role("boss")
     True
     >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: J. Conrad\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'...Author: J. Conrad...', '')
     >>> display.POST(['testapp', 'record', 'record_1'], {'_delete': True})
     ('deleted', '')
     >>> rest.DELETE(['record', 'new_record'], "")

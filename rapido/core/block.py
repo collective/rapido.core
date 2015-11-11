@@ -47,8 +47,6 @@ class ElementDict(dict):
         self.block = block
         self.record = record
         self.edit = edit
-        if not action:
-            action = self.block.url
         classes = ' '.join(["rapido-block"] + classes)
         self.params = {
             '_block_name': block.id,

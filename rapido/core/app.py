@@ -41,9 +41,6 @@ class RapidoApplication(Index):
     def url(self):
         return self.context.url()
 
-    def json(self):
-        return self.settings
-
     def create_record(self, id=None):
         record = self.storage.create()
         record = IRecord(record)

@@ -16,7 +16,7 @@ class Rest(object):
         # body will be always empty
         try:
             if not path:
-                return self.app.json()
+                return self.app.settings
 
             if path[0] == "block":
                 blockid = path[1]

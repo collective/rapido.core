@@ -14,6 +14,8 @@ elements:
         type: TEXT
     year:
         type: NUMBER
+    bad_field:
+        type: WHATEVER
     famous_quote:
         mode: COMPUTED_ON_SAVE
         type: TEXT
@@ -103,6 +105,9 @@ class SimpleRapidoApplication(BaseNode):
 
     def set_fake_block_data(self, ftype, data):
         self.fake_block[ftype] = data
+
+    def delete_fake_block_data(self, ftype):
+        del self.fake_block[ftype]
 
     def current_user(self):
         return self.fake_user
