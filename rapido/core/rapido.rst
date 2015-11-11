@@ -1,6 +1,7 @@
 Soup Creation
 =============
 
+    >>> from zope.publisher.browser import TestRequest
     >>> from zope.configuration.xmlconfig import XMLConfig
     >>> import zope.component
     >>> XMLConfig("meta.zcml", zope.component)()
@@ -62,9 +63,9 @@ We can use block to display records::
     >>> from rapido.core.interfaces import IBlock
     >>> block = app.get_block('frmBook')
     >>> block.display(None, edit=True)
-    u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
+    u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here", "debug": true}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="Victor Hugo" />\n<footer>Powered by Rapido</footer></form>\n'
     >>> block.display(record)
-    u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
+    u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/record/record_1"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here", "debug": true}, "id": "frmBook"}\'\n    method="POST">Author: Joseph Conrad\n<footer>Powered by Rapido</footer></form>\n'
     >>> block.display(record, edit=True)
     u'...<input type="text"\n        name="author" value="Joseph Conrad" />...'
 
@@ -115,12 +116,23 @@ When saving value from a dict, the block is optional::
     >>> record3.save({'author': "John DosPassos"})
 
 When saving value from a request, the block is mandatory::
-    >>> from zope.publisher.browser import TestRequest
     >>> request = TestRequest()
     >>> record3.save(request)
     Traceback (most recent call last):
     ...
     Exception: Cannot save without a block
+    >>> request = TestRequest(form=dict(
+    ...     block='frmBook',
+    ...     author='J. DosPassos',
+    ...     year='2015',
+    ...     publication='2015-11-15',
+    ...     weight='1.3',
+    ... ))
+    >>> record3.save(request)
+    >>> record3['author']
+    'J. DosPassos'
+    >>> record3['weight']
+    1.3
 
 By default, the record title is the block title::
     >>> record.title
@@ -208,7 +220,7 @@ Undefined elements
 
 Undefined element type
     >>> app_obj.set_fake_block_data('html', """Author: {author}
-    ... {bad_field}<footer>Powered by Rapido</footer>""")
+    ... {bad_field} {publication}<footer>Powered by Rapido</footer>""")
     >>> del app._blocks['frmBook']
     >>> block = app.get_block('frmBook')
     >>> block.display(None, edit=True)
@@ -219,13 +231,17 @@ Datetime and number fields
     ... def author(context):
     ...     return "Victor Hugo"
     ... def year(context):
-    ...     return 1845""")
+    ...     return 1845
+    ... def weight(context):
+    ...     return 3.2
+    ... def publication(context):
+    ...     return context.app.get_block("frmBook").get_element("publication").process_input("2015-11-10")""")
     >>> app_obj.set_fake_block_data('html', """Author: {author}
-    ... {publication} {year}<footer>Powered by Rapido</footer>""")
+    ... {publication} {year} {weight}<footer>Powered by Rapido</footer>""")
     >>> del app._blocks['frmBook']
     >>> block = app.get_block('frmBook')
     >>> block.display(None, edit=True)
-    u'...<input type="date"\n        name="publication" value="" /> <input type="number"\n        name="year" value="1845" />...'
+    u'...<input type="date"\n        name="publication" value="2015-11-10" /> <input type="number"\n        name="year" value="1845" /> <input type="number"\n        name="weight" value="3.2" />...'
 
     >>> app_obj.set_fake_block_data('html', """Author: {author}
     ... <footer>Powered by Rapido</footer>""")
@@ -249,7 +265,7 @@ HTTP commands
     >>> from rapido.core.interfaces import IDisplay
     >>> display = IDisplay(app)
     >>> display.GET(['testapp', 'block', 'frmBook'], {})
-    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here"}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="" />\n<footer>Powered by Rapido</footer></form>\n', '')
+    (u'<form\n    name="frmBook"\n    class="rapido-block rapido-target-ajax"\n    action="http://here/block/frmBook"\n    rapido-settings=\'{"target": "ajax", "title": "Book", "debug": true, "app": {"url": "http://here", "debug": true}, "id": "frmBook"}\'\n    method="POST">Author: <input type="text"\n        name="author" value="" />\n<footer>Powered by Rapido</footer></form>\n', '')
     >>> display.GET(['testapp', 'block', 'not_existing'], {})
     Traceback (most recent call last):
     ...
@@ -260,6 +276,8 @@ HTTP commands
     Traceback (most recent call last):
     ...
     NotFound
+    >>> display.GET(['testapp', 'record', 'record_1', 'edit'], {})
+    (u'...Author: <input type="text"\n        name="author" value="JOSEPH CONRAD" />...', '')
     >>> display.GET(['testapp', 'refresh'], {})
     (u'Refreshed (author, id)', '')
     >>> display.GET(['testapp', 'bad_directive'], {})
@@ -292,13 +310,13 @@ REST commands
     >>> from rapido.core.interfaces import IRest
     >>> rest = IRest(app)
     >>> rest.GET([], "")
-    {'acl': {'roles': {'boss': ['marie.curie']}, 'rights': {'author': ['FamousDiscoverers'], 'editor': ['marie.curie'], 'reader': ['isaac.newton']}}}
+    {'debug': True, 'acl': {'roles': {'boss': ['marie.curie']}, 'rights': {'author': ['FamousDiscoverers'], 'editor': ['marie.curie'], 'reader': ['isaac.newton']}}}
     >>> rest.GET(['bad_directive'], "")
     Traceback (most recent call last):
     ...
     NotAllowed
     >>> rest.GET(['block', 'frmBook'], "")
-    {'code': '', 'elements': {'forever': {'type': 'TEXT', 'mode': 'COMPUTED_ON_CREATION'}, 'publication': {'type': 'DATETIME'}, 'author': {'index_type': 'text', 'type': 'TEXT'}, 'bad_field': {'type': 'WHATEVER'}, 'do_something': {'type': 'ACTION', 'label': 'Do'}, 'year': {'type': 'NUMBER'}, 'famous_quote': {'type': 'TEXT', 'mode': 'COMPUTED_ON_SAVE'}, '_save': {'type': 'ACTION', 'label': 'Save'}}, 'layout': 'Author: {author}\n<footer>Powered by Rapido</footer>', 'target': 'ajax', 'title': 'Book', 'debug': True, 'id': 'frmBook'}
+    {'code': '', 'elements': {'forever': {'type': 'TEXT', 'mode': 'COMPUTED_ON_CREATION'}, 'publication': {'type': 'DATETIME'}, 'weight': {'type': 'NUMBER'}, 'author': {'index_type': 'text', 'type': 'TEXT'}, 'bad_field': {'type': 'WHATEVER'}, 'do_something': {'type': 'ACTION', 'label': 'Do'}, 'year': {'type': 'NUMBER'}, 'famous_quote': {'type': 'TEXT', 'mode': 'COMPUTED_ON_SAVE'}, '_save': {'type': 'ACTION', 'label': 'Save'}}, 'layout': 'Author: {author}\n<footer>Powered by Rapido</footer>', 'target': 'ajax', 'title': 'Book', 'debug': True, 'id': 'frmBook'}
     >>> rest.GET(['block', 'not_existing'], {})
     {'elements': {}, 'id': 'not_existing', 'title': ''}
     >>> len(rest.GET(['records'], ""))

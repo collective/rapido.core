@@ -3,4 +3,4 @@ omit =
     */test*
 
 include =
-    rapido/*
+    rapido/core/*

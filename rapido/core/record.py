@@ -84,9 +84,13 @@ class Record(object):
 
         # store submitted elements
         if request:
-            for element in block.elements.keys():
-                if element in request.keys():
-                    self[element] = request.get(element)
+            for el_id in block.elements.keys():
+                if el_id in request.keys():
+                    if type(request) is dict:
+                        self[el_id] = request.get(el_id)
+                    else:
+                        element = block.get_element(el_id)
+                        self[el_id] = element.process_input(request.get(el_id))
 
         # compute elements
         for (element, params) in block.elements.items():

@@ -14,6 +14,8 @@ elements:
         type: TEXT
     year:
         type: NUMBER
+    weight:
+        type: NUMBER
     bad_field:
         type: WHATEVER
     famous_quote:
@@ -87,7 +89,8 @@ class SimpleRapidoApplication(BaseNode):
         return ['frmBook']
 
     def get_settings(self):
-        return """acl:
+        return """debug: true
+acl:
   rights:
     author: [FamousDiscoverers]
     editor: [marie.curie]

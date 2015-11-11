@@ -58,15 +58,11 @@ class ElementDict(dict):
     def __getitem__(self, key):
         if key in self.params:
             return self.params[key]
-        element_settings = self.block.elements.get(key, None)
-        if not element_settings:
-            return "UNDEFINED ELEMENT"
-        constructor = get_element_class(element_settings['type'])
-        if constructor:
-            element = constructor(key, element_settings, self.block)
-            return element.render(self.record, edit=self.edit)
-        else:
-            return "UNKNOWN ELEMENT TYPE"
+        try:
+            element = self.block.get_element(key)
+        except Exception, e:
+            return str(e)
+        return element.render(self.record, edit=self.edit)
 
 
 class Block(FormulaContainer):
@@ -127,8 +123,6 @@ class Block(FormulaContainer):
         )
 
     def display(self, record=None, edit=False):
-        if not self.layout:
-            return ""
         layout = BLOCK_TEMPLATE % self.layout
         if record:
             action = record.url
@@ -163,3 +157,14 @@ class Block(FormulaContainer):
     def on_delete(self, record):
         result = self.execute('on_delete', record)
         return result
+
+    def get_element(self, element_id):
+        element_settings = self.elements.get(element_id, None)
+        if not element_settings:
+            raise Exception("UNDEFINED ELEMENT")
+        constructor = get_element_class(element_settings['type'])
+        if constructor:
+            element = constructor(element_id, element_settings, self)
+            return element
+        else:
+            raise Exception("UNKNOWN ELEMENT TYPE")

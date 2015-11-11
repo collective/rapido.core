@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class BaseElement(object):
 
     def __init__(self, id, settings, block):
@@ -12,6 +15,9 @@ class BaseElement(object):
             element_value = self.block.compute_element(
                 self.id, {'block': self.block})
         return element_value
+
+    def process_input(self, value):
+        return value
 
     def render(self, record=None, edit=False):
         element_value = self.get_value(record)
@@ -51,6 +57,16 @@ class NumberElement(BaseElement):
     edit_template = """<input type="number"
         name="{id}" value="{value}" />"""
 
+    def process_input(self, value):
+        if '.' in value:
+            return float(value)
+        else:
+            return int(value)
+
+    def get_value(self, record=None):
+        value = BaseElement.get_value(self, record)
+        return str(value)
+
 
 class ActionElement(BaseElement):
 
@@ -81,3 +97,6 @@ class DatetimeElement(BaseElement):
             return value.strftime("%Y-%m-%d")
         else:
             return ''
+
+    def process_input(self, value):
+        return datetime.strptime(value, "%Y-%m-%d")
