@@ -76,6 +76,7 @@ class SimpleRapidoApplication(BaseNode):
         self.fake_groups = []
         self.context = Context()
         self.fake_block = FAKE
+        self.settings = 'no_settings: {}'
 
     @property
     def root(self):
@@ -89,13 +90,7 @@ class SimpleRapidoApplication(BaseNode):
         return ['frmBook']
 
     def get_settings(self):
-        return """debug: true
-acl:
-  rights:
-    author: [FamousDiscoverers]
-    editor: [marie.curie]
-    reader: [isaac.newton]
-  roles: {"boss": ["marie.curie"]}"""
+        return self.settings
 
     def get_block(self, block_id, ftype='yaml'):
         if block_id == 'frmBook':

@@ -1,6 +1,7 @@
 from zope.component.interfaces import ObjectEvent
-from zope.interface import Interface,implements
+from zope.interface import Interface, implements
 import traceback
+
 
 class ICompilationErrorEvent(Interface):
     """ when user code cannot be compiled """
@@ -35,12 +36,9 @@ class ExecutionErrorEvent(ObjectEvent):
         self.container = container
         self.traceback = traceback.format_exc().splitlines()
 
-        if not hasattr(self.error, 'message') or not self.error.message:
-            error_msg = "%s %s" % (
-                self.error.__class__.__name__,
-                str(self.error))
-        else:
-            error_msg = self.error.message
+        error_msg = getattr(self.error, 'message', "%s %s" % (
+            self.error.__class__.__name__,
+            str(self.error)))
         error_line = self.traceback[-2].replace('  File "<string>", ', '')
         self.message = """%s, %s""" % (
             error_msg,

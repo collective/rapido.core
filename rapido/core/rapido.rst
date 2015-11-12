@@ -30,6 +30,19 @@ Create a persistent object that will be adapted as a rapido app::
     >>> app_obj = root['myapp']
     >>> app = IRapidoApplication(app_obj)
     >>> app.initialize()
+    >>> app.settings
+    {'no_settings': {}, 'acl': {'roles': {}, 'rights': {'author': [], 'editor': [], 'reader': []}}}
+    >>> app_obj.settings = """debug: true
+    ... acl:
+    ...   rights:
+    ...     author: [FamousDiscoverers]
+    ...     editor: [marie.curie]
+    ...     reader: [isaac.newton]
+    ...   roles: {"boss": ["marie.curie"], "biology": ["FamousDiscoverers"]}"""
+    >>> app = IRapidoApplication(app_obj)
+    >>> app.initialize()
+    >>> app.settings
+    {'debug': True, 'acl': {'roles': {'biology': ['FamousDiscoverers'], 'boss': ['marie.curie']}, 'rights': {'author': ['FamousDiscoverers'], 'editor': ['marie.curie'], 'reader': ['isaac.newton']}}}
 
 Create a record::
 
@@ -310,7 +323,7 @@ REST commands
     >>> from rapido.core.interfaces import IRest
     >>> rest = IRest(app)
     >>> rest.GET([], "")
-    {'debug': True, 'acl': {'roles': {'boss': ['marie.curie']}, 'rights': {'author': ['FamousDiscoverers'], 'editor': ['marie.curie'], 'reader': ['isaac.newton']}}}
+    {'debug': True, 'acl': {'roles': {'biology': ['FamousDiscoverers'], 'boss': ['marie.curie']}, 'rights': {'author': ['FamousDiscoverers'], 'editor': ['marie.curie'], 'reader': ['isaac.newton']}}}
     >>> rest.GET(['bad_directive'], "")
     Traceback (most recent call last):
     ...
@@ -399,7 +412,7 @@ REST commands
 
 Access rights
     >>> app.acl.roles()
-    {'boss': ['marie.curie']}
+    {'biology': ['FamousDiscoverers'], 'boss': ['marie.curie']}
     >>> app_obj.set_fake_user("nobody")
     >>> display.GET(['testapp', 'refresh'], {})
     Traceback (most recent call last):
@@ -491,6 +504,11 @@ Access rights
     >>> app.acl.has_role("anything")
     False
     >>> app.acl.has_role("boss")
+    True
+    >>> app.acl.has_role("biology")
+    False
+    >>> app_obj.set_fake_groups(["FamousDiscoverers"])
+    >>> app.acl.has_role("biology")
     True
     >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
     (u'...Author: J. Conrad...', '')
