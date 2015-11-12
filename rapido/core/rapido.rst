@@ -35,9 +35,9 @@ Create a persistent object that will be adapted as a rapido app::
     >>> app_obj.settings = """debug: true
     ... acl:
     ...   rights:
-    ...     author: [FamousDiscoverers]
+    ...     author: [isaac.newton]
     ...     editor: [marie.curie]
-    ...     reader: [isaac.newton]
+    ...     reader: []
     ...   roles: {"boss": ["marie.curie"], "biology": ["FamousDiscoverers"]}"""
     >>> app = IRapidoApplication(app_obj)
     >>> app.initialize()
@@ -485,7 +485,7 @@ Access rights
     Traceback (most recent call last):
     ...
     Unauthorized
-    >>> app_obj.set_fake_user("FamousDiscoverers")
+    >>> app_obj.set_fake_user("isaac.newton")
     >>> app.acl.has_access_right("author")
     True
     >>> display.POST(['testapp', 'record', 'record_1'], {'_save': True, 'item2': 'value2'})
