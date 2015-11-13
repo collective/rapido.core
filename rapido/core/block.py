@@ -20,7 +20,6 @@ ELEMENT_WIDGET_MAPPING = {
     'DATETIME': 'text',
 }
 DEFAULT_SETTINGS = {
-    'title': "",
     'elements': {},
 }
 
@@ -80,10 +79,6 @@ class Block(FormulaContainer):
             if (self.settings['elements'][element].get('index_type', None)
             and element not in app.indexes):
                 self.init_element(element)
-
-    @property
-    def title(self):
-        return self.settings['title']
 
     @property
     def layout(self):

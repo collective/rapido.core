@@ -25,10 +25,6 @@ class Record(object):
             str(self.id),
         ])
 
-    @property
-    def title(self):
-        return self.get('title', None)
-
     def get(self, name, default=None):
         if name in self.context:
             return self.context[name]
@@ -107,12 +103,6 @@ class Record(object):
 
         # execute on_save
         block.on_save(self)
-
-        # compute title
-        title = block.compute_element('title', {'record': self})
-        if not title:
-            title = block.title
-        self['title'] = title
 
         self.reindex()
 
