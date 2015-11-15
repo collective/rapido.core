@@ -83,16 +83,16 @@ class Display(object):
                 raise NotFound(obj_id)
             editmode = (action == "edit")
             if request.get("_save"):
-                if not self.app.acl.has_permission('edit'):
+                if not self.app.acl.has_permission('edit', record):
                     raise Unauthorized()
                 record.save(request=request)
                 result = record.display(edit=editmode)
             elif request.get("_edit"):
-                if not self.app.acl.has_permission('edit'):
+                if not self.app.acl.has_permission('edit', record):
                     raise Unauthorized()
                 result = record.display(edit=True)
             elif request.get("_delete"):
-                if not self.app.acl.has_permission('delete'):
+                if not self.app.acl.has_permission('delete', record):
                     raise Unauthorized()
                 self.app.delete_record(record=record)
                 # TODO: use on_delete to provide redirection

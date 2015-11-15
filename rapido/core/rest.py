@@ -51,7 +51,7 @@ class Rest(object):
     def POST(self, path, body):
         try:
             if len(path) == 0:
-                if not self.app.acl.has_permission('create_record'):
+                if not self.app.acl.has_permission('create'):
                     raise Unauthorized()
                 record = self.app.create_record()
                 items = json.loads(body)
@@ -63,17 +63,17 @@ class Rest(object):
                     'path': base_path + record.id
                 }
             elif path[0] == "record":
-                if not self.app.acl.has_permission('edit_record'):
-                    raise Unauthorized()
                 record_id = path[1]
                 record = self.app.get_record(record_id)
                 if not record:
                     raise NotFound(record_id)
+                if not self.app.acl.has_permission('edit', record):
+                    raise Unauthorized()
                 items = json.loads(body)
                 record.save(items)
                 return {'success': 'updated'}
             elif path[0] == "records":
-                if not self.app.acl.has_permission('create_record'):
+                if not self.app.acl.has_permission('create'):
                     raise Unauthorized()
                 rows = json.loads(body)
                 for row in rows:
@@ -119,10 +119,10 @@ class Rest(object):
             raise NotAllowed()
 
     def DELETE(self, path, body):
-        if not self.app.acl.has_permission('delete'):
-            raise Unauthorized()
         try:
             if path[0] == "records":
+                if not self.app.acl.has_permission('delete'):
+                    raise Unauthorized()
                 self.app.clear_storage()
                 return {'success': 'deleted'}
             elif path[0] != "record":
@@ -131,6 +131,8 @@ class Rest(object):
             record = self.app.get_record(record_id)
             if not record:
                 raise NotFound(record_id)
+            if not self.app.acl.has_permission('delete', record):
+                raise Unauthorized()
             self.app.delete_record(record=record)
             return {'success': 'deleted'}
         except IndexError:
@@ -159,8 +161,6 @@ class Rest(object):
             raise NotAllowed()
 
     def PATCH(self, path, body):
-        if not self.app.acl.has_permission('edit'):
-            raise Unauthorized()
         try:
             if path[0] != "record":
                 raise NotAllowed()
@@ -168,6 +168,8 @@ class Rest(object):
             record = self.app.get_record(record_id)
             if not record:
                 raise NotFound(record_id)
+            if not self.app.acl.has_permission('edit', record):
+                raise Unauthorized()
             items = json.loads(body)
             record.save(items)
             return {'success': 'updated'}
