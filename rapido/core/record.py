@@ -52,6 +52,10 @@ class Record(object):
     def __iter__(self):
         return iter(self.items())
 
+    def set_block(self, block_id):
+        self.block = self.app.get_block(block_id)
+        self['block'] = block_id
+
     def items(self):
         return self.context.items()
 
