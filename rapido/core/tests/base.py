@@ -5,9 +5,8 @@ from zope.annotation.interfaces import IAttributeAnnotatable
 from rapido.core.app import Context
 from rapido.core.interfaces import IRapidable
 
-FAKE = {
+FAKE1 = {
     'yaml': """target: ajax
-debug: true
 elements:
     author:
         index_type: text
@@ -29,35 +28,91 @@ elements:
         mode: COMPUTED_ON_SAVE
     publication:
         type: DATETIME
-    do_something:
-        type: ACTION
-        label: Do
     _save:
         type: ACTION
         label: Save
-id: frmBook
-title: Book""",
+id: frmBook""",
 
     'py': """
 def forever(context):
     return 'I will never change.'
 
-def do_something(context):
-    context.app.log('Hello')
-
-# default value for the 'author' element
 def author(context):
     return "Victor Hugo"
 
 def year(context):
     return 1845
 
-# executed everytime we save a record with this block
+def famous_quote(context):
+    return 'A good plan violently executed now is better than a perfect plan executed next week.'
+
 def on_save(context):
     author = context['author']
     context['author'] = author.upper()""",
 
     'html': """Author: {author}
+<footer>Powered by Rapido</footer>"""
+}
+
+FAKE2 = {
+    'yaml': """target: ajax
+elements:
+    author:
+        type: TEXT
+    do_something:
+        type: ACTION
+        label: Do""",
+
+    'py': """
+def record_id(context):
+    return 'my-id'
+
+def on_delete(context):
+    other = context.app.get_record('record_1')
+    if other:
+        other['message'] = "Good bye"
+
+def do_something(context):
+    context.app.log('Hello')""",
+
+    'html': """Author: {author}
+<footer>Powered by Rapido</footer>"""
+}
+
+FAKE3 = {
+    'yaml': """target: ajax
+elements:
+    author:
+        type: TEXT""",
+
+    'html': """Author: {author}
+<footer>Powered by Rapido</footer>"""
+}
+
+FAKE4 = {
+    'yaml': """target: ajax
+elements:
+    author:
+        type: TEXT""",
+
+    'py': """
+def author(context):
+    returm 'hello'""",
+
+    'html': """Author: {author}
+<footer>Powered by Rapido</footer>"""
+}
+
+FAKE5 = {
+    'yaml': """target: ajax
+elements:
+    author:
+        type: BAD_TYPE
+    _save:
+        type: ACTION
+        label: Save""",
+
+    'html': """Author: {author} {_save}
 <footer>Powered by Rapido</footer>"""
 }
 
@@ -75,7 +130,13 @@ class SimpleRapidoApplication(BaseNode):
         self.fake_user = 'admin'
         self.fake_groups = []
         self.context = Context()
-        self.fake_block = FAKE
+        self.fake_blocks = {
+            'frmBook': FAKE1,
+            'frmBook2': FAKE2,
+            'frmBook3': FAKE3,
+            'frmBook4': FAKE4,
+            'frmBook5': FAKE5,
+        }
         self.settings = 'no_settings: {}'
 
     @property
@@ -87,25 +148,25 @@ class SimpleRapidoApplication(BaseNode):
 
     @property
     def blocks(self):
-        return ['frmBook']
+        return self.fake_blocks.keys()
 
     def get_settings(self):
         return self.settings
 
     def get_block(self, block_id, ftype='yaml'):
-        if block_id == 'frmBook':
-            return self.fake_block[ftype]
+        if block_id in self.fake_blocks:
+            return self.fake_blocks[block_id][ftype]
         else:
             if ftype == 'yaml':
                 return 'id: ' + block_id
             else:
                 raise KeyError
 
-    def set_fake_block_data(self, ftype, data):
-        self.fake_block[ftype] = data
+    def set_fake_block_data(self, block_id, ftype, data):
+        self.fake_blocks[block_id][ftype] = data
 
-    def delete_fake_block_data(self, ftype):
-        del self.fake_block[ftype]
+    def delete_fake_block_data(self, block_id, ftype):
+        del self.fake_blocks[block_id][ftype]
 
     def current_user(self):
         return self.fake_user
