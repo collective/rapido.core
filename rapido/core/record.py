@@ -85,6 +85,8 @@ class Record(object):
         # store submitted elements
         if request:
             for el_id in block.elements.keys():
+                if el_id.startswith('_'):
+                    continue
                 if el_id in request.keys():
                     if type(request) is dict:
                         self[el_id] = request.get(el_id)
