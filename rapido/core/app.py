@@ -61,12 +61,14 @@ class RapidoApplication(Index):
                 return search[0]
 
     def delete_record(self, id=None, record=None, ondelete=True):
+        result = None
         if not record:
             record = self.get_record(id)
         if record:
             if ondelete and record.block:
-                record.block.on_delete(record)
+                result = record.block.on_delete(record)
             self.storage.delete(record.context)
+        return result
 
     def clear_storage(self):
         self.storage.clear()

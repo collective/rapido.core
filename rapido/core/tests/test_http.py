@@ -162,6 +162,16 @@ acl:
             1
         )
 
+    def test_post_block_save_redirect(self):
+        display = IDisplay(self.app)
+        result = display.POST([
+            'testapp', 'block', 'frmBook2'],
+            {'_save': True, 'author': 'J. Conrad'})
+        self.assertEquals(
+            result[1],
+            "http://somewhere"
+        )
+
     def test_post_block_save_not_author(self):
         display = IDisplay(self.app)
         self.app_obj.set_fake_user("nobody")
@@ -317,3 +327,12 @@ acl:
             ['testapp', 'record', 'record_1'],
             {'_delete': True}
         )
+
+    def test_delete_record_redirect(self):
+        record = self.app.create_record(id='record_1')
+        record.set_block('frmBook2')
+        display = IDisplay(self.app)
+        result = display.POST(
+            ['testapp', 'record', 'record_1'],
+            {'_delete': True})
+        self.assertEquals(result[1], "http://somewhere")

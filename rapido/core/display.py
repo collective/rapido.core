@@ -71,8 +71,8 @@ class Display(object):
                     raise Unauthorized()
                 record = self.app.create_record()
                 record['_author'] = [self.app.acl.current_user(), ]
-                record.save(request=request, block=block, creation=True)
-                redirect = record.url
+                redirect = record.save(
+                    request=request, block=block, creation=True) or record.url
             else:
                 try:
                     result = block.display(edit=True)
@@ -87,7 +87,7 @@ class Display(object):
             if request.get("_save"):
                 if not self.app.acl.has_permission('edit', record):
                     raise Unauthorized()
-                record.save(request=request)
+                redirect = record.save(request=request)
                 result = record.display(edit=editmode)
             elif request.get("_edit"):
                 if not self.app.acl.has_permission('edit', record):
@@ -96,8 +96,7 @@ class Display(object):
             elif request.get("_delete"):
                 if not self.app.acl.has_permission('delete', record):
                     raise Unauthorized()
-                self.app.delete_record(record=record)
-                # TODO: use on_delete to provide redirection
+                redirect = self.app.delete_record(record=record)
                 result = "deleted"
             else:
                 if not self.app.acl.has_permission('view'):

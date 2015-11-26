@@ -72,10 +72,14 @@ elements:
 def record_id(context):
     return 'my-id'
 
+def on_save(context):
+    return "http://somewhere"
+
 def on_delete(context):
     other = context.app.get_record('record_1')
     if other:
         other['message'] = "Good bye"
+    return "http://somewhere"
 
 def do_something(context):
     context.app.log('Hello')""",

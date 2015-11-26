@@ -108,9 +108,11 @@ class Record(object):
                 self['id'] = record_id
 
         # execute on_save
-        block.on_save(self)
+        result = block.on_save(self)
 
         self.reindex()
+
+        return result
 
     def display(self, edit=False):
         if self.block:
