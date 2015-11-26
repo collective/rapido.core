@@ -278,6 +278,18 @@ acl:
             {'_edit': True}
         )
 
+    def test_post_record_action(self):
+        record = self.app.create_record(id='record_1')
+        record.set_block("frmBook")
+        display = IDisplay(self.app)
+        display.POST(
+            ['testapp', 'record', 'record_1'],
+            {'action.add_note': True})
+        self.assertEquals(
+            record['note'],
+            "That's a good book"
+        )
+
     def test_post_bad_directive(self):
         display = IDisplay(self.app)
         self.assertRaises(

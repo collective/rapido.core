@@ -28,6 +28,8 @@ elements:
         mode: COMPUTED_ON_SAVE
     publication:
         type: DATETIME
+    add_note:
+        type: ACTION
     _save:
         type: ACTION
         label: Save
@@ -45,6 +47,9 @@ def year(context):
 
 def famous_quote(context):
     return 'A good plan violently executed now is better than a perfect plan executed next week.'
+
+def add_note(context):
+    context.record['note'] = "That's a good book"
 
 def on_save(context):
     author = context['author']
