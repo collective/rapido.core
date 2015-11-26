@@ -63,7 +63,8 @@ class Display(object):
             for action_id in actions:
                 element_id = action_id[7:]
                 if block.elements.get(element_id, None):
-                    block.compute_element(element_id, {'block': block})
+                    redirect = block.compute_element(
+                        element_id, {'block': block})
             # create record if special action _save
             if request.get("_save"):
                 if not self.app.acl.has_permission('create'):
