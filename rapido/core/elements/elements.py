@@ -40,21 +40,21 @@ class BaseElement(object):
 
 class BasicElement(BaseElement):
 
-    read_template = """{value}"""
-    edit_template = """{value}"""
+    read_template = u"""{value}"""
+    edit_template = u"""{value}"""
 
 
 class TextElement(BaseElement):
 
-    read_template = """{value}"""
-    edit_template = """<input type="text"
+    read_template = u"""{value}"""
+    edit_template = u"""<input type="text"
         name="{id}" value="{value}" />"""
 
 
 class NumberElement(BaseElement):
 
-    read_template = """{value}"""
-    edit_template = """<input type="number"
+    read_template = u"""{value}"""
+    edit_template = u"""<input type="number"
         name="{id}" value="{value}" />"""
 
     def process_input(self, value):
@@ -70,7 +70,7 @@ class NumberElement(BaseElement):
 
 class ActionElement(BaseElement):
 
-    template = """<input type="submit"
+    template = u"""<input type="submit"
         name="{id}" value="{label}" />"""
 
     def render(self, record=None, edit=False):
@@ -87,8 +87,8 @@ class ActionElement(BaseElement):
 
 class DatetimeElement(BaseElement):
 
-    read_template = """{value}"""
-    edit_template = """<input type="date"
+    read_template = u"""{value}"""
+    edit_template = u"""<input type="date"
         name="{id}" value="{value}" />"""
 
     def get_value(self, record=None):
