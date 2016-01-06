@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.3 (unreleased)
+1.0.3 (2016-01-06)
 ------------------
 
 - Allow redirection after action, save, or delete
