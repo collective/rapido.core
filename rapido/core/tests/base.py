@@ -28,6 +28,8 @@ elements:
         mode: COMPUTED_ON_SAVE
     publication:
         type: DATETIME
+    something_computed:
+        type: BASIC
     add_note:
         type: ACTION
     _save:
@@ -44,6 +46,12 @@ def author(context):
 
 def year(context):
     return 1845
+
+def something_computed(context):
+    return {
+        'one': 1,
+        'two': 2.0,
+    }
 
 def famous_quote(context):
     return 'A good plan violently executed now is better than a perfect plan executed next week.'

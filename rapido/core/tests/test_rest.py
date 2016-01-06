@@ -78,6 +78,22 @@ acl:
             }
         )
 
+    def test_get_element(self):
+        rest = IRest(self.app)
+        result = rest.GET(['block', 'frmBook', 'something_computed'], "")
+        self.assertEquals(result,
+            {'one': 1, 'two': 2.0}
+        )
+
+    def test_get_block_too_many_param(self):
+        rest = IRest(self.app)
+        self.assertRaises(
+            NotAllowed,
+            rest.GET,
+            ['block', 'frmBook', 'what', 'ever'],
+            ""
+        )
+
     def test_get_not_defined_block(self):
         rest = IRest(self.app)
         result = rest.GET(['block', 'anything'], "")

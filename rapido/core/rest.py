@@ -21,7 +21,13 @@ class Rest(object):
             if path[0] == "block":
                 blockid = path[1]
                 block = self.app.get_block(blockid)
-                return block.settings
+                if len(path) == 2:
+                    return block.settings
+                elif len(path) == 3:
+                    element_id = path[2]
+                    return block.compute_element(element_id, {'block': block})
+                else:
+                    raise NotAllowed()
 
             elif path[0] == "records":
                 if not self.app.acl.has_permission('view'):
