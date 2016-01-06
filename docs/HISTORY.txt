@@ -4,7 +4,11 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Allow redirection after action, save, or delete
+  [ebrehault]
+
+- REST endpoint to compute a block element
+  [ebrehault]
 
 
 1.0.2 (2015-11-17)
