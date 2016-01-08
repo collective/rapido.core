@@ -47,7 +47,7 @@ class ElementDict(dict):
         self.record = record
         self.edit = edit
         classes = ' '.join(["rapido-block"] + classes)
-        self.params = {
+        self.values = {
             '_block_name': block.id,
             '_block_action': action,
             '_block_classes': classes,
@@ -55,13 +55,16 @@ class ElementDict(dict):
         }
 
     def __getitem__(self, key):
-        if key in self.params:
-            return self.params[key]
+        if key in self.values:
+            return self.values[key]
+        result = None
         try:
             element = self.block.get_element(key)
+            result = element.render(self.record, edit=self.edit)
         except Exception, e:
-            return str(e)
-        return element.render(self.record, edit=self.edit)
+            result = str(e)
+        self.values[key] = result
+        return result
 
 
 class Block(FormulaContainer):
