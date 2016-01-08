@@ -40,8 +40,8 @@ class BaseElement(object):
 
 class BasicElement(BaseElement):
 
-    read_template = u"""{value}"""
-    edit_template = u"""{value}"""
+    def render(self, record=None, edit=False):
+        return self.get_value(record)
 
 
 class TextElement(BaseElement):

@@ -50,6 +50,21 @@ acl:
             'Powered by Rapido</footer></form>\n'
         )
 
+    def test_display_element_items(self):
+        block = self.app.get_block('frmBook6')
+        self.assertEquals(
+            block.display(None, edit=True),
+            u'<form\n'
+            '    name="frmBook6"\n'
+            '    class="rapido-block"\n'
+            '    action="http://here/block/frmBook6"\n'
+            '    rapido-settings=\''
+            '{"app": {"url": "http://here", "debug": true}}\'\n'
+            '    method="POST"><h1>The Force awakens</h1>\n'
+            '<p>No spoil</p></form>\n'
+
+        )
+
     def test_display_record(self):
         block = self.app.get_block('frmBook')
         record = self.app.create_record(id='record_1')

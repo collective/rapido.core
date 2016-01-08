@@ -133,6 +133,20 @@ elements:
 <footer>Powered by Rapido</footer>"""
 }
 
+FAKE6 = {
+    'yaml': """elements:
+    info:
+        type: BASIC""",
+    'py': """def info(context):
+    return {
+        'title': "The Force awakens",
+        'summary': "No spoil",
+    }
+""",
+    'html': """<h1>{info[title]}</h1>
+<p>{info[summary]}</p>"""
+}
+
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -153,6 +167,7 @@ class SimpleRapidoApplication(BaseNode):
             'frmBook3': FAKE3,
             'frmBook4': FAKE4,
             'frmBook5': FAKE5,
+            'frmBook6': FAKE6,
         }
         self.settings = 'no_settings: {}'
 
