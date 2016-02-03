@@ -56,7 +56,7 @@ class Rest(object):
 
     def POST(self, path, body):
         try:
-            if len(path) == 0:
+            if not path:
                 if not self.app.acl.has_permission('create'):
                     raise Unauthorized()
                 record = self.app.create_record()
