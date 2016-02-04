@@ -114,4 +114,7 @@ class Context(object):
     """ bunch of useful objects provided by an IRapidable
     """
 
-    pass
+    def extend(self, extra_context):
+        for key in extra_context:
+            setattr(self, key, extra_context[key])
+        return self

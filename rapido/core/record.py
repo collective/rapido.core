@@ -103,7 +103,8 @@ class Record(object):
 
         # compute id if record creation
         if creation:
-            record_id = block.execute('record_id', self)
+            record_id = block.execute('record_id',
+                self.app.app_context.extend({'block': block, 'record': self}))
             if record_id:
                 self['id'] = record_id
 

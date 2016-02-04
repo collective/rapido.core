@@ -60,8 +60,8 @@ def add_note(context):
     context.record['note'] = "That's a good book"
 
 def on_save(context):
-    author = context['author']
-    context['author'] = author.upper()""",
+    author = context.record['author']
+    context.record['author'] = author.upper()""",
 
     'html': """Author: {author}
 <footer>Powered by Rapido</footer>"""
@@ -160,7 +160,6 @@ class SimpleRapidoApplication(BaseNode):
         self['root'] = root
         self.fake_user = 'admin'
         self.fake_groups = []
-        self.context = Context()
         self.fake_blocks = {
             'frmBook': FAKE1,
             'frmBook2': FAKE2,
@@ -170,6 +169,7 @@ class SimpleRapidoApplication(BaseNode):
             'frmBook6': FAKE6,
         }
         self.settings = 'no_settings: {}'
+        self.context = Context().extend({'app': self})
 
     @property
     def root(self):

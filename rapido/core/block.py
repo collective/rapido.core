@@ -3,7 +3,7 @@ import string
 from zope.interface import implements
 from pyaml import yaml
 
-from interfaces import IBlock
+from .interfaces import IBlock
 from .elements.utils import get_element_class
 from .formula import FormulaContainer
 
@@ -142,18 +142,26 @@ class Block(FormulaContainer):
         return string.Formatter().vformat(layout, (), values)
 
     def compute_element(self, element_id, extra_context):
-        context = self.app.app_context
-        context.app = self.app
-        for key in extra_context:
-            setattr(context, key, extra_context[key])
+        extra_context['app'] = self.app
+        context = self.app.app_context.extend(extra_context)
         return self.execute(element_id, context)
 
     def on_save(self, record):
-        result = self.execute('on_save', record)
+        context = self.app.app_context.extend({
+            'app': self.app,
+            'block': self,
+            'record': record,
+        })
+        result = self.execute('on_save', context)
         return result
 
     def on_delete(self, record):
-        result = self.execute('on_delete', record)
+        context = self.app.app_context.extend({
+            'app': self.app,
+            'block': self,
+            'record': record,
+        })
+        result = self.execute('on_delete', context)
         return result
 
     def get_element(self, element_id):

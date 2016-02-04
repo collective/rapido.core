@@ -83,6 +83,17 @@ class Display(object):
             if not record:
                 raise NotFound(obj_id)
             editmode = (action == "edit")
+            # execute submitted actions
+            if record.block:
+                actions = [key for key in request.keys()
+                    if key.startswith("action.")]
+                for action_id in actions:
+                    element_id = action_id[7:]
+                    if record.block.elements.get(element_id, None):
+                        redirect = record.block.compute_element(
+                            element_id,
+                            {'block': record.block, 'record': record}
+                        )
             # execute special actions
             if request.get("_save"):
                 if not self.app.acl.has_permission('edit', record):
