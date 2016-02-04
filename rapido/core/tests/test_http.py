@@ -220,7 +220,7 @@ acl:
         display.POST(
             ['testapp', 'record', 'record_1'],
             {'_save': True, 'author': 'J. Conrad'})
-        self.assertEquals(record['author'], 'J. Conrad')
+        self.assertEquals(record['author'], 'J. CONRAD')
 
     def test_post_record_save_author(self):
         self.app_obj.set_fake_user("isaac.newton")

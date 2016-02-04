@@ -68,7 +68,8 @@ class Record(object):
         If a block is mentionned, formulas will be executed.
         If no block (and request is a dict), we just save the items values.
         """
-        if not(block or block_id or (request and request.get('block'))):
+        if not(block or block_id or self.get('block') or
+        (request and request.get('block'))):
             if type(request) is dict:
                 for (key, value) in request.items():
                     self[key] = value
@@ -76,8 +77,8 @@ class Record(object):
                 return
             else:
                 raise Exception("Cannot save without a block")
-        if not block_id and request:
-            block_id = request.get('block')
+        if not block_id:
+            block_id = (request and request.get('block')) or self.get('block')
         if not block:
             block = self.app.get_block(block_id)
         self['block'] = block.id
