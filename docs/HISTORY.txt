@@ -4,7 +4,11 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- No rendering on basic element to allow {elem.attr} or {elem[item]} in templates
+
+- compute elements only once
+
+- Fixes
 
 
 1.0.3 (2016-01-06)
