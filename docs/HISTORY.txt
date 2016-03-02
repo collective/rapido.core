@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.4 (unreleased)
+1.0.4 (2016-03-02)
 ------------------
 
 - No rendering on basic element to allow {elem.attr} or {elem[item]} in templates
