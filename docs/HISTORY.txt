@@ -4,7 +4,8 @@ Changelog
 1.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Allow POST to element
+  [simon-previdente]
 
 
 1.0.4 (2016-03-02)

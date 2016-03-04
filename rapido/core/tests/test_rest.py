@@ -85,6 +85,22 @@ acl:
             {'one': 1, 'two': 2.0}
         )
 
+    def test_post_element(self):
+        rest = IRest(self.app)
+        result = rest.POST(['block', 'frmBook', 'something_computed'], "")
+        self.assertEquals(result,
+            {'one': 1, 'two': 2.0}
+        )
+
+    def test_post_without_element(self):
+        rest = IRest(self.app)
+        self.assertRaises(
+            NotAllowed,
+            rest.POST,
+            ['block', 'frmBook'],
+            ""
+        )
+
     def test_get_block_too_many_param(self):
         rest = IRest(self.app)
         self.assertRaises(
