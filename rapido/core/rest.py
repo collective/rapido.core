@@ -119,6 +119,14 @@ class Rest(object):
                     'success': 'refresh',
                     'indexes': indexes,
                 }
+            elif path[0] == "block":
+                blockid = path[1]
+                block = self.app.get_block(blockid)
+                if len(path) == 3:
+                    element_id = path[2]
+                    return block.compute_element(element_id, {'block': block})
+                else:
+                    raise NotAllowed()
             else:
                 raise NotAllowed()
         except IndexError:
