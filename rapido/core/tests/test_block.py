@@ -120,7 +120,7 @@ acl:
         block.display(None, edit=True)
         self.assertEquals(
             self.app.messages[0],
-            "Rapido compilation error - testapp:\nin frmBook4, at line 3: "
+            "Rapido compilation error - testapp\nin frmBook4.py, at line 3: "
             "invalid syntax\n    returm 'hello'\n-----------------^"
         )
         self.app_obj.set_fake_block_data('frmBook4', 'py', """
@@ -131,9 +131,9 @@ def author(context):
         block.display(None, edit=True)
         self.assertEquals(
             self.app.messages[1],
-            'Rapido execution error - testapp:\n   \'Context\' object has no '
-            'attribute \'not_a_method\'\n   File "frmBook4.py", line 3, in '
-            'author'
+            'Rapido execution error - testapp\n  File "frmBook4.py", line 3, '
+            'in author\nAttributeError: \'Context\' object has no attribute \''
+            'not_a_method\''
         )
 
     def test_undefined_element(self):

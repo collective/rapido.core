@@ -60,7 +60,7 @@ def add_note(context):
     context.record['note'] = "That's a good book"
 
 def on_save(context):
-    author = context.record['author']
+    author = context.record.get('author', 'N/A')
     context.record['author'] = author.upper()""",
 
     'html': """Author: {author}

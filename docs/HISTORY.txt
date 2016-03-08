@@ -7,6 +7,9 @@ Changelog
 - Allow POST to element
   [simon-previdente]
 
+- Raise compilation and execution errors
+  [ebrehault]
+
 
 1.0.4 (2016-03-02)
 ------------------

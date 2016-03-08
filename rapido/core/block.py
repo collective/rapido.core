@@ -62,7 +62,7 @@ class ElementDict(dict):
             element = self.block.get_element(key)
             result = element.render(self.record, edit=self.edit)
         except Exception, e:
-            result = str(e)
+            result = "<pre>%s</pre>" % str(e)
         self.values[key] = result
         return result
 
