@@ -22,15 +22,16 @@ class CompilationError(Exception):
 
     def __init__(self, error, container):
         self.message = """Rapido compilation error - %s
-in %s.py, at line %d: %s
+in %s.py, at line %d:
+%s
 %s
 %s""" % (
             container.app.context.id,
             container.id,
             error.lineno,
-            error.msg,
             error.text.replace('\n', ''),
             '-' * (error.offset - 1) + '^',
+            error.msg,
         )
         logger.error(self.message)
         container.app.add_message(self.message)

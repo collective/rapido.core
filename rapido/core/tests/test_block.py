@@ -120,8 +120,8 @@ acl:
         block.display(None, edit=True)
         self.assertEquals(
             self.app.messages[0],
-            "Rapido compilation error - testapp\nin frmBook4.py, at line 3: "
-            "invalid syntax\n    returm 'hello'\n-----------------^"
+            "Rapido compilation error - testapp\nin frmBook4.py, at line 3:"
+            "\n    returm 'hello'\n-----------------^\ninvalid syntax"
         )
         self.app_obj.set_fake_block_data('frmBook4', 'py', """
 def author(context):
