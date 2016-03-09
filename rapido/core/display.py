@@ -79,6 +79,8 @@ class Display(object):
                 except KeyError:
                     raise NotFound(obj_id)
         elif directive == "record":
+            if not self.app.acl.has_permission('view'):
+                raise Unauthorized()
             record = self.app.get_record(obj_id)
             if not record:
                 raise NotFound(obj_id)
@@ -110,8 +112,6 @@ class Display(object):
                 redirect = self.app.delete_record(record=record)
                 result = "deleted"
             else:
-                if not self.app.acl.has_permission('view'):
-                    raise Unauthorized()
                 result = record.display(edit=editmode)
         else:
             raise NotAllowed()
