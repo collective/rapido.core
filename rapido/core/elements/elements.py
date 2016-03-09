@@ -13,7 +13,7 @@ class BaseElement(object):
             element_value = record[self.id]
         else:
             element_value = self.block.compute_element(
-                self.id, {'block': self.block})
+                self.id, {'block': self.block, 'record': record})
         return element_value
 
     def process_input(self, value):
