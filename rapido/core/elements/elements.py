@@ -9,8 +9,8 @@ class BaseElement(object):
         self.block = block
 
     def get_value(self, record=None):
-        if record:
-            element_value = record.get(self.id, None)
+        if record and self.id in record:
+            element_value = record[self.id]
         else:
             element_value = self.block.compute_element(
                 self.id, {'block': self.block})
