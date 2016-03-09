@@ -147,6 +147,26 @@ FAKE6 = {
 <p>{info[summary]}</p>"""
 }
 
+FAKE7 = {
+    'yaml': """target: ajax
+elements:
+    author:
+        type: TEXT
+    message:
+        type: BASIC""",
+
+    'py': """
+def message(context):
+    if context.record:
+        return "Bonjour " + context.record['author']
+    else:
+        return "No author"
+""",
+
+    'html': """<p>Author: {author}</p>
+<footer>{message}</footer>"""
+}
+
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -167,6 +187,7 @@ class SimpleRapidoApplication(BaseNode):
             'frmBook4': FAKE4,
             'frmBook5': FAKE5,
             'frmBook6': FAKE6,
+            'frmBook7': FAKE7,
         }
         self.settings = 'no_settings: {}'
         self.context = Context().extend({'app': self})

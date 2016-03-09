@@ -167,3 +167,12 @@ acl:
         html = block.display(record, edit=True)
         self.assertTrue('<input type="date"\n'
             '        name="publication" value="2015-11-15" />' in html)
+
+    def test_compute_element_using_record_data(self):
+        block = self.app.get_block('frmBook7')
+        record = self.app.create_record()
+        record.save({
+            'author': 'John DosPassos',
+        })
+        html = block.display(record, edit=True)
+        self.assertTrue('Bonjour John DosPassos' in html)
