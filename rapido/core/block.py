@@ -121,7 +121,6 @@ class Block(FormulaContainer):
         )
 
     def display(self, record=None, edit=False):
-        layout = BLOCK_TEMPLATE % self.layout
         if record:
             action = record.url
         else:
@@ -139,7 +138,15 @@ class Block(FormulaContainer):
             settings['app']['debug'] = True
         values = ElementDict(
             self, action, record, edit, classes=classes, settings=settings)
-        return string.Formatter().vformat(layout, (), values)
+        if callable(self.layout):
+            form_wrapper = string.Formatter().vformat(
+                BLOCK_TEMPLATE, (), values)
+            form_content = self.layout(elements=values,
+                context=self.app.app_context)
+            return form_wrapper % form_content
+        else:
+            layout = BLOCK_TEMPLATE % self.layout
+            return string.Formatter().vformat(layout, (), values)
 
     def compute_element(self, element_id, extra_context):
         extra_context['app'] = self.app

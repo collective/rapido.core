@@ -172,3 +172,9 @@ def author(context):
             '        name="author" value="" />' in block.display(
                 None, edit=True)
         )
+
+    def test_callable_layout(self):
+        block = self.app.get_block('frmBook8')
+        self.assertTrue(
+            u'France is bacon' in block.display(None, edit=True)
+        )

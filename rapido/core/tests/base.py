@@ -167,6 +167,18 @@ def message(context):
 <footer>{message}</footer>"""
 }
 
+FAKE8 = {
+    'yaml': """target: ajax
+elements:
+    message:
+        type: BASIC""",
+
+    'py': """
+def message(context):
+    return "bacon"
+""",
+}
+
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -188,6 +200,7 @@ class SimpleRapidoApplication(BaseNode):
             'frmBook5': FAKE5,
             'frmBook6': FAKE6,
             'frmBook7': FAKE7,
+            'frmBook8': FAKE8,
         }
         self.settings = 'no_settings: {}'
         self.context = Context().extend({'app': self})
@@ -207,6 +220,8 @@ class SimpleRapidoApplication(BaseNode):
         return self.settings
 
     def get_block(self, block_id, ftype='yaml'):
+        if block_id == 'frmBook8' and ftype == 'html':
+            return lambda elements, context: 'France is ' + elements['message']
         if block_id in self.fake_blocks:
             return self.fake_blocks[block_id][ftype]
         else:
