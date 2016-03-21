@@ -13,6 +13,9 @@ Changelog
 - Support callable layout
   [ebrehault]
 
+- Allow safe modules (datetime, random, time)
+  [ebrehault]
+
 
 1.0.4 (2016-03-02)
 ------------------

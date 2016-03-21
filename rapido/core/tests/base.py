@@ -179,6 +179,26 @@ def message(context):
 """,
 }
 
+FAKE9 = {
+    'yaml': """target: ajax
+elements:
+    a_number:
+        type: BASIC
+    a_date:
+        type: BASIC""",
+
+    'py': """
+def a_number(context):
+    if context.modules.re:
+        return context.modules.random.random()
+
+def a_date(context):
+    return context.modules.datetime.date.today().strftime("%Y-%m-%d")
+""",
+    'html': """<p>Random: {a_number}</p>
+<p>Date: {a_date}</p>""",
+}
+
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -201,6 +221,7 @@ class SimpleRapidoApplication(BaseNode):
             'frmBook6': FAKE6,
             'frmBook7': FAKE7,
             'frmBook8': FAKE8,
+            'frmBook9': FAKE9,
         }
         self.settings = 'no_settings: {}'
         self.context = Context().extend({'app': self})

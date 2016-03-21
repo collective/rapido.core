@@ -178,3 +178,18 @@ def author(context):
         self.assertTrue(
             u'France is bacon' in block.display(None, edit=True)
         )
+
+    def test_safe_modules(self):
+        import datetime
+        # add a new safe module
+        import re
+        from rapido.core import app
+        app.safe_modules.re = re
+        block = self.app.get_block('frmBook9')
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        self.assertTrue(
+            u'Random: 0.' in block.display(None, edit=True)
+        )
+        self.assertTrue(
+            u'Date: %s' % today in block.display(None, edit=True)
+        )

@@ -1,13 +1,21 @@
+import datetime
+import logging
+import random
+import time
+
+from pyaml import yaml
 from zope.interface import implements
 
-from interfaces import (
-    IRapidable, IRapidoApplication, IStorage, IRecord, IACLable,
-    IAccessControlList, IRestable, IDisplayable)
-from index import Index
-import logging
-from pyaml import yaml
-
 from .block import Block
+from .index import Index
+from .interfaces import IAccessControlList
+from .interfaces import IACLable
+from .interfaces import IDisplayable
+from .interfaces import IRapidable
+from .interfaces import IRapidoApplication
+from .interfaces import IRecord
+from .interfaces import IRestable
+from .interfaces import IStorage
 
 logger = logging.getLogger("Rapido")
 
@@ -110,9 +118,30 @@ class RapidoApplication(Index):
         self._messages.append(message)
 
 
+class SafeModules(object):
+    """Manage safe modules."""
+
+    SAFE_MODULES = {
+        'datetime': datetime,
+        'random': random,
+        'time': time,
+    }
+
+    def __getattr__(self, name):
+        """Return a module."""
+        return self.SAFE_MODULES[name]
+
+    def __setattr__(self, name, module):
+        """Assign a new safe module."""
+        self.SAFE_MODULES[name] = module
+
+safe_modules = SafeModules()
+
+
 class Context(object):
-    """ bunch of useful objects provided by an IRapidable
-    """
+    """Bunch of useful objects provided by an IRapidable."""
+
+    modules = safe_modules
 
     def extend(self, extra_context):
         for key in extra_context:
