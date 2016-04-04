@@ -50,6 +50,10 @@ class TextElement(BaseElement):
     edit_template = u"""<input type="text"
         name="{id}" value="{value}" />"""
 
+    def get_value(self, record=None):
+        value = BaseElement.get_value(self, record)
+        return value and value.decode('utf-8')
+
 
 class NumberElement(BaseElement):
 

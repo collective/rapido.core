@@ -4,7 +4,7 @@ from zope.interface import implements
 from pyaml import yaml
 
 from .interfaces import IBlock
-from .elements.utils import get_element_class
+from .elements import get_element_class
 from .formula import FormulaContainer
 
 ELEMENT_TYPE_MAPPING = {
