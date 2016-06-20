@@ -22,23 +22,43 @@ class Display(object):
             action = 'view'
         return (directive, obj_id, action)
 
+    def element_direct_call(self, block, action_or_element):
+        result = ""
+        redirect = ""
+        try:
+            element = block.get_element(action_or_element)
+        except:
+            raise NotFound(action_or_element)
+        if element.settings['type'] == 'ACTION':
+            redirect = block.compute_element(
+                action_or_element, {'block': block})
+        else:
+            result = block.compute_element(
+                action_or_element, {'block': block})
+        return (result, redirect)
+
     def GET(self, path, request):
-        (directive, obj_id, action) = self._parse_path(path)
+        (directive, obj_id, action_or_element) = self._parse_path(path)
         result = ""
         redirect = ""
         if directive == "block":
             block = self.app.get_block(obj_id)
-            try:
-                result = block.display(edit=True)
-            except KeyError:
-                raise NotFound(obj_id)
+            if action_or_element in ['view', 'edit']:
+                try:
+                    result = block.display(edit=True)
+                except KeyError:
+                    raise NotFound(obj_id)
+            else:
+                # direct call to element
+                (result, redirect) = self.element_direct_call(
+                    block, action_or_element)
         elif directive == "record":
             if not self.app.acl.has_permission('view'):
                 raise Unauthorized()
             record = self.app.get_record(obj_id)
             if not record:
                 raise NotFound(obj_id)
-            editmode = (action == "edit")
+            editmode = (action_or_element == "edit")
             result = record.display(edit=editmode)
         elif directive == "refresh":
             if not self.app.acl.is_manager():
@@ -52,39 +72,46 @@ class Display(object):
         return (result, redirect)
 
     def POST(self, path, request):
-        (directive, obj_id, action) = self._parse_path(path)
+        (directive, obj_id, action_or_element) = self._parse_path(path)
         result = ""
         redirect = ""
         if directive == "block":
             block = self.app.get_block(obj_id)
-            # execute submitted actions
-            actions = [key for key in request.keys()
-                if key.startswith("action.")]
-            for action_id in actions:
-                element_id = action_id[7:]
-                if block.elements.get(element_id, None):
-                    redirect = block.compute_element(
-                        element_id, {'block': block})
-            # create record if special action _save
-            if request.get("_save"):
-                if not self.app.acl.has_permission('create'):
-                    raise Unauthorized()
-                record = self.app.create_record()
-                record['_author'] = [self.app.acl.current_user(), ]
-                redirect = record.save(
-                    request=request, block=block, creation=True) or record.url
+            if action_or_element in ['view', 'edit']:
+                # execute submitted actions
+                actions = [key for key in request.keys()
+                    if key.startswith("action.")]
+                for action_id in actions:
+                    element_id = action_id[7:]
+                    if block.elements.get(element_id, None):
+                        redirect = block.compute_element(
+                            element_id, {'block': block})
+                # create record if special action _save
+                if request.get("_save"):
+                    if not self.app.acl.has_permission('create'):
+                        raise Unauthorized()
+                    record = self.app.create_record()
+                    record['_author'] = [self.app.acl.current_user(), ]
+                    redirect = record.save(
+                        request=request,
+                        block=block,
+                        creation=True) or record.url
+                else:
+                    try:
+                        result = block.display(edit=True)
+                    except KeyError:
+                        raise NotFound(obj_id)
             else:
-                try:
-                    result = block.display(edit=True)
-                except KeyError:
-                    raise NotFound(obj_id)
+                # direct call to element
+                (result, redirect) = self.element_direct_call(
+                    block, action_or_element)
         elif directive == "record":
             if not self.app.acl.has_permission('view'):
                 raise Unauthorized()
             record = self.app.get_record(obj_id)
             if not record:
                 raise NotFound(obj_id)
-            editmode = (action == "edit")
+            editmode = (action_or_element == "edit")
             # execute submitted actions
             if record.block:
                 actions = [key for key in request.keys()

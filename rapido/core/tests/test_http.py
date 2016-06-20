@@ -47,6 +47,23 @@ acl:
             'Powered by Rapido</footer></form>\n', '')
         )
 
+    def test_get_block_element(self):
+        display = IDisplay(self.app)
+        result = display.GET(
+            ['testapp', 'block', 'frmBook', 'famous_quote'], {})
+        self.assertEquals(result,
+            ('A good plan violently executed now is better than a perfect '
+            'plan executed next week.', '')
+        )
+
+    def test_get_block_action_element(self):
+        display = IDisplay(self.app)
+        result = display.GET(
+            ['testapp', 'block', 'frmBook', 'go_to_bed'], {})
+        self.assertEquals(result,
+            ('', 'http://localhost/bed')
+        )
+
     def test_get_not_existing_block(self):
         display = IDisplay(self.app)
         self.assertRaises(
@@ -151,6 +168,30 @@ acl:
             self.app.messages[-1],
             'Hello'
         )
+
+    def test_post_block_element(self):
+        display = IDisplay(self.app)
+        result = display.POST(
+            ['testapp', 'block', 'frmBook', 'famous_quote'], {})
+        self.assertEquals(result,
+            ('A good plan violently executed now is better than a perfect '
+            'plan executed next week.', '')
+        )
+
+    def test_post_block_action_element(self):
+        display = IDisplay(self.app)
+        result = display.POST(
+            ['testapp', 'block', 'frmBook', 'go_to_bed'], {})
+        self.assertEquals(result,
+            ('', 'http://localhost/bed')
+        )
+
+    def test_post_block_bad_action_element(self):
+        display = IDisplay(self.app)
+        self.assertRaises(
+            NotFound,
+            display.POST,
+            ['testapp', 'block', 'frmBook', 'go_to_home'], {})
 
     def test_post_block_save(self):
         display = IDisplay(self.app)

@@ -32,6 +32,8 @@ elements:
         type: BASIC
     add_note:
         type: ACTION
+    go_to_bed:
+        type: ACTION
     _save:
         type: ACTION
         label: Save
@@ -58,6 +60,9 @@ def famous_quote(context):
 
 def add_note(context):
     context.record['note'] = "That's a good book"
+
+def go_to_bed(context):
+    return 'http://localhost/bed'
 
 def on_save(context):
     author = context.record.get('author', 'N/A')
