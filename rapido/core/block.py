@@ -82,6 +82,10 @@ class Block(FormulaContainer):
             if (self.settings['elements'][element].get('index_type', None)
             and element not in app.indexes):
                 self.init_element(element)
+        self.context = self.app.app_context.extend({
+            'app': self.app,
+            'block': self,
+        })
 
     @property
     def layout(self):
@@ -142,30 +146,25 @@ class Block(FormulaContainer):
             form_wrapper = string.Formatter().vformat(
                 BLOCK_TEMPLATE, (), values)
             form_content = self.layout(elements=values,
-                context=self.app.app_context)
+                context=self.context)
             return form_wrapper % form_content
         else:
             layout = BLOCK_TEMPLATE % self.layout
             return string.Formatter().vformat(layout, (), values)
 
     def compute_element(self, element_id, extra_context):
-        extra_context['app'] = self.app
-        context = self.app.app_context.extend(extra_context)
+        context = self.context.extend(extra_context)
         return self.execute(element_id, context)
 
     def on_save(self, record):
-        context = self.app.app_context.extend({
-            'app': self.app,
-            'block': self,
+        context = self.context.extend({
             'record': record,
         })
         result = self.execute('on_save', context)
         return result
 
     def on_delete(self, record):
-        context = self.app.app_context.extend({
-            'app': self.app,
-            'block': self,
+        context = self.context.extend({
             'record': record,
         })
         result = self.execute('on_delete', context)
