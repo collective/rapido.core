@@ -11,10 +11,8 @@ elements:
     author:
         index_type: text
         type: TEXT
-    year:
-        type: NUMBER
-    weight:
-        type: NUMBER
+    year: NUMBER
+    weight: NUMBER
     bad_field:
         type: WHATEVER
     famous_quote:
@@ -26,14 +24,10 @@ elements:
     famous_quote:
         type: TEXT
         mode: COMPUTED_ON_SAVE
-    publication:
-        type: DATETIME
-    something_computed:
-        type: BASIC
-    add_note:
-        type: ACTION
-    go_to_bed:
-        type: ACTION
+    publication: DATETIME
+    something_computed: BASIC
+    add_note: ACTION
+    go_to_bed: ACTION
     _save:
         type: ACTION
         label: Save
@@ -75,8 +69,7 @@ def on_save(context):
 FAKE2 = {
     'yaml': """target: ajax
 elements:
-    author:
-        type: TEXT
+    author: TEXT
     do_something:
         type: ACTION
         label: Do""",
@@ -104,8 +97,7 @@ def do_something(context):
 FAKE3 = {
     'yaml': """target: ajax
 elements:
-    author:
-        type: TEXT""",
+    author: TEXT""",
 
     'html': """Author: {author}
 <footer>Powered by Rapido</footer>"""
@@ -114,8 +106,7 @@ elements:
 FAKE4 = {
     'yaml': """target: ajax
 elements:
-    author:
-        type: TEXT""",
+    author: TEXT""",
 
     'py': """
 def author(context):
@@ -140,8 +131,7 @@ elements:
 
 FAKE6 = {
     'yaml': """elements:
-    info:
-        type: BASIC""",
+    info: BASIC""",
     'py': """def info(context):
     return {
         'title': "The Force awakens",
@@ -155,10 +145,8 @@ FAKE6 = {
 FAKE7 = {
     'yaml': """target: ajax
 elements:
-    author:
-        type: TEXT
-    message:
-        type: BASIC""",
+    author: TEXT
+    message: BASIC""",
 
     'py': """
 def message(context):
@@ -175,8 +163,7 @@ def message(context):
 FAKE8 = {
     'yaml': """target: ajax
 elements:
-    message:
-        type: BASIC""",
+    message: BASIC""",
 
     'py': """
 def message(context):
@@ -187,10 +174,8 @@ def message(context):
 FAKE9 = {
     'yaml': """target: ajax
 elements:
-    a_number:
-        type: BASIC
-    a_date:
-        type: BASIC""",
+    a_number: BASIC
+    a_date: BASIC""",
 
     'py': """
 def a_number(context):
@@ -206,8 +191,7 @@ def a_date(context):
 
 FAKE10 = {
     'yaml': """elements:
-    message:
-        type: BASIC""",
+    message: BASIC""",
 
     'py': """
 def on_display(context):

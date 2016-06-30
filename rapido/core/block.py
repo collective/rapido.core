@@ -75,12 +75,10 @@ class Block(FormulaContainer):
     def __init__(self, block_id, app):
         self.id = block_id
         self._app = app
-        self.settings = DEFAULT_SETTINGS.copy()
-        settings = yaml.load(self.app.context.get_block(block_id))
-        self.settings.update(settings)
+        self.settings = self._load_settings()
         for element in self.settings['elements']:
-            if (self.settings['elements'][element].get('index_type', None)
-            and element not in app.indexes):
+            if (self.settings['elements'][element].get('index_type', None) and
+            element not in app.indexes):
                 self.init_element(element)
         self.context = self.app.app_context.extend({
             'app': self.app,
@@ -191,3 +189,14 @@ class Block(FormulaContainer):
             return element
         else:
             raise Exception("UNKNOWN ELEMENT TYPE")
+
+    def _load_settings(self):
+        yaml_settings = yaml.load(self.app.context.get_block(self.id))
+        # if not dict provided, we assume the value is the type
+        if 'elements' in yaml_settings:
+            for (id, value) in yaml_settings['elements'].items():
+                if type(value) is str:
+                    yaml_settings['elements'][id] = {'type': value}
+        settings = DEFAULT_SETTINGS.copy()
+        settings.update(yaml_settings)
+        return settings
