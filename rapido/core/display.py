@@ -29,12 +29,14 @@ class Display(object):
             element = block.get_element(action_or_element)
         except:
             raise NotFound(action_or_element)
+        try:
+            value = block.compute_element(action_or_element, {'block': block})
+        except Exception, e:
+            return (str(e), None)
         if element.settings['type'] == 'ACTION':
-            redirect = block.compute_element(
-                action_or_element, {'block': block})
+            redirect = value
         else:
-            result = block.compute_element(
-                action_or_element, {'block': block})
+            result = value
         return (result, redirect)
 
     def GET(self, path, request):

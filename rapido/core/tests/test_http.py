@@ -56,6 +56,16 @@ acl:
             'plan executed next week.', '')
         )
 
+    def test_get_block_element_with_error(self):
+        display = IDisplay(self.app)
+        result = display.GET(
+            ['testapp', 'block', 'frmBook4', 'author'], {})
+        self.assertEquals(result,
+            ('Rapido execution error - testapp\n  File "frmBook4.py", line 3, '
+            'in author\nAttributeError: \'Context\' object has no attribute '
+            '\'not_a_method\'', None)
+        )
+
     def test_get_block_action_element(self):
         display = IDisplay(self.app)
         result = display.GET(
