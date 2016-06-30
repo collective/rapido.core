@@ -193,3 +193,10 @@ def author(context):
         self.assertTrue(
             u'Date: %s' % today in block.display(None, edit=True)
         )
+
+    def test_on_display(self):
+        block = self.app.get_block('block10')
+        self.assertIn(
+            "You know nothing, John Snow",
+            block.display(None)
+        )

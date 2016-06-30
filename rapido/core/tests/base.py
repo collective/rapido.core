@@ -204,6 +204,21 @@ def a_date(context):
 <p>Date: {a_date}</p>""",
 }
 
+FAKE10 = {
+    'yaml': """elements:
+    message:
+        type: BASIC""",
+
+    'py': """
+def on_display(context):
+    context.hero = "John Snow"
+
+def message(context):
+    return "You know nothing, " + context.hero
+""",
+    'html': """<p>{message}</p>""",
+}
+
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -227,6 +242,7 @@ class SimpleRapidoApplication(BaseNode):
             'frmBook7': FAKE7,
             'frmBook8': FAKE8,
             'frmBook9': FAKE9,
+            'block10': FAKE10,
         }
         self.settings = 'no_settings: {}'
         self.context = Context().extend({'app': self})

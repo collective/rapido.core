@@ -8,6 +8,9 @@ Changelog
   other elements just return the result).
   [ebrehault]
 
+- ``on_display`` event
+  [ebrehault]
+
 
 1.0.5 (2016-04-09)
 ------------------

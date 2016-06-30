@@ -125,6 +125,10 @@ class Block(FormulaContainer):
         )
 
     def display(self, record=None, edit=False):
+        try:
+            self.on_display(record)
+        except Exception, e:
+            return "<pre>%s</pre>" % str(e)
         if record:
             action = record.url
         else:
@@ -155,6 +159,13 @@ class Block(FormulaContainer):
     def compute_element(self, element_id, extra_context):
         context = self.context.extend(extra_context)
         return self.execute(element_id, context)
+
+    def on_display(self, record):
+        context = self.context.extend({
+            'record': record,
+        })
+        result = self.execute('on_display', context)
+        return result
 
     def on_save(self, record):
         context = self.context.extend({
