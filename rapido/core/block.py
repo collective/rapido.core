@@ -1,3 +1,4 @@
+import collections
 import json
 import string
 from zope.interface import implements
@@ -32,7 +33,7 @@ BLOCK_TEMPLATE = u"""<form
 """
 
 
-class ElementDict(dict):
+class ElementDict(collections.MutableMapping):
 
     def __init__(
         self,
@@ -53,18 +54,45 @@ class ElementDict(dict):
             '_block_classes': classes,
             '_block_settings': json.dumps(settings),
         }
+        self.cached = dict()
+        self.iscallables = False
+
+    def setcallables(self, callables):
+        self.iscallables = callables == True
 
     def __getitem__(self, key):
+        if not self.iscallables and key in self.cached:
+            return self.cached[key]
         if key in self.values:
             return self.values[key]
-        result = None
-        try:
-            element = self.block.get_element(key)
-            result = element.render(self.record, edit=self.edit)
-        except Exception, e:
-            result = "<pre>%s</pre>" % str(e)
-        self.values[key] = result
-        return result
+        def callelement(**args):
+            try:
+                element = self.block.get_element(key)
+                return element.render(self.record, edit=self.edit, **args)
+            except Exception, e:
+                return "<pre>%s</pre>" % str(e)
+        if self.iscallables:
+            return callelement
+        else:
+            self.cached[key] = callelement()
+            return self.cached[key]
+
+    def __setitem__(self, key, value):
+        self.values[key] = value
+
+    def __delitem__(self, key):
+        del self.values[key]
+
+    def __iter__(self):
+        for key in self.values:
+            yield key
+        for key in self.block.elements:
+            yield key
+
+
+    def __len__(self):
+        #TODO: sets not mutually exclusive
+        return len(self.values) + len(self.block.elements)
 
 
 class Block(FormulaContainer):
@@ -124,7 +152,7 @@ class Block(FormulaContainer):
 
     def display(self, record=None, edit=False):
         try:
-            self.on_display(record)
+            result = self.on_display(record)
         except Exception, e:
             return "<pre>%s</pre>" % str(e)
         if record:
@@ -144,11 +172,36 @@ class Block(FormulaContainer):
             settings['app']['debug'] = True
         values = ElementDict(
             self, action, record, edit, classes=classes, settings=settings)
+
+        if result is None:
+            pass
+        elif isinstance(result, basestring):
+            return (None, result)
+        elif isinstance(result, tuple) or isinstance(result, list):
+            # expect (mimetype, response)
+            mimetype, body = result
+            if mimetype=="text/html":
+                return (None, body)
+            else:
+                response = self.context.request.response
+                response.setHeader("Content-type", mimetype)
+                response.setBody(body)
+                return response
+        elif isinstance(result, dict):
+            values.update(result)
+
+
         if callable(self.layout):
             form_wrapper = string.Formatter().vformat(
                 BLOCK_TEMPLATE, (), values)
-            form_content = self.layout(elements=values,
-                context=self.context)
+            #need to turn elements into callables
+            elements = ElementDict(
+                self, action, record, edit, classes=classes, settings=settings)
+            elements.setcallables(False)
+            values.setcallables(True)
+
+            form_content = self.layout(elements=elements,
+                context=self.context, **values)
             return form_wrapper % form_content
         else:
             layout = BLOCK_TEMPLATE % self.layout
@@ -192,6 +245,8 @@ class Block(FormulaContainer):
 
     def _load_settings(self):
         yaml_settings = yaml.load(self.app.context.get_block(self.id))
+        if yaml_settings is None:
+            yaml_settings = {}
         # if not dict provided, we assume the value is the type
         if 'elements' in yaml_settings:
             for (id, value) in yaml_settings['elements'].items():

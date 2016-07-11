@@ -9,6 +9,7 @@ import rapido.souper
 from rapido.core.interfaces import IRapidoApplication
 import rapido.core.tests
 from rapido.core.tests.base import SiteNode, SimpleRapidoApplication
+from chameleon import PageTemplate
 
 
 class TestCase(unittest.TestCase):
@@ -198,5 +199,31 @@ def author(context):
         block = self.app.get_block('block10')
         self.assertIn(
             "You know nothing, John Snow",
+            block.display(None)
+        )
+
+    def test_on_display_noelements(self):
+        self.app_obj.fake_blocks['noelements1'] = {'py': """
+def on_display(context):
+    return ["text/html", "John Snow"]
+"""}
+
+        block = self.app.get_block('noelements1')
+        self.assertIn(
+            "John Snow",
+            block.display(None)
+        )
+
+    def test_on_display_noelements_zpt(self):
+        self.app_obj.fake_blocks['noelements1'] = {'py': """
+def on_display(context):
+    return {'myelement':'John Snow'}
+""",
+                                                   'html': PageTemplate("""
+<html><body>${myelement}</body></html>""")}
+
+        block = self.app.get_block('noelements1')
+        self.assertIn(
+            "John Snow",
             block.display(None)
         )

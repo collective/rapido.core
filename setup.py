@@ -33,6 +33,8 @@ setup(name='rapido.core',
         'test': [
             'plone.app.testing',
             'rapido.souper',
+            'zope.annotation',
+            'chameleon'
         ],
       },
       entry_points="""

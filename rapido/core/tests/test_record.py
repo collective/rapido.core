@@ -146,10 +146,10 @@ acl:
             'weight': 3.2,
         })
         html = block.display(record, edit=True)
-        self.assertTrue('<input type="number"\n'
-            '        name="year" value="1845" />' in html)
-        self.assertTrue('<input type="number"\n'
-            '        name="weight" value="3.2" />' in html)
+        self.assertIn('<input type="number"\n'
+            '        name="year" value="1845" />', html)
+        self.assertIn('<input type="number"\n'
+            '        name="weight" value="3.2" />', html)
 
     def test_render_datetime_elements(self):
         self.app_obj.set_fake_block_data('frmBook', 'html', """Author: {author}
@@ -158,15 +158,15 @@ acl:
             del self.app._blocks['frmBook']
         block = self.app.get_block('frmBook')
         html = block.display(None, edit=True)
-        self.assertTrue('<input type="date"\n'
-            '        name="publication" value="" />' in html)
+        self.assertIn('<input type="date"\n'
+            '        name="publication" value="" />', html)
         record = self.app.create_record()
         record.save({
             'publication': datetime.strptime('2015-11-15', "%Y-%m-%d"),
         })
         html = block.display(record, edit=True)
-        self.assertTrue('<input type="date"\n'
-            '        name="publication" value="2015-11-15" />' in html)
+        self.assertIn('<input type="date"\n'
+            '        name="publication" value="2015-11-15" />', html)
 
     def test_compute_element_using_record_data(self):
         block = self.app.get_block('frmBook7')

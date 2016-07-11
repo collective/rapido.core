@@ -169,6 +169,8 @@ elements:
 def message(context):
     return "bacon"
 """,
+
+    'html': lambda elements, context, **v: 'France is ' + elements['message']
 }
 
 FAKE9 = {
@@ -246,10 +248,8 @@ class SimpleRapidoApplication(BaseNode):
         return self.settings
 
     def get_block(self, block_id, ftype='yaml'):
-        if block_id == 'frmBook8' and ftype == 'html':
-            return lambda elements, context: 'France is ' + elements['message']
         if block_id in self.fake_blocks:
-            return self.fake_blocks[block_id][ftype]
+            return self.fake_blocks[block_id].get(ftype,"")
         else:
             if ftype == 'yaml':
                 return 'id: ' + block_id
