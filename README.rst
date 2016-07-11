@@ -1,20 +1,20 @@
 rapido.core
 ===========
 
-.. image:: https://secure.travis-ci.org/plomino/rapido.core.png?branch=master
-    :target: http://travis-ci.org/plomino/rapido.core
+.. image:: https://secure.travis-ci.org/collective/rapido.core.png?branch=master
+    :target: http://travis-ci.org/collective/rapido.core
     :alt: Tests
-.. image:: https://landscape.io/github/plomino/rapido.core/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/plomino/rapido.core/master
+.. image:: https://landscape.io/github/collective/rapido.core/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/collective/rapido.core/master
     :alt: Code Health
-.. image:: https://coveralls.io/repos/plomino/rapido.core/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/plomino/rapido.core?branch=master
+.. image:: https://coveralls.io/repos/collective/rapido.core/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/collective/rapido.core?branch=master
     :alt: Coverage
 
 rapido.core allows to run Rapido applications.
 
 rapido.core can run on Zope or Pyramid. The initial target is Plone (using
-`rapido.plone <https://github.com/plomino/rapido.plone>`_), but a POC has been
+`rapido.plone <https://github.com/collective/rapido.plone>`_), but a POC has been
 successfully implemented on Substance D.
 
 Database design
@@ -33,7 +33,7 @@ Record storage
 
 Storage is not handled directly by rapido.core.
 
-By default, we use `rapido.souper <https://github.com/plomino/rapido.souper>`_
+By default, we use `rapido.souper <https://github.com/collective/rapido.souper>`_
 which allows to store records in a `soup <https://pypi.python.org/pypi/souper>`_.
 
 Using ZODB is not mandatory, different storages could be easily implemented
