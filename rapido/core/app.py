@@ -34,7 +34,15 @@ class RapidoApplication(Index):
         self._blocks = {}
 
     def initialize(self):
-        self.acl
+        if 'acl' not in self.settings:
+            self.settings['acl'] = {
+                'rights': {
+                    'reader': [],
+                    'author': [],
+                    'editor': [],
+                },
+                'roles': {},
+            }
         self.storage.initialize()
 
     @property

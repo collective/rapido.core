@@ -47,6 +47,22 @@ acl:
             'Powered by Rapido</footer></form>\n', '')
         )
 
+    def test_get_block_with_permission(self):
+        self.app_obj.set_fake_user("isaac.newton")
+        display = IDisplay(self.app)
+        result = display.GET(['testapp', 'block', 'block11'], {})
+        self.assertTrue('You know nothing, John Snow' in result[0])
+
+    def test_get_block_without_permission(self):
+        self.app_obj.set_fake_user("marie.curie")
+        display = IDisplay(self.app)
+        self.assertRaises(
+            Unauthorized,
+            display.GET,
+            ['testapp', 'block', 'block11'],
+            {}
+        )
+
     def test_get_block_element(self):
         display = IDisplay(self.app)
         result = display.GET(
@@ -64,6 +80,22 @@ acl:
             ('Rapido execution error - testapp\n  File "frmBook4.py", line 3, '
             'in author\nAttributeError: \'Context\' object has no attribute '
             '\'not_a_method\'', None)
+        )
+
+    def test_get_block_element_with_permission(self):
+        self.app_obj.set_fake_user("isaac.newton")
+        display = IDisplay(self.app)
+        result = display.GET(['testapp', 'block', 'block11', 'message'], {})
+        self.assertTrue('You know nothing, John Snow' in result[0])
+
+    def test_get_block_element_without_permission(self):
+        self.app_obj.set_fake_user("marie.curie")
+        display = IDisplay(self.app)
+        self.assertRaises(
+            Unauthorized,
+            display.GET,
+            ['testapp', 'block', 'block11', 'message'],
+            {}
         )
 
     def test_get_block_action_element(self):

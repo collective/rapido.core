@@ -45,6 +45,8 @@ class Display(object):
         redirect = ""
         if directive == "block":
             block = self.app.get_block(obj_id)
+            if not block.can_view():
+                raise Unauthorized()
             if action_or_element in ['view', 'edit']:
                 try:
                     result = block.display(edit=True)
@@ -79,6 +81,8 @@ class Display(object):
         redirect = ""
         if directive == "block":
             block = self.app.get_block(obj_id)
+            if not block.can_view():
+                raise Unauthorized()
             if action_or_element in ['view', 'edit']:
                 # execute submitted actions
                 actions = [key for key in request.keys()

@@ -21,6 +21,8 @@ class Rest(object):
             if path[0] == "block":
                 blockid = path[1]
                 block = self.app.get_block(blockid)
+                if not block.can_view():
+                    raise Unauthorized()
                 if len(path) == 2:
                     return block.settings
                 elif len(path) == 3:
@@ -122,6 +124,8 @@ class Rest(object):
             elif path[0] == "block":
                 blockid = path[1]
                 block = self.app.get_block(blockid)
+                if not block.can_view():
+                    raise Unauthorized()
                 if len(path) == 3:
                     element_id = path[2]
                     return block.compute_element(element_id, {'block': block})

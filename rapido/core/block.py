@@ -200,3 +200,17 @@ class Block(FormulaContainer):
         settings = DEFAULT_SETTINGS.copy()
         settings.update(yaml_settings)
         return settings
+
+    def can_view(self):
+        if 'view_permission' not in self.settings:
+            return True
+        allowed = self.settings['view_permission']
+        acl = self.app.acl
+        if acl.is_manager():
+            return True
+        if acl.current_user() in allowed:
+            return True
+        elif set(acl.current_user_groups()).intersection(allowed):
+            return True
+        else:
+            return False

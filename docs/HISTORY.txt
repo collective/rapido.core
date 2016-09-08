@@ -11,6 +11,9 @@ Changelog
 - ``on_display`` event
   [ebrehault]
 
+- Manager vew permissions on blocks
+  [ebrehault]
+
 
 1.0.5 (2016-04-09)
 ------------------

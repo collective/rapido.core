@@ -203,6 +203,18 @@ def message(context):
     'html': """<p>{message}</p>""",
 }
 
+FAKE11 = {
+    'yaml': """elements:
+    message: BASIC
+view_permission:
+    isaac.newton""",
+
+    'py': """
+def message(context):
+    return "You know nothing, John Snow"
+""",
+    'html': """<p>{message}</p>""",
+}
 
 class SiteNode(OOBTNode):
     implements(IAttributeAnnotatable)
@@ -227,6 +239,7 @@ class SimpleRapidoApplication(BaseNode):
             'frmBook8': FAKE8,
             'frmBook9': FAKE9,
             'block10': FAKE10,
+            'block11': FAKE11,
         }
         self.settings = 'no_settings: {}'
         self.context = Context().extend({'app': self})
