@@ -4,6 +4,12 @@ Changelog
 1.0.6 (unreleased)
 ------------------
 
+Breaking changes:
+
+- Use '/blocks/' in Rapido URLs (instead of '/block/')
+
+New features:
+
 - Allow regular GET and POST on elements (action elements make a redirect,
   other elements just return the result).
   [ebrehault]

@@ -18,7 +18,7 @@ class Rest(object):
             if not path:
                 return self.app.settings
 
-            if path[0] == "block":
+            if path[0] == "blocks":
                 blockid = path[1]
                 block = self.app.get_block(blockid)
                 if not block.can_view():
@@ -121,7 +121,7 @@ class Rest(object):
                     'success': 'refresh',
                     'indexes': indexes,
                 }
-            elif path[0] == "block":
+            elif path[0] == "blocks":
                 blockid = path[1]
                 block = self.app.get_block(blockid)
                 if not block.can_view():

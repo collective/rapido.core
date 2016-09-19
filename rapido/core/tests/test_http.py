@@ -36,10 +36,10 @@ acl:
 
     def test_get_block(self):
         display = IDisplay(self.app)
-        result = display.GET(['testapp', 'block', 'frmBook'], {})
+        result = display.GET(['testapp', 'blocks', 'frmBook'], {})
         self.assertEquals(result,
             (u'<form\n    name="frmBook"\n    class="rapido-block '
-            'rapido-target-ajax"\n    action="http://here/block/frmBook"\n'
+            'rapido-target-ajax"\n    action="http://here/blocks/frmBook"\n'
             '    rapido-settings=\'{"app": {"url": "http://here", '
             '"debug": true}, "target": "ajax", "id": "frmBook"}\'\n'
             '    method="POST">Author: <input type="text"\n'
@@ -50,7 +50,7 @@ acl:
     def test_get_block_with_permission(self):
         self.app_obj.set_fake_user("isaac.newton")
         display = IDisplay(self.app)
-        result = display.GET(['testapp', 'block', 'block11'], {})
+        result = display.GET(['testapp', 'blocks', 'block11'], {})
         self.assertTrue('You know nothing, John Snow' in result[0])
 
     def test_get_block_without_permission(self):
@@ -59,14 +59,14 @@ acl:
         self.assertRaises(
             Unauthorized,
             display.GET,
-            ['testapp', 'block', 'block11'],
+            ['testapp', 'blocks', 'block11'],
             {}
         )
 
     def test_get_block_element(self):
         display = IDisplay(self.app)
         result = display.GET(
-            ['testapp', 'block', 'frmBook', 'famous_quote'], {})
+            ['testapp', 'blocks', 'frmBook', 'famous_quote'], {})
         self.assertEquals(result,
             ('A good plan violently executed now is better than a perfect '
             'plan executed next week.', '')
@@ -75,7 +75,7 @@ acl:
     def test_get_block_element_with_error(self):
         display = IDisplay(self.app)
         result = display.GET(
-            ['testapp', 'block', 'frmBook4', 'author'], {})
+            ['testapp', 'blocks', 'frmBook4', 'author'], {})
         self.assertEquals(result,
             ('Rapido execution error - testapp\n  File "frmBook4.py", line 3, '
             'in author\nAttributeError: \'Context\' object has no attribute '
@@ -85,7 +85,7 @@ acl:
     def test_get_block_element_with_permission(self):
         self.app_obj.set_fake_user("isaac.newton")
         display = IDisplay(self.app)
-        result = display.GET(['testapp', 'block', 'block11', 'message'], {})
+        result = display.GET(['testapp', 'blocks', 'block11', 'message'], {})
         self.assertTrue('You know nothing, John Snow' in result[0])
 
     def test_get_block_element_without_permission(self):
@@ -94,14 +94,14 @@ acl:
         self.assertRaises(
             Unauthorized,
             display.GET,
-            ['testapp', 'block', 'block11', 'message'],
+            ['testapp', 'blocks', 'block11', 'message'],
             {}
         )
 
     def test_get_block_action_element(self):
         display = IDisplay(self.app)
         result = display.GET(
-            ['testapp', 'block', 'frmBook', 'go_to_bed'], {})
+            ['testapp', 'blocks', 'frmBook', 'go_to_bed'], {})
         self.assertEquals(result,
             ('', 'http://localhost/bed')
         )
@@ -111,7 +111,7 @@ acl:
         self.assertRaises(
             NotFound,
             display.GET,
-            ['testapp', 'block', 'not_existing'],
+            ['testapp', 'blocks', 'not_existing'],
             {}
         )
 
@@ -188,7 +188,7 @@ acl:
 
     def test_post_block(self):
         display = IDisplay(self.app)
-        result = display.POST(['testapp', 'block', 'frmBook'], {})
+        result = display.POST(['testapp', 'blocks', 'frmBook'], {})
         self.assertTrue('Author: <input type="text"\n'
         '        name="author" value="Victor Hugo" />' in result[0])
 
@@ -197,14 +197,14 @@ acl:
         self.assertRaises(
             NotFound,
             display.POST,
-            ['testapp', 'block', 'not_existing'],
+            ['testapp', 'blocks', 'not_existing'],
             {}
         )
 
     def test_post_block_action(self):
         display = IDisplay(self.app)
         display.POST([
-            'testapp', 'block', 'frmBook2'],
+            'testapp', 'blocks', 'frmBook2'],
             {'action.do_something': True})
         self.assertEquals(
             self.app.messages[-1],
@@ -214,7 +214,7 @@ acl:
     def test_post_block_element(self):
         display = IDisplay(self.app)
         result = display.POST(
-            ['testapp', 'block', 'frmBook', 'famous_quote'], {})
+            ['testapp', 'blocks', 'frmBook', 'famous_quote'], {})
         self.assertEquals(result,
             ('A good plan violently executed now is better than a perfect '
             'plan executed next week.', '')
@@ -223,7 +223,7 @@ acl:
     def test_post_block_action_element(self):
         display = IDisplay(self.app)
         result = display.POST(
-            ['testapp', 'block', 'frmBook', 'go_to_bed'], {})
+            ['testapp', 'blocks', 'frmBook', 'go_to_bed'], {})
         self.assertEquals(result,
             ('', 'http://localhost/bed')
         )
@@ -233,12 +233,12 @@ acl:
         self.assertRaises(
             NotFound,
             display.POST,
-            ['testapp', 'block', 'frmBook', 'go_to_home'], {})
+            ['testapp', 'blocks', 'frmBook', 'go_to_home'], {})
 
     def test_post_block_save(self):
         display = IDisplay(self.app)
         display.POST([
-            'testapp', 'block', 'frmBook2'],
+            'testapp', 'blocks', 'frmBook2'],
             {'_save': True, 'author': 'J. Conrad'})
         self.assertEquals(
             len(self.app.records()),
@@ -248,7 +248,7 @@ acl:
     def test_post_block_save_redirect(self):
         display = IDisplay(self.app)
         result = display.POST([
-            'testapp', 'block', 'frmBook2'],
+            'testapp', 'blocks', 'frmBook2'],
             {'_save': True, 'author': 'J. Conrad'})
         self.assertEquals(
             result[1],
@@ -261,7 +261,7 @@ acl:
         self.assertRaises(
             Unauthorized,
             display.POST,
-            ['testapp', 'block', 'frmBook2'],
+            ['testapp', 'blocks', 'frmBook2'],
             {'_save': True, 'author': 'J. Conrad'}
         )
 
@@ -309,7 +309,7 @@ acl:
         self.app_obj.set_fake_user("isaac.newton")
         display = IDisplay(self.app)
         display.POST([
-            'testapp', 'block', 'frmBook2'],
+            'testapp', 'blocks', 'frmBook2'],
             {'_save': True, 'author': 'John DosPassos'})
         record = self.app.records()[0]
         self.assertEquals(record['_author'], ['isaac.newton'])

@@ -117,7 +117,7 @@ class Block(FormulaContainer):
 
     @property
     def url(self):
-        return '%s/block/%s' % (
+        return '%s/blocks/%s' % (
             self.app.url,
             self.id,
         )

@@ -64,7 +64,7 @@ acl:
 
     def test_get_block(self):
         rest = IRest(self.app)
-        result = rest.GET(['block', 'frmBook2'], "")
+        result = rest.GET(['blocks', 'frmBook2'], "")
         self.assertEquals(result,
             {
                 'elements': {
@@ -80,14 +80,14 @@ acl:
 
     def test_get_element(self):
         rest = IRest(self.app)
-        result = rest.GET(['block', 'frmBook', 'something_computed'], "")
+        result = rest.GET(['blocks', 'frmBook', 'something_computed'], "")
         self.assertEquals(result,
             {'one': 1, 'two': 2.0}
         )
 
     def test_post_element(self):
         rest = IRest(self.app)
-        result = rest.POST(['block', 'frmBook', 'something_computed'], "")
+        result = rest.POST(['blocks', 'frmBook', 'something_computed'], "")
         self.assertEquals(result,
             {'one': 1, 'two': 2.0}
         )
@@ -97,7 +97,7 @@ acl:
         self.assertRaises(
             NotAllowed,
             rest.POST,
-            ['block', 'frmBook'],
+            ['blocks', 'frmBook'],
             ""
         )
 
@@ -106,13 +106,13 @@ acl:
         self.assertRaises(
             NotAllowed,
             rest.GET,
-            ['block', 'frmBook', 'what', 'ever'],
+            ['blocks', 'frmBook', 'what', 'ever'],
             ""
         )
 
     def test_get_not_defined_block(self):
         rest = IRest(self.app)
-        result = rest.GET(['block', 'anything'], "")
+        result = rest.GET(['blocks', 'anything'], "")
         self.assertEquals(result,
             {'elements': {}, 'id': 'anything'}
         )

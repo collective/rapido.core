@@ -42,7 +42,7 @@ acl:
         self.assertEquals(
             block.display(None, edit=True),
             u'<form\n    name="frmBook"\n    class="rapido-block '
-            'rapido-target-ajax"\n    action="http://here/block/frmBook"\n'
+            'rapido-target-ajax"\n    action="http://here/blocks/frmBook"\n'
             '    rapido-settings=\'{"app": {"url": "http://here", '
             '"debug": true}, "target": "ajax", "id": "frmBook"}\'\n'
             '    method="POST">Author: <input type="text"\n'
@@ -57,7 +57,7 @@ acl:
             u'<form\n'
             '    name="frmBook6"\n'
             '    class="rapido-block"\n'
-            '    action="http://here/block/frmBook6"\n'
+            '    action="http://here/blocks/frmBook6"\n'
             '    rapido-settings=\''
             '{"app": {"url": "http://here", "debug": true}}\'\n'
             '    method="POST"><h1>The Force awakens</h1>\n'

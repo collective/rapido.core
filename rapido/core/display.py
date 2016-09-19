@@ -43,7 +43,7 @@ class Display(object):
         (directive, obj_id, action_or_element) = self._parse_path(path)
         result = ""
         redirect = ""
-        if directive == "block":
+        if directive == "blocks":
             block = self.app.get_block(obj_id)
             if not block.can_view():
                 raise Unauthorized()
@@ -79,7 +79,7 @@ class Display(object):
         (directive, obj_id, action_or_element) = self._parse_path(path)
         result = ""
         redirect = ""
-        if directive == "block":
+        if directive == "blocks":
             block = self.app.get_block(obj_id)
             if not block.can_view():
                 raise Unauthorized()
