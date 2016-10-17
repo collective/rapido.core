@@ -64,12 +64,12 @@ class Record(object):
 
     def save(self, request=None, block=None, block_id=None, creation=False):
         """ Update the record with the provided items.
-        Request can be an actual HTTP request or a dictionnary.
-        If a block is mentionned, formulas will be executed.
-        If no block (and request is a dict), we just save the items values.
+        Request can be an actual HTTP request or a dictionary.
+        If a block is mentioned, formulas will be executed.
+        If no block (and request is a dict), we just save the item's values.
         """
-        if not(block or block_id or self.get('block') or
-        (request and request.get('block'))):
+        if not (block or block_id or self.get('block') or
+                (request and request.get('block'))):
             if type(request) is dict:
                 for (key, value) in request.items():
                     self[key] = value
