@@ -77,9 +77,7 @@ acl:
         result = display.GET(
             ['testapp', 'blocks', 'frmBook4', 'author'], {})
         self.assertEquals(result,
-            ('Rapido execution error - testapp\n  File "frmBook4.py", line 3, '
-            'in author\nAttributeError: \'Context\' object has no attribute '
-            '\'not_a_method\'', None)
+            ('Syntax error at line 42', '')
         )
 
     def test_get_block_element_with_permission(self):

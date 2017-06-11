@@ -5,7 +5,7 @@ from pyaml import yaml
 
 from .interfaces import IBlock
 from .elements import get_element_class
-from .formula import FormulaContainer
+from .exceptions import ExecutionError, NotFound
 
 ELEMENT_TYPE_MAPPING = {
     'BASIC': 'string',
@@ -67,7 +67,7 @@ class ElementDict(dict):
         return result
 
 
-class Block(FormulaContainer):
+class Block:
     """
     """
     implements(IBlock)
@@ -102,14 +102,13 @@ class Block(FormulaContainer):
             self.app.create_index(element_id, element['index_type'])
 
     @property
-    def code(self):
-        if 'code' not in self.settings:
+    def script(self):
+        if not hasattr(self, '_script'):
             try:
-                self.settings['code'] = self.app.context.get_block(
-                    self.id, ftype="py")
-            except KeyError:
-                self.settings['code'] = '# no code'
-        return self.settings['code']
+                self._script = self.app.context.get_script(self.id)
+            except KeyError, e:
+                raise NotFound(self.id)
+        return self._script
 
     @property
     def app(self):
@@ -122,10 +121,25 @@ class Block(FormulaContainer):
             self.id,
         )
 
+    def execute(self, func, *args, **kwargs):
+        script = self.script
+        if not script:
+            return
+        if func in script:
+            try:
+                return script[func](*args, **kwargs)
+            except Exception, e:
+                raise ExecutionError(e, self)
+        elif 'rapido_error' in script:
+            return script['rapido_error']
+
     def display(self, record=None, edit=False):
         try:
             self.on_display(record)
-        except Exception, e:
+        except NotFound:
+            # .py file is not mandatory
+            pass
+        except ExecutionError, e:
             return "<pre>%s</pre>" % str(e)
         if record:
             action = record.url
@@ -136,7 +150,7 @@ class Block(FormulaContainer):
         if target:
             classes.append('rapido-target-%s' % target)
         settings = self.settings.copy()
-        for key in ['elements', 'layout', 'code']:
+        for key in ['elements', 'layout',]:
             if key in settings:
                 del settings[key]
         settings['app'] = {'url': self.app.url}

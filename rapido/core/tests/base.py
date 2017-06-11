@@ -5,6 +5,7 @@ from zope.annotation.interfaces import IAttributeAnnotatable
 from rapido.core.app import Context
 from rapido.core.interfaces import IRapidable
 
+SCRIPTS = {}
 FAKE1 = {
     'yaml': """target: ajax
 elements:
@@ -32,40 +33,47 @@ elements:
         type: ACTION
         label: Save
 id: frmBook""",
-
-    'py': """
-def forever(context):
+    'html': """Author: {author}
+<footer>Powered by Rapido</footer>"""
+}
+def fake1_forever(context):
     return 'I will never change.'
 
-def author(context):
+def fake1_author(context):
     return "Victor Hugo"
 
-def year(context):
+def fake1_year(context):
     return 1845
 
-def something_computed(context):
+def fake1_something_computed(context):
     return {
         'one': 1,
         'two': 2.0,
     }
 
-def famous_quote(context):
+def fake1_famous_quote(context):
     return 'A good plan violently executed now is better than a perfect plan executed next week.'
 
-def add_note(context):
+def fake1_add_note(context):
     context.record['note'] = "That's a good book"
 
-def go_to_bed(context):
+def fake1_go_to_bed(context):
     return 'http://localhost/bed'
 
-def on_save(context):
+def fake1_on_save(context):
     author = context.record.get('author', 'N/A')
-    context.record['author'] = author.upper()""",
+    context.record['author'] = author.upper()
 
-    'html': """Author: {author}
-<footer>Powered by Rapido</footer>"""
+SCRIPTS['frmBook'] = {
+    'forever': fake1_forever,
+    'author': fake1_author,
+    'year': fake1_year,
+    'something_computed': fake1_something_computed,
+    'famous_quote': fake1_famous_quote,
+    'add_note': fake1_add_note,
+    'go_to_bed': fake1_go_to_bed,
+    'on_save': fake1_on_save,
 }
-
 FAKE2 = {
     'yaml': """target: ajax
 elements:
@@ -73,32 +81,34 @@ elements:
     do_something:
         type: ACTION
         label: Do""",
-
-    'py': """
-def record_id(context):
+    'html': """Author: {author}
+<footer>Powered by Rapido</footer>"""
+}
+def fake2_record_id(context):
     return 'my-id'
 
-def on_save(context):
+def fake2_on_save(context):
     return "http://somewhere"
 
-def on_delete(context):
+def fake2_on_delete(context):
     other = context.app.get_record('record_1')
     if other:
         other['message'] = "Good bye"
     return "http://somewhere"
 
-def do_something(context):
-    context.app.log('Hello')""",
+def fake2_do_something(context):
+    context.app.log('Hello')
 
-    'html': """Author: {author}
-<footer>Powered by Rapido</footer>"""
+SCRIPTS['frmBook2'] = {
+    'record_id': fake2_record_id,
+    'on_save': fake2_on_save,
+    'on_delete': fake2_on_delete,
+    'do_something': fake2_do_something,
 }
-
 FAKE3 = {
     'yaml': """target: ajax
 elements:
     author: TEXT""",
-
     'html': """Author: {author}
 <footer>Powered by Rapido</footer>"""
 }
@@ -107,13 +117,12 @@ FAKE4 = {
     'yaml': """target: ajax
 elements:
     author: TEXT""",
-
-    'py': """
-def author(context):
-    returm 'hello'""",
-
     'html': """Author: {author}
 <footer>Powered by Rapido</footer>"""
+}
+
+SCRIPTS['frmBook4'] = {
+    'rapido_error': 'Syntax error at line 42'
 }
 
 FAKE5 = {
@@ -124,7 +133,6 @@ elements:
     _save:
         type: ACTION
         label: Save""",
-
     'html': """Author: {author} {_save}
 <footer>Powered by Rapido</footer>"""
 }
@@ -132,14 +140,18 @@ elements:
 FAKE6 = {
     'yaml': """elements:
     info: BASIC""",
-    'py': """def info(context):
+    'html': """<h1>{info[title]}</h1>
+<p>{info[summary]}</p>"""
+}
+
+def fake6_info(context):
     return {
         'title': "The Force awakens",
         'summary': "No spoil",
     }
-""",
-    'html': """<h1>{info[title]}</h1>
-<p>{info[summary]}</p>"""
+
+SCRIPTS['frmBook6'] = {
+    'info': fake6_info,
 }
 
 FAKE7 = {
@@ -147,28 +159,31 @@ FAKE7 = {
 elements:
     author: TEXT
     message: BASIC""",
+    'html': """<p>Author: {author}</p>
+<footer>{message}</footer>"""
+}
 
-    'py': """
-def message(context):
+def fake7_message(context):
     if context.record:
         return "Bonjour " + context.record['author']
     else:
         return "No author"
-""",
 
-    'html': """<p>Author: {author}</p>
-<footer>{message}</footer>"""
+SCRIPTS['frmBook7'] = {
+    'message': fake7_message,
 }
 
 FAKE8 = {
     'yaml': """target: ajax
 elements:
     message: BASIC""",
+}
 
-    'py': """
-def message(context):
+def fake8_message(context):
     return "bacon"
-""",
+
+SCRIPTS['frmBook8'] = {
+    'message': fake8_message,
 }
 
 FAKE9 = {
@@ -176,31 +191,37 @@ FAKE9 = {
 elements:
     a_number: BASIC
     a_date: BASIC""",
+    'html': """<p>Random: {a_number}</p>
+<p>Date: {a_date}</p>""",
+}
 
-    'py': """
-def a_number(context):
+def fake9_a_number(context):
     if context.modules.re:
         return context.modules.random.random()
 
-def a_date(context):
+def fake9_a_date(context):
     return context.modules.datetime.date.today().strftime("%Y-%m-%d")
-""",
-    'html': """<p>Random: {a_number}</p>
-<p>Date: {a_date}</p>""",
+
+SCRIPTS['frmBook9'] = {
+    'a_number': fake9_a_number,
+    'a_date': fake9_a_date,
 }
 
 FAKE10 = {
     'yaml': """elements:
     message: BASIC""",
+    'html': """<p>{message}</p>""",
+}
 
-    'py': """
-def on_display(context):
+def fake10_on_display(context):
     context.hero = "John Snow"
 
-def message(context):
+def fake10_message(context):
     return "You know nothing, " + context.hero
-""",
-    'html': """<p>{message}</p>""",
+
+SCRIPTS['block10'] = {
+    'on_display': fake10_on_display,
+    'message': fake10_message,
 }
 
 FAKE11 = {
@@ -208,12 +229,14 @@ FAKE11 = {
     message: BASIC
 view_permission:
     isaac.newton""",
-
-    'py': """
-def message(context):
-    return "You know nothing, John Snow"
-""",
     'html': """<p>{message}</p>""",
+}
+
+def fake11_message(context):
+    return "You know nothing, John Snow"
+
+SCRIPTS['block11'] = {
+    'message': fake11_message,
 }
 
 class SiteNode(OOBTNode):
@@ -268,6 +291,9 @@ class SimpleRapidoApplication(BaseNode):
                 return 'id: ' + block_id
             else:
                 raise KeyError
+
+    def get_script(self, block):
+        return SCRIPTS[block]
 
     def set_fake_block_data(self, block_id, ftype, data):
         self.fake_blocks[block_id][ftype] = data

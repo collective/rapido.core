@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from ..exceptions import NotFound
+
 
 class BaseElement(object):
 
@@ -12,8 +14,11 @@ class BaseElement(object):
         if record and self.id in record:
             element_value = record[self.id]
         else:
-            element_value = self.block.compute_element(
-                self.id, {'block': self.block, 'record': record})
+            try:
+                element_value = self.block.compute_element(
+                    self.id, {'block': self.block, 'record': record})
+            except NotFound:
+                return None
         return element_value
 
     def process_input(self, value):

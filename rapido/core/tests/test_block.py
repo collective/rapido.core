@@ -33,10 +33,6 @@ acl:
         self.app = IRapidoApplication(self.app_obj)
         self.app.initialize()
 
-    def test_no_code(self):
-        block = self.app.get_block('frmBook3')
-        self.assertEquals(block.code, '# no code')
-
     def test_display(self):
         block = self.app.get_block('frmBook')
         self.assertEquals(
@@ -117,23 +113,8 @@ acl:
 
     def test_python_compilation_errors(self):
         block = self.app.get_block('frmBook4')
-        block.display(None, edit=True)
-        self.assertEquals(
-            self.app.messages[0],
-            "Rapido compilation error - testapp\nin frmBook4.py, at line 3:"
-            "\n    returm 'hello'\n-----------------^\ninvalid syntax"
-        )
-        self.app_obj.set_fake_block_data('frmBook4', 'py', """
-def author(context):
-    return context.not_a_method()""")
-        del self.app._blocks['frmBook4']
-        block = self.app.get_block('frmBook4')
-        block.display(None, edit=True)
-        self.assertEquals(
-            self.app.messages[1],
-            'Rapido execution error - testapp\n  File "frmBook4.py", line 3, '
-            'in author\nAttributeError: \'Context\' object has no attribute \''
-            'not_a_method\''
+        self.assertTrue(
+            "Syntax error at line 42" in block.display(None, edit=True)
         )
 
     def test_undefined_element(self):

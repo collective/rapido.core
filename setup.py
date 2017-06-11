@@ -27,7 +27,6 @@ setup(name='rapido.core',
           'pyaml',
           'zope.security',
           'zope.configuration',
-          'zope.untrustedpython',
       ],
       extras_require={
         'test': [
